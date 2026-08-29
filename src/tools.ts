@@ -13,10 +13,12 @@
  * which unregisters that scope in a single operation (§5).
  */
 import {
-  JOB_SCOPED_TOOLS, getApplications, getFitGaps, getJobDetails, getProfileFacts,
-  getResume, getWorkspaceState, searchJobs, selectJob, setWebmcpStatus, getState, subscribe,
+  ALWAYS_TOOLS, EDIT_SCOPED_TOOLS, JOB_SCOPED_TOOLS, getApplications, getFitGaps, getJobDetails,
+  getProfileFacts, getResume, getWorkspaceState, pendingEdits, proposeResumeEdits,
+  requestProfileFact, searchJobs, selectJob, setWebmcpStatus, getState, subscribe,
+  withdrawEdit,
 } from './store'
-import type { Application, FactKind, ResumeSection } from './types'
+import type { Application, EditProposal, FactKind, FactRequest, ResumeSection } from './types'
 
 type ToolDescriptor = {
   name: string
@@ -141,6 +143,22 @@ const ALWAYS: ToolDescriptor[] = [
     WRITES,
     (a) => selectJob(String(a.jobId)),
   ),
+  tool(
+    'request_profile_fact',
+    'Ask the human to add a fact to the bank. You CANNOT write to the fact bank yourself — this only opens a pre-filled panel that the human saves, edits or dismisses. Use it when get_fit_gaps reports something missing that you believe the candidate actually has. Returns immediately with awaiting_user; carry on and re-read get_profile_facts later.',
+    {
+      type: 'object',
+      properties: {
+        claim: { type: 'string', description: 'The fact as you understood it, written in the first person.' },
+        kind: { type: 'string', enum: ['skill', 'role', 'achievement', 'education', 'language'] },
+        why: { type: 'string', description: 'Why this posting makes it worth adding.' },
+      },
+      required: ['claim', 'kind', 'why'],
+      additionalProperties: false,
+    },
+    WRITES,
+    (a) => requestProfileFact(a as unknown as FactRequest),
+  ),
 ]
 
 const JOB_SCOPED: ToolDescriptor[] = [
@@ -156,6 +174,48 @@ const JOB_SCOPED: ToolDescriptor[] = [
     noArgs, READ_ONLY,
     () => getFitGaps(),
   ),
+  tool(
+    'propose_resume_edits',
+    'Queue resume rewrites for HUMAN REVIEW. This never applies anything — each edit appears as a before/after diff the human accepts or rejects. Every edit must cite the fact ids that support its wording. Edits whose new text contains a technology, product name or number that no cited fact supports are REFUSED, and come back listing the offending tokens so you can correct them. Do not retry the same wording; either cite a fact that supports it, call request_profile_fact, or drop the claim.',
+    {
+      type: 'object',
+      properties: {
+        edits: {
+          type: 'array', minItems: 1, maxItems: 8,
+          items: {
+            type: 'object',
+            properties: {
+              targetBlockId: { type: 'string' },
+              newText: { type: 'string', maxLength: 400 },
+              rationale: { type: 'string', maxLength: 200, description: 'Why this wording helps for THIS posting.' },
+              sourceFactIds: { type: 'array', items: { type: 'string' }, minItems: 1 },
+            },
+            required: ['targetBlockId', 'newText', 'rationale', 'sourceFactIds'],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ['edits'],
+      additionalProperties: false,
+    },
+    WRITES,
+    (a) => proposeResumeEdits((a.edits ?? []) as EditProposal[]),
+  ),
+]
+
+const EDIT_SCOPED: ToolDescriptor[] = [
+  tool(
+    'withdraw_edit',
+    'Retract a still-pending proposal — for example after the human rejects one and you want to offer different wording. Cannot touch an edit that has already been accepted.',
+    {
+      type: 'object',
+      properties: { editId: { type: 'string' } },
+      required: ['editId'],
+      additionalProperties: false,
+    },
+    WRITES,
+    (a) => withdrawEdit(String(a.editId)),
+  ),
 ]
 
 // ---------------------------------------------------------------- lifecycle
@@ -163,6 +223,8 @@ const JOB_SCOPED: ToolDescriptor[] = [
 let started = false
 let jobScope: AbortController | null = null
 let jobScopeFor: string | null = null
+let editScope: AbortController | null = null
+let editScopeOn = false
 
 async function register(t: ToolDescriptor, signal?: AbortSignal) {
   const mc = document.modelContext
@@ -200,6 +262,25 @@ function syncJobScope() {
   }
 }
 
+function syncEditScope() {
+  const on = pendingEdits(getState()).length > 0
+  if (on === editScopeOn) return
+  editScopeOn = on
+
+  if (!on) {
+    editScope?.abort()
+    editScope = null
+    return
+  }
+  editScope = new AbortController()
+  for (const t of EDIT_SCOPED) void register(t, editScope.signal)
+}
+
+function syncScopes() {
+  syncJobScope()
+  syncEditScope()
+}
+
 /** Safe to call unconditionally; does nothing in a browser without WebMCP. */
 export function initTools() {
   if (started) return
@@ -212,16 +293,20 @@ export function initTools() {
 
   setWebmcpStatus('active')
   for (const t of ALWAYS) void register(t)
-  subscribe(syncJobScope)
-  syncJobScope()
+  subscribe(syncScopes)
+  syncScopes()
 }
 
 export const TOOL_NAMES = {
   always: ALWAYS.map((t) => t.name),
   jobScoped: JOB_SCOPED.map((t) => t.name),
+  editScoped: EDIT_SCOPED.map((t) => t.name),
 }
 
-// Keep the exported scope list and the real descriptors from drifting apart.
-if (JOB_SCOPED.map((t) => t.name).join() !== [...JOB_SCOPED_TOOLS].join()) {
-  console.warn('[tailor] job-scoped tool list disagrees with the store definition')
+// Keep the exported scope lists and the real descriptors from drifting apart —
+// the status strip counts the store's lists, not these.
+if (ALWAYS.map((t) => t.name).join() !== [...ALWAYS_TOOLS].join()
+  || JOB_SCOPED.map((t) => t.name).join() !== [...JOB_SCOPED_TOOLS].join()
+  || EDIT_SCOPED.map((t) => t.name).join() !== [...EDIT_SCOPED_TOOLS].join()) {
+  console.warn('[tailor] registered tool scopes disagree with the store definition')
 }

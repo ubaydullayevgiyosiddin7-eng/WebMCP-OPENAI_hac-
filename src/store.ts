@@ -12,13 +12,16 @@
 import jobsData from './data/jobs.json'
 import factsData from './data/profile-facts.json'
 import resumeData from './data/resume.json'
+import { checkEdit } from './lib/guard'
 import { applyFilters, computeFitGaps, groupTags } from './lib/match'
 import type {
-  Application, Fact, FactKind, Filters, Job, ResumeBlock, ResumeSection,
+  Application, EditProposal, Fact, FactKind, FactRequest, Filters, GuardFailure,
+  Job, PendingEdit, ResumeBlock, ResumeSection,
 } from './types'
 import { EMPTY_FILTERS } from './types'
 
 export const JOBS = jobsData.jobs as Job[]
+/** Initial fact bank. Live facts live in state — the human can add one. */
 export const FACTS = factsData.facts as Fact[]
 export const PROFILE = factsData.profile
 export const ATTRIBUTION = jobsData.attribution
@@ -26,15 +29,23 @@ export const ATTRIBUTION = jobsData.attribution
 /** Tool scope, per docs/TOOL_CONTRACT.md §5. */
 export const ALWAYS_TOOLS = [
   'get_workspace_state', 'get_profile_facts', 'get_resume',
-  'get_applications', 'search_jobs', 'open_job',
+  'get_applications', 'search_jobs', 'open_job', 'request_profile_fact',
 ] as const
 
-export const JOB_SCOPED_TOOLS = ['get_job_details', 'get_fit_gaps'] as const
+export const JOB_SCOPED_TOOLS = [
+  'get_job_details', 'get_fit_gaps', 'propose_resume_edits',
+] as const
+
+/** Registered only while at least one edit is pending (contract §5). */
+export const EDIT_SCOPED_TOOLS = ['withdraw_edit'] as const
 
 export type State = {
   filters: Filters
   openJobId: string | null
+  facts: Fact[]
   resume: ResumeBlock[]
+  pendingEdits: PendingEdit[]
+  factRequest: FactRequest | null
   applications: Application[]
   /** 'active' once registerTool has been found and used; never faked. */
   webmcp: 'unsupported' | 'active'
@@ -43,7 +54,10 @@ export type State = {
 let state: State = {
   filters: EMPTY_FILTERS,
   openJobId: null,
+  facts: FACTS,
   resume: resumeData.blocks as ResumeBlock[],
+  pendingEdits: [],
+  factRequest: null,
   applications: [],
   webmcp: 'unsupported',
 }
@@ -74,8 +88,13 @@ export function openJob(s: State = state): Job | null {
 
 /** The tool names in scope right now. Derived from state, so it cannot drift. */
 export function toolsInScope(s: State = state): string[] {
-  return s.openJobId ? [...ALWAYS_TOOLS, ...JOB_SCOPED_TOOLS] : [...ALWAYS_TOOLS]
+  const names: string[] = [...ALWAYS_TOOLS]
+  if (s.openJobId) names.push(...JOB_SCOPED_TOOLS)
+  if (s.pendingEdits.some((e) => e.status === 'pending')) names.push(...EDIT_SCOPED_TOOLS)
+  return names
 }
+
+export const pendingEdits = (s: State = state) => s.pendingEdits.filter((e) => e.status === 'pending')
 
 const err = (error: string, hint: string) => ({ ok: false as const, error, hint })
 
@@ -168,7 +187,7 @@ export function getWorkspaceState() {
 }
 
 export function getProfileFacts(kind?: FactKind) {
-  const facts = kind ? FACTS.filter((f) => f.kind === kind) : FACTS
+  const facts = kind ? state.facts.filter((f) => f.kind === kind) : state.facts
   const byKind: Record<string, number> = {}
   for (const f of facts) byKind[f.kind] = (byKind[f.kind] ?? 0) + 1
   const breakdown = Object.entries(byKind).map(([k, n]) => `${n} ${k}${n === 1 ? '' : 's'}`).join(', ')
@@ -221,16 +240,122 @@ export function getJobDetails() {
 export function getFitGaps() {
   const job = openJob()
   if (!job) return err('no_job_open', 'Call open_job first — this tool compares the open posting against the fact bank.')
-  const gaps = computeFitGaps(job, FACTS)
-  const total = gaps.covered.length + gaps.missing.length
+  const gaps = computeFitGaps(job, state.facts)
   return {
     ok: true as const,
-    summary: `Covered ${gaps.covered.length} of ${total} requirements.`
+    summary: gaps.verdict
       + (gaps.missing.length ? ` Missing: ${gaps.missing.join(', ')}.` : ' Nothing missing.'),
     covered: gaps.covered,
     missing: gaps.missing,
     yearsGap: gaps.yearsGap,
     candidateYears: gaps.candidateYears,
     yearsBasis: gaps.yearsBasis,
+    yearsFactId: gaps.yearsFactId,
+    coverageRatio: gaps.coverageRatio,
+    verdict: gaps.verdict,
   }
+}
+
+// ---------------------------------------------------------------- phase 2
+
+let editSeq = 0
+
+/**
+ * Queues reviewable diffs. It NEVER mutates the resume — that is the whole
+ * contract. Each edit is put through the fact guard first; anything that fails
+ * comes back as a structured refusal naming the tokens, so the agent can
+ * correct itself rather than retry blindly.
+ */
+export function proposeResumeEdits(edits: EditProposal[]) {
+  if (!Array.isArray(edits) || edits.length === 0) {
+    return err('no_edits', 'Pass at least one edit. Each needs targetBlockId, newText, rationale and sourceFactIds.')
+  }
+  if (edits.length > 8) {
+    return err('too_many_edits', 'At most 8 edits per call. Split them across turns so the human can review.')
+  }
+
+  const queued: { editId: string; targetBlockId: string }[] = []
+  const rejected: GuardFailure[] = []
+  const accepted: PendingEdit[] = []
+
+  for (const proposal of edits) {
+    const failure = checkEdit(proposal, state.resume, state.facts)
+    if (failure) { rejected.push(failure); continue }
+
+    const block = state.resume.find((b) => b.id === proposal.targetBlockId)!
+    const id = `e_${++editSeq}`
+    accepted.push({
+      ...proposal,
+      id,
+      jobId: state.openJobId,
+      before: block.text,
+      after: proposal.newText,
+      status: 'pending',
+    })
+    queued.push({ editId: id, targetBlockId: proposal.targetBlockId })
+  }
+
+  if (accepted.length > 0) set({ pendingEdits: [...state.pendingEdits, ...accepted] })
+
+  const parts = [`${queued.length} of ${edits.length} edit${edits.length === 1 ? '' : 's'} queued for review.`]
+  if (rejected.length > 0) {
+    parts.push(`${rejected.length} rejected: ${rejected.map((r) => r.offendingTokens.join('/') || r.reason).join('; ')}.`)
+  }
+
+  return { ok: true as const, summary: parts.join(' '), queued, rejected }
+}
+
+export function withdrawEdit(editId: string) {
+  const edit = state.pendingEdits.find((e) => e.id === editId)
+  if (!edit) return err('edit_not_found', `No edit "${editId}". Call get_workspace_state to see pending edit ids.`)
+  if (edit.status !== 'pending') {
+    return err('edit_not_pending', `Edit "${editId}" is already ${edit.status} and cannot be withdrawn.`)
+  }
+  set({ pendingEdits: state.pendingEdits.filter((e) => e.id !== editId) })
+  return { ok: true as const, summary: `Withdrew ${editId}.`, withdrawnId: editId }
+}
+
+/** Human-only. The agent has no path to this. */
+export function acceptEdit(editId: string) {
+  const edit = state.pendingEdits.find((e) => e.id === editId)
+  if (!edit) return
+  set({
+    resume: state.resume.map((b) => (b.id === edit.targetBlockId ? { ...b, text: edit.after } : b)),
+    pendingEdits: state.pendingEdits.filter((e) => e.id !== editId),
+  })
+}
+
+/** Human-only. Removing it frees the agent to propose different wording. */
+export function rejectEdit(editId: string) {
+  set({ pendingEdits: state.pendingEdits.filter((e) => e.id !== editId) })
+}
+
+/**
+ * The agent may never write to the fact bank. This only opens a pre-filled
+ * panel; the human saves, edits or dismisses it.
+ */
+export function requestProfileFact(req: FactRequest) {
+  if (!req?.claim || !req?.kind) {
+    return err('bad_request', 'Pass claim, kind and why. The user sees the claim pre-filled and decides.')
+  }
+  set({ factRequest: { claim: String(req.claim), kind: req.kind, why: String(req.why ?? '') } })
+  return {
+    ok: true as const,
+    summary: `Asked the user to confirm: "${req.claim}". Nothing was added — continue, and re-read get_profile_facts later.`,
+    status: 'awaiting_user' as const,
+  }
+}
+
+/** Human-only: commit the pending request as a real fact. */
+export function saveFactRequest(claim: string, kind: Fact['kind'], tokens: string[]) {
+  const id = `f_user_${state.facts.length + 1}`
+  set({
+    facts: [...state.facts, { id, kind, text: claim, tokens }],
+    factRequest: null,
+  })
+  return id
+}
+
+export function dismissFactRequest() {
+  set({ factRequest: null })
 }

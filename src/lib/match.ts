@@ -61,21 +61,38 @@ export function applyFilters(jobs: Job[], filters: Filters): Job[] {
 }
 
 /**
- * Years of experience the fact bank actually supports.
+ * Years of experience.
  *
- * The bank has no explicit "N years" fact, so this is derived from the start
- * date stated in the role fact and nothing else. It reads conservatively on
- * purpose — inferring a larger number by stitching overlapping facts together
- * would be inventing experience, which is the one thing this app must not do.
+ * This is read from an explicit fact, not inferred in code. The number is a
+ * claim the candidate owns, carrying the same provenance as every other claim,
+ * and `basis` is the fact's own words so a reader can judge it rather than
+ * being handed a bare integer.
+ *
+ * Falling back to a date subtraction — which is what this used to do — produced
+ * a technically defensible but practically false 0, because a start date says
+ * nothing about the work that preceded it. Where no explicit fact exists the
+ * fallback still runs, but it labels itself as derived so the difference is
+ * visible.
  */
-export function candidateYears(facts: Fact[], now = new Date()): { years: number | null; basis: string } {
-  const role = facts.find((f) => f.kind === 'role' && /\b(19|20)\d{2}\b/.test(f.text))
-  if (!role) return { years: null, basis: 'no role fact states a start date' }
+export function candidateYears(
+  facts: Fact[],
+  now = new Date(),
+): { years: number | null; basis: string; factId: string | null } {
+  // An explicit experience fact: a token of the form "N years".
+  for (const fact of facts) {
+    for (const token of fact.tokens) {
+      const m = token.match(/^(\d+(?:\.\d+)?)\s*(?:\+\s*)?years?$/i)
+      if (m) return { years: Math.floor(Number(m[1])), basis: fact.text, factId: fact.id }
+    }
+  }
 
-  const match = role.text.match(
+  const role = facts.find((f) => f.kind === 'role' && /\b(19|20)\d{2}\b/.test(f.text))
+  const match = role?.text.match(
     /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+((?:19|20)\d{2})\b/i,
   )
-  if (!match) return { years: null, basis: `no month/year found in ${role.id}` }
+  if (!role || !match) {
+    return { years: null, basis: 'No fact states years of experience.', factId: null }
+  }
 
   const months = [
     'january', 'february', 'march', 'april', 'may', 'june',
@@ -85,7 +102,9 @@ export function candidateYears(facts: Fact[], now = new Date()): { years: number
   const elapsed = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth())
   return {
     years: Math.max(0, Math.floor(elapsed / 12)),
-    basis: `${match[1]} ${match[2]} start stated in ${role.id}`,
+    basis: `Derived from the ${match[1]} ${match[2]} start date in ${role.id}; `
+      + 'no fact states total years of experience, so earlier work is not counted.',
+    factId: role.id,
   }
 }
 
@@ -104,10 +123,35 @@ export function computeFitGaps(job: Job, facts: Fact[], now = new Date()): FitGa
     else missing.push(tag)
   }
 
-  const { years, basis } = candidateYears(facts, now)
+  const { years, basis, factId } = candidateYears(facts, now)
   const yearsGap = job.minYears === null || years === null ? null : Math.max(0, job.minYears - years)
 
-  return { covered, missing, yearsGap, yearsBasis: basis, candidateYears: years }
+  const total = covered.length + missing.length
+  const ratio = total === 0 ? 0 : covered.length / total
+
+  // A short years count must not be allowed to stand in for the whole fit. When
+  // coverage is strong the verdict says so, because reducing a candidate to one
+  // failing number is the same error as inflating him with a false one.
+  let verdict: string
+  if (yearsGap === null) {
+    verdict = `${covered.length} of ${total} requirements evidenced. The posting states no minimum years.`
+  } else if (yearsGap === 0) {
+    verdict = `${covered.length} of ${total} requirements evidenced, and the stated years are met.`
+  } else if (ratio >= 0.6) {
+    verdict = `${covered.length} of ${total} requirements evidenced — strong coverage — but ${yearsGap} year`
+      + `${yearsGap === 1 ? '' : 's'} short of the ${job.minYears} the posting asks for. `
+      + 'Lead with the evidenced work; do not restate the years.'
+  } else {
+    verdict = `${covered.length} of ${total} requirements evidenced, and ${yearsGap} year`
+      + `${yearsGap === 1 ? '' : 's'} short of the ${job.minYears} the posting asks for.`
+  }
+
+  return {
+    covered, missing, yearsGap,
+    yearsBasis: basis, candidateYears: years, yearsFactId: factId,
+    coverageRatio: Number(ratio.toFixed(2)),
+    verdict,
+  }
 }
 
 /** The three requirement groups, derived from tags — never parsed a second time. */

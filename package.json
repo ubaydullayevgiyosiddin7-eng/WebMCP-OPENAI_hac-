@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "fetch-jobs": "node scripts/fetch-jobs.mjs"
+    "fetch-jobs": "node scripts/fetch-jobs.mjs",
+    "guard-tests": "node scripts/guard-tests.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

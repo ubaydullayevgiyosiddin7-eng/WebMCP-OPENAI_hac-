@@ -380,3 +380,89 @@ a.link { text-decoration: underline; }
   .panes { grid-template-columns: 290px minmax(0, 1fr); }
   .pane--right { display: none; }
 }
+
+/* ---------------------------------------------------------------- review queue */
+
+.queue {
+  margin: 0 -12px 14px;
+  padding: 10px 12px 12px;
+  background: var(--panel-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.queue__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.queue__note { font-size: 10px; color: var(--dimmer); flex: 0 1 auto; min-width: 0; }
+
+.edit {
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--r);
+  background: var(--bg);
+  padding: 8px 9px;
+  margin-top: 8px;
+}
+
+.edit__top { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.edit__id { font-family: var(--mono); font-size: 10px; color: var(--accent); }
+.edit__target { font-family: var(--mono); font-size: 10px; color: var(--dimmer); }
+
+.edit__rationale { font-size: 11.5px; color: var(--dim); margin: 0 0 6px; line-height: 1.5; }
+
+.edit__diff {
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 7px 8px;
+  background: var(--panel);
+  border-radius: var(--r);
+  margin-bottom: 6px;
+}
+.d-ctx { color: var(--dimmer); }
+.d-del { color: var(--warn); text-decoration: line-through; text-decoration-thickness: 1px; opacity: .75; }
+.d-add { color: var(--text); background: rgba(224, 163, 65, .14); text-decoration: none; padding: 0 2px; }
+
+.edit__facts { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 8px; }
+
+.edit__actions { display: flex; gap: 6px; }
+
+.btn {
+  font: inherit;
+  font-size: 11.5px;
+  padding: 3px 10px;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--dimmer); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn--accept { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btn--accept:hover:not(:disabled) { filter: brightness(1.08); }
+
+/* ---------------------------------------------------------------- fact request */
+
+.factreq {
+  margin: 0 -12px 14px;
+  padding: 10px 12px 12px;
+  background: var(--panel-2);
+  border-top: 2px solid var(--accent);
+  border-bottom: 1px solid var(--line);
+}
+.factreq .h2 { color: var(--accent); }
+.factreq__why { font-size: 11.5px; color: var(--dim); margin: 0 0 8px; line-height: 1.5; }
+.factreq__label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--dimmer);
+  margin: 6px 0 3px;
+}
+.factreq__claim { resize: vertical; line-height: 1.5; }

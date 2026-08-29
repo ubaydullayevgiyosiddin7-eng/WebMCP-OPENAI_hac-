@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import './App.css'
+import { conceptsIn } from './lib/guard'
 import { groupTags, profileCoverage } from './lib/match'
 import {
-  ATTRIBUTION, FACTS, JOBS, PROFILE, closeJob, getState, openJob as getOpenJob,
-  patchFilters, resetFilters, selectJob, subscribe, toolsInScope, visibleJobs,
+  ATTRIBUTION, FACTS, JOBS, PROFILE, acceptEdit, closeJob, dismissFactRequest,
+  getState, openJob as getOpenJob, patchFilters, rejectEdit, resetFilters,
+  saveFactRequest, selectJob, subscribe, toolsInScope, visibleJobs,
 } from './store'
 import { initTools } from './tools'
-import type { Job, JobTag, ResumeSection, Seniority } from './types'
+import type { FactRequest, Job, JobTag, PendingEdit, ResumeSection, Seniority } from './types'
 import { EMPTY_FILTERS } from './types'
 
 const SENIORITIES: Seniority[] = ['junior', 'mid', 'senior', 'lead']
@@ -56,7 +58,9 @@ export default function App() {
           {job ? <JobDetail job={job} /> : <EmptyDetail />}
         </section>
 
-        <section className="pane pane--right" aria-label="Resume">
+        <section className="pane pane--right" aria-label="Resume and review queue">
+          <FactRequestPanel />
+          <ReviewQueue edits={state.pendingEdits.filter((e) => e.status === 'pending')} />
           <ResumePane />
         </section>
       </main>
@@ -305,6 +309,118 @@ function ResumePane() {
       })}
 
       <footer className="resume__foot">{ATTRIBUTION}</footer>
+    </div>
+  )
+}
+
+
+/** Common prefix/suffix trimmed so the eye lands on what actually changed. */
+function diffParts(before: string, after: string) {
+  const a = before.split(/(\s+)/)
+  const b = after.split(/(\s+)/)
+  let start = 0
+  while (start < a.length && start < b.length && a[start] === b[start]) start++
+  let endA = a.length
+  let endB = b.length
+  while (endA > start && endB > start && a[endA - 1] === b[endB - 1]) { endA--; endB-- }
+  return {
+    prefix: a.slice(0, start).join(''),
+    removed: a.slice(start, endA).join(''),
+    added: b.slice(start, endB).join(''),
+    suffix: a.slice(endA).join(''),
+  }
+}
+
+function ReviewQueue({ edits }: { edits: PendingEdit[] }) {
+  if (edits.length === 0) return null
+  return (
+    <div className="queue">
+      <header className="queue__head">
+        <h2 className="h2">Proposed edits <span className="h2__n">{edits.length}</span></h2>
+        <span className="queue__note">accept or reject — the agent cannot apply these</span>
+      </header>
+      {edits.map((e) => <EditCard key={e.id} edit={e} />)}
+    </div>
+  )
+}
+
+function EditCard({ edit }: { edit: PendingEdit }) {
+  const d = diffParts(edit.before, edit.after)
+  return (
+    <article className="edit">
+      <div className="edit__top">
+        <code className="edit__id">{edit.id}</code>
+        <code className="edit__target">{edit.targetBlockId}</code>
+      </div>
+
+      <p className="edit__rationale">{edit.rationale}</p>
+
+      <div className="edit__diff">
+        <span className="d-ctx">{d.prefix}</span>
+        {d.removed && <del className="d-del">{d.removed}</del>}
+        {d.added && <ins className="d-add">{d.added}</ins>}
+        <span className="d-ctx">{d.suffix}</span>
+      </div>
+
+      <div className="edit__facts">
+        {edit.sourceFactIds.map((id) => <span key={id} className="factref">{id}</span>)}
+      </div>
+
+      <div className="edit__actions">
+        <button className="btn btn--accept" onClick={() => acceptEdit(edit.id)}>Accept</button>
+        <button className="btn" onClick={() => rejectEdit(edit.id)}>Reject</button>
+      </div>
+    </article>
+  )
+}
+
+function FactRequestPanel() {
+  const { factRequest } = useSyncExternalStore(subscribe, getState)
+  if (!factRequest) return null
+  // Keyed so a new request remounts with fresh state — no effect needed.
+  return <FactRequestForm key={factRequest.claim} req={factRequest} />
+}
+
+function FactRequestForm({ req }: { req: FactRequest }) {
+  const [claim, setClaim] = useState(req.claim)
+  const [tokens, setTokens] = useState(() => [...conceptsIn(req.claim)].join(', '))
+
+  return (
+    <div className="factreq">
+      <h2 className="h2">The agent is asking you to confirm a fact</h2>
+      <p className="factreq__why">{req.why}</p>
+
+      <label className="factreq__label" htmlFor="fr-claim">Claim — edit it into your own words</label>
+      <textarea
+        id="fr-claim"
+        className="input factreq__claim"
+        rows={3}
+        value={claim}
+        onChange={(e) => setClaim(e.target.value)}
+      />
+
+      <label className="factreq__label" htmlFor="fr-tokens">Match tokens</label>
+      <input
+        id="fr-tokens"
+        className="input"
+        value={tokens}
+        onChange={(e) => setTokens(e.target.value)}
+      />
+
+      <div className="edit__actions">
+        <button
+          className="btn btn--accept"
+          disabled={claim.trim().length === 0}
+          onClick={() => saveFactRequest(
+            claim.trim(),
+            req.kind,
+            tokens.split(',').map((t) => t.trim()).filter(Boolean),
+          )}
+        >
+          Add to fact bank
+        </button>
+        <button className="btn" onClick={() => dismissFactRequest()}>Dismiss</button>
+      </div>
     </div>
   )
 }

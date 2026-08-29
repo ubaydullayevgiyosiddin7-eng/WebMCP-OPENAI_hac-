@@ -105,56 +105,167 @@ const TITLE_REJECT = [
 ]
 
 /**
- * Controlled tech vocabulary. Only these tags are attached to a job, which keeps
- * get_fit_gaps comparable against the profile fact tokens.
+ * Controlled tech vocabulary — canonical name plus the surface forms that mean
+ * the same thing.
+ *
+ *   aliases        matched in job text AND accepted from profile fact tokens.
+ *   profileAliases accepted from a profile token only. These are forms that are
+ *                  unambiguous on a resume but too ambiguous in posting prose to
+ *                  tag a job with.
+ *
+ * The alias lists are DERIVED FROM THE CORPUS, not from memory: every form was
+ * measured across the 175 fetched postings, and the count is noted where it
+ * motivated the entry. This is what closes the synonym gap — the market writes
+ * "TTS"/"STT"/"ASR" while the profile writes "text to speech", and without a
+ * shared table get_fit_gaps reports a skill the candidate demonstrably has as
+ * missing. A false negative is as damaging as a false positive here.
+ *
+ * Deliberately NOT aliased, with the measurement that ruled them out:
+ *   'cv'        → computer vision. 10 corpus hits, roughly half of them résumé
+ *                 ("apply with your CV in English", "CV writing and content").
+ *   'serving'   → model deployment. 37 hits, dominated by "Serving 50,000+
+ *                 customers" and "serving hundreds of millions of people".
+ *   'grounding' → rag. 18 hits, ~30% ordinary English ("grounding AI risk
+ *                 management in rigorous analysis"). Kept as a profileAlias.
+ *   'embeddings'→ vector database. 13 hits, but it is a distinct concept and
+ *                 folding it in would overstate vector-store experience.
  */
 const TECH = {
-  python: ['python'],
-  sql: ['sql'],
-  pytorch: ['pytorch', 'torch', 'lightning'],
-  tensorflow: ['tensorflow', 'tf2'],
-  keras: ['keras'],
-  jax: ['jax'],
-  yolo: ['yolo', 'ultralytics'],
-  opencv: ['opencv', 'cv2'],
-  'computer vision': [
-    'computer vision', 'image processing', 'object detection',
-    'image segmentation', 'machine vision', 'visual perception',
-  ],
-  'image classification': ['image classification', 'classification model'],
-  ocr: ['ocr', 'optical character recognition', 'document ai', 'text extraction'],
-  llm: ['llm', 'llms', 'large language model', 'large language models', 'foundation model', 'gpt'],
-  rag: ['rag', 'retrieval augmented', 'retrieval-augmented'],
-  'vector database': ['vector database', 'pinecone', 'weaviate', 'qdrant', 'faiss', 'milvus'],
-  nlp: ['nlp', 'natural language processing'],
-  speech: ['speech recognition', 'text to speech', 'text-to-speech', 'asr', 'tts', 'stt', 'whisper'],
-  docker: ['docker', 'containerization'],
-  kubernetes: ['kubernetes', 'k8s'],
-  aws: ['aws', 'amazon web services', 'sagemaker'],
-  gcp: ['gcp', 'google cloud', 'vertex ai', 'bigquery'],
-  azure: ['azure'],
-  fastapi: ['fastapi'],
-  flask: ['flask'],
-  linux: ['linux'],
-  git: ['git', 'github', 'gitlab'],
-  spark: ['spark', 'pyspark'],
-  airflow: ['airflow'],
-  mlflow: ['mlflow'],
-  kubeflow: ['kubeflow'],
-  postgresql: ['postgres', 'postgresql'],
-  numpy: ['numpy'],
-  pandas: ['pandas'],
-  'real-time inference': [
-    'real-time inference', 'real time inference', 'low latency',
-    'low-latency', 'edge deployment', 'edge device',
-  ],
-  'model deployment': [
-    'model deployment', 'model serving', 'production model',
-    'deploy models', 'productionize',
-  ],
-  react: ['react'],
-  typescript: ['typescript'],
+  python: { aliases: ['python'] },
+  sql: { aliases: ['sql'] },
+  pytorch: { aliases: ['pytorch', 'torch', 'lightning', 'pytorch lightning'] },
+  tensorflow: { aliases: ['tensorflow', 'tf2'] },
+  keras: { aliases: ['keras'] },
+  jax: { aliases: ['jax'] },
+  yolo: {
+    aliases: ['yolo', 'ultralytics', 'yolov5', 'yolov8', 'mmdetection', 'detectron'],
+    profileAliases: ['yolo26'],
+  },
+  opencv: { aliases: ['opencv', 'cv2', 'open cv'] },
+  'computer vision': {
+    // 'cv' excluded on purpose — see header note.
+    aliases: [
+      'computer vision', 'image processing', 'object detection',
+      'image segmentation', 'machine vision', 'visual perception',
+      'vision models', 'detection models', 'video analytics',
+    ],
+  },
+  'image classification': {
+    aliases: ['image classification', 'classification model', 'cnn', 'convolutional', 'transfer learning'],
+    profileAliases: ['resnet', 'resnet18'],
+  },
+  ocr: {
+    aliases: [
+      'ocr', 'optical character recognition', 'document ai', 'text extraction',
+      'tesseract', 'document understanding', 'document processing',
+    ],
+    profileAliases: ['easyocr', 'paddleocr'],
+  },
+  llm: {
+    aliases: [
+      'llm', 'llms', 'large language model', 'large language models',
+      'foundation model', 'gpt', 'vlm', 'slm',
+    ],
+    profileAliases: ['local llm'],
+  },
+  rag: {
+    aliases: [
+      'rag', 'retrieval augmented', 'retrieval-augmented',
+      'retrieval augmented generation', 'retrieval-augmented generation',
+      'semantic search',
+    ],
+    profileAliases: ['grounding'],
+  },
+  'vector database': {
+    aliases: [
+      'vector database', 'vector store', 'pinecone', 'weaviate', 'qdrant',
+      'faiss', 'milvus', 'pgvector',
+    ],
+    profileAliases: ['chromadb'],
+  },
+  nlp: { aliases: ['nlp', 'natural language processing'] },
+  speech: {
+    // The synonym gap that motivated this whole layer. Corpus counts:
+    // tts 2, stt 1, asr 1, speech 5, text-to-speech 1, speech-to-text 1,
+    // voice ai 1, audio processing 1 — while the profile's spelled-out
+    // "text to speech" / "speech recognition" score 0.
+    aliases: [
+      'speech', 'speech recognition', 'speech synthesis',
+      'text to speech', 'text-to-speech', 'speech to text', 'speech-to-text',
+      'tts', 'stt', 'asr', 'whisper', 'voice ai', 'audio processing',
+    ],
+    profileAliases: ['voice interface', 'voice assistant'],
+  },
+  docker: { aliases: ['docker', 'containerization'] },
+  kubernetes: { aliases: ['kubernetes', 'k8s'] },
+  aws: { aliases: ['aws', 'amazon web services', 'sagemaker'] },
+  gcp: { aliases: ['gcp', 'google cloud', 'vertex ai', 'bigquery'] },
+  azure: { aliases: ['azure'] },
+  fastapi: { aliases: ['fastapi', 'fast api'] },
+  flask: { aliases: ['flask'] },
+  linux: { aliases: ['linux'] },
+  git: { aliases: ['git', 'github', 'gitlab', 'version control'] },
+  spark: { aliases: ['spark', 'pyspark'] },
+  airflow: { aliases: ['airflow'] },
+  mlflow: { aliases: ['mlflow'] },
+  kubeflow: { aliases: ['kubeflow'] },
+  postgresql: { aliases: ['postgres', 'postgresql'] },
+  numpy: { aliases: ['numpy'] },
+  pandas: { aliases: ['pandas'] },
+  'real-time inference': {
+    aliases: [
+      'real-time inference', 'real time inference', 'low latency', 'low-latency',
+      'edge deployment', 'edge device', 'edge inference',
+      'onnx', 'tensorrt', 'openvino', 'quantization',
+    ],
+  },
+  'model deployment': {
+    // 'serving' alone excluded — see header note.
+    aliases: [
+      'model deployment', 'model serving', 'production model',
+      'deploy models', 'productionize', 'model registry',
+    ],
+  },
+  react: { aliases: ['react'] },
+  typescript: { aliases: ['typescript'] },
+
+  // ---- reviewed and approved from the corpus mining pass ----
+  'fine-tuning': { aliases: ['fine-tuning', 'fine tuning', 'finetuning', 'fine-tune', 'finetune', 'peft', 'lora', 'sft'] },
+  langchain: { aliases: ['langchain'] },
+  langgraph: { aliases: ['langgraph'] },
+  llamaindex: { aliases: ['llamaindex', 'llama index', 'llama-index'] },
+  'hugging face': { aliases: ['hugging face', 'huggingface'] },
+  cuda: { aliases: ['cuda', 'cudnn'] },
+  gpu: {
+    // 'gpus' needs its own entry: the trailing boundary blocks the plural.
+    aliases: ['gpu', 'gpus', 'gpu-accelerated'],
+    profileAliases: ['nvidia', 'rtx 3060'],
+  },
+  triton: { aliases: ['triton'] },
+  ray: { aliases: ['ray'] }, // hyphen-guarded below so "X-ray" cannot match
+  rlhf: { aliases: ['rlhf', 'reward modeling', 'preference data', 'dpo'] },
+  rl: { aliases: ['rl', 'reinforcement learning'] },
+  'ci/cd': { aliases: ['ci/cd', 'cicd', 'continuous integration', 'continuous deployment'] },
+  terraform: { aliases: ['terraform'] },
+  kafka: { aliases: ['kafka'] },
+  snowflake: { aliases: ['snowflake'] },
+  etl: { aliases: ['etl', 'elt'] },
+  'c++': { aliases: ['c++'] },
+  java: { aliases: ['java', 'jvm'] },
+  mcp: { aliases: ['mcp', 'model context protocol'] },
+  bedrock: { aliases: ['bedrock'] },
+  gemini: { aliases: ['gemini'] },
+  flink: { aliases: ['flink'] },
+  tableau: { aliases: ['tableau'] },
 }
+
+/**
+ * Terms that must not match when preceded by a hyphen. "ray" is the live case:
+ * the default boundary treats "-" as a separator, so "X-ray" would otherwise be
+ * tagged as the Ray framework — and this candidate's whole portfolio is X-ray
+ * inspection work, so the collision would have fired constantly.
+ */
+const HYPHEN_GUARDED = new Set(['ray'])
 
 /** A posting must carry at least one of these to count as an ML role. */
 const CORE_ML = [
@@ -219,12 +330,36 @@ const termCache = new Map()
 function termRe(term) {
   let re = termCache.get(term)
   if (!re) {
-    re = new RegExp(`(?<![a-z0-9])${escapeRe(term)}(?![a-z0-9])`, 'i')
+    const lookBehind = HYPHEN_GUARDED.has(term) ? '(?<![a-z0-9-])' : '(?<![a-z0-9])'
+    re = new RegExp(`${lookBehind}${escapeRe(term)}(?![a-z0-9])`, 'i')
     termCache.set(term, re)
   }
   return re
 }
 const hasTerm = (hay, term) => termRe(term).test(hay)
+
+/**
+ * The alias table, inverted once: every surface form -> its canonical tag.
+ * Both directions of the product go through this map, which is the point —
+ * a job posting saying "TTS" and a profile fact saying "text to speech" must
+ * land on the same canonical tag or get_fit_gaps reports a false gap.
+ */
+const ALIAS_TO_CANONICAL = new Map()
+for (const [canonical, spec] of Object.entries(TECH)) {
+  ALIAS_TO_CANONICAL.set(canonical.toLowerCase(), canonical)
+  for (const a of spec.aliases ?? []) ALIAS_TO_CANONICAL.set(a.toLowerCase(), canonical)
+  for (const a of spec.profileAliases ?? []) ALIAS_TO_CANONICAL.set(a.toLowerCase(), canonical)
+}
+
+/**
+ * Resolve any surface form — a profile fact token, a job tag, a user query —
+ * to its canonical tag. Returns null when the term is outside the vocabulary,
+ * which is a real answer: it means the app must not claim anything about it.
+ */
+function resolveToken(token) {
+  if (!token) return null
+  return ALIAS_TO_CANONICAL.get(String(token).trim().toLowerCase()) ?? null
+}
 
 const decodeEntities = (s) =>
   s.replace(/&nbsp;/g, ' ')
@@ -370,8 +505,10 @@ function classifyRequired(text, marks, index, len) {
 function detectTags(text) {
   const marks = sectionMarkers(text)
   const found = []
-  for (const [tag, needles] of Object.entries(TECH)) {
-    const hit = firstMatch(text, needles)
+  for (const [tag, spec] of Object.entries(TECH)) {
+    // Only `aliases` tag a job. `profileAliases` are resolution-only forms that
+    // are too ambiguous in posting prose to attach a tag from.
+    const hit = firstMatch(text, spec.aliases ?? [])
     if (!hit) continue
     found.push({
       tag,
@@ -669,7 +806,8 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
 }
 
 export {
-  TECH, CORE_ML, TITLE_MATCH, TITLE_REJECT,
+  TECH, CORE_ML, TITLE_MATCH, TITLE_REJECT, HYPHEN_GUARDED,
+  ALIAS_TO_CANONICAL, resolveToken,
   stripHtml, titleQualifies, detectTags, detectSeniority, detectMinYears,
   fetchJobicy, fetchHimalayas, fetchArbeitnow, fetchRemotive,
 }

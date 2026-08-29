@@ -1,0 +1,219 @@
+{
+  "profile": {
+    "name": "Giyosiddin Ubaydullayev",
+    "headline": "AI / Machine Learning Engineer — Computer Vision & Deep Learning",
+    "location": "Tashkent, Uzbekistan (UTC+5)",
+    "openTo": ["remote", "hybrid-tashkent"],
+    "github": "github.com/ubaydullayevgiyosiddin7-eng",
+    "linkedin": "linkedin.com/in/g-iyosiddin-ubaydullayev-52427b382",
+    "email": "giyosiddin.demo@example.com",
+    "note": "Contact fields are demo placeholders. Phone number and date of birth are deliberately excluded — this profile appears in a public demo video."
+  },
+
+  "facts": [
+    {
+      "id": "f_python",
+      "kind": "skill",
+      "text": "Python — primary language, used daily for model training, data pipelines and backend services.",
+      "tokens": ["python"]
+    },
+    {
+      "id": "f_sql",
+      "kind": "skill",
+      "text": "SQL — querying and schema work against PostgreSQL and MySQL.",
+      "tokens": ["sql", "postgresql", "mysql"]
+    },
+    {
+      "id": "f_pytorch",
+      "kind": "skill",
+      "text": "PyTorch — training, fine-tuning and evaluating detection and classification models in production projects.",
+      "tokens": ["pytorch", "torch"]
+    },
+    {
+      "id": "f_yolo",
+      "kind": "skill",
+      "text": "Ultralytics YOLO (up to YOLO26) — object detection models trained and deployed on real video streams.",
+      "tokens": ["yolo", "yolo26", "ultralytics", "object detection"]
+    },
+    {
+      "id": "f_resnet_cnn",
+      "kind": "skill",
+      "text": "ResNet and CNN architectures — image classification and transfer learning.",
+      "tokens": ["resnet", "resnet18", "cnn", "image classification", "transfer learning"]
+    },
+    {
+      "id": "f_opencv",
+      "kind": "skill",
+      "text": "OpenCV — video and X-ray image processing, real-time inference pipelines.",
+      "tokens": ["opencv", "computer vision", "real-time inference"]
+    },
+    {
+      "id": "f_dataset_work",
+      "kind": "skill",
+      "text": "Dataset collection, annotation and augmentation — full cycle from raw footage to a training-ready set.",
+      "tokens": ["dataset", "annotation", "labeling", "augmentation", "data collection"]
+    },
+    {
+      "id": "f_ocr",
+      "kind": "skill",
+      "text": "OCR with EasyOCR, Tesseract and PaddleOCR — extracting text and fields from scanned documents.",
+      "tokens": ["ocr", "easyocr", "tesseract", "paddleocr"]
+    },
+    {
+      "id": "f_llm_rag",
+      "kind": "skill",
+      "text": "Local LLMs and RAG — vector databases, retrieval pipelines, prompt engineering, chatbot systems.",
+      "tokens": ["llm", "rag", "retrieval-augmented generation", "vector database", "prompt engineering", "chatbot", "local llm"]
+    },
+    {
+      "id": "f_speech",
+      "kind": "skill",
+      "text": "Speech technologies — STT (speech to text) and TTS (speech synthesis) models integrated into voice assistants.",
+      "tokens": ["stt", "tts", "speech to text", "text to speech", "speech recognition", "voice interface"]
+    },
+    {
+      "id": "f_backend",
+      "kind": "skill",
+      "text": "Backend and infrastructure — FastAPI, Flask, Docker, Linux, Git, Streamlit.",
+      "tokens": ["fastapi", "flask", "docker", "linux", "git", "streamlit", "rest api"]
+    },
+    {
+      "id": "f_data_analysis",
+      "kind": "skill",
+      "text": "NumPy and Pandas — data handling and model metric evaluation (mAP, precision, recall, accuracy).",
+      "tokens": ["numpy", "pandas", "map", "precision", "recall", "accuracy", "metrics", "evaluation"]
+    },
+    {
+      "id": "f_airgapped",
+      "kind": "skill",
+      "text": "Building AI systems that run fully offline in a closed network, with no external API calls, to meet data-confidentiality requirements.",
+      "tokens": ["offline", "on-premise", "air-gapped", "closed network", "data privacy", "confidentiality", "self-hosted"]
+    },
+
+    {
+      "id": "r_customs",
+      "kind": "role",
+      "text": "AI / ML Engineer at the State Customs Committee, Department of Information Technology and Cybersecurity, Tashkent — September 2025 to present.",
+      "tokens": ["state customs committee", "ml engineer", "ai engineer", "tashkent", "2025"]
+    },
+    {
+      "id": "r_customs_scope",
+      "kind": "role",
+      "text": "Owned the full model lifecycle at Customs: dataset preparation, training, evaluation and production deployment. Shipped more than six AI systems now in live operational use.",
+      "tokens": ["full cycle", "deployment", "production", "six systems", "lifecycle", "end-to-end"]
+    },
+    {
+      "id": "r_customs_team",
+      "kind": "role",
+      "text": "Worked with colleagues to integrate models into existing inspection systems, and improved results through hyperparameter tuning and augmentation.",
+      "tokens": ["integration", "collaboration", "hyperparameter tuning", "teamwork"]
+    },
+
+    {
+      "id": "a_wagon_pipeline",
+      "kind": "achievement",
+      "text": "Built a three-stage computer vision pipeline that counts railway wagons and reads their identification numbers automatically.",
+      "tokens": ["railway", "wagon", "pipeline", "counting", "number recognition", "three-stage"]
+    },
+    {
+      "id": "a_wagon_metrics",
+      "kind": "achievement",
+      "text": "Wagon pipeline results: detection mAP@50 = 0.994, character detection mAP@50 = 0.995, ResNet18 character recognition validation accuracy = 99.76% across 10 classes.",
+      "tokens": ["0.994", "0.995", "99.76", "map@50", "resnet18", "10 classes", "validation accuracy"]
+    },
+    {
+      "id": "a_wagon_speed",
+      "kind": "achievement",
+      "text": "Wagon pipeline runs at roughly 5 ms per frame on an NVIDIA RTX 3060, fast enough for real-time operation.",
+      "tokens": ["5 ms", "rtx 3060", "nvidia", "real-time", "latency", "throughput", "gpu"]
+    },
+    {
+      "id": "a_xray_loaded",
+      "kind": "achievement",
+      "text": "Trained a ResNet classifier on customs X-ray scans to determine whether a wagon is loaded or empty — around 95% accuracy, made robust to poor-quality scans through cleaning, balancing and augmentation.",
+      "tokens": ["x-ray", "xray", "classification", "95%", "resnet", "robustness", "class balancing"]
+    },
+    {
+      "id": "a_xray_threat",
+      "kind": "achievement",
+      "text": "Built detection and classification models that flag dangerous or prohibited goods in hand-luggage X-ray images at around 95% accuracy, highlighting the suspicious region for the inspector.",
+      "tokens": ["x-ray", "xray", "threat detection", "prohibited goods", "95%", "security screening"]
+    },
+    {
+      "id": "a_rag_chatbot",
+      "kind": "achievement",
+      "text": "Built a RAG chatbot over customs regulatory documents: questions are matched to document chunks through a vector database and answers are grounded strictly in those sources. Runs on a local server so internal data never leaves the network.",
+      "tokens": ["rag", "chatbot", "vector database", "grounding", "local server", "regulatory documents", "llm"]
+    },
+    {
+      "id": "a_voice_interface",
+      "kind": "achievement",
+      "text": "Built a voice interface module — STT for user questions, TTS for spoken answers — and integrated it into both the chatbot and a physical robot.",
+      "tokens": ["stt", "tts", "voice interface", "robot", "speech", "integration"]
+    },
+    {
+      "id": "a_anpr",
+      "kind": "achievement",
+      "text": "Built an ANPR system for border checkpoints: detects and counts vehicles from video, extracts and reads the licence plate, around 95% accuracy.",
+      "tokens": ["anpr", "licence plate", "license plate", "vehicle detection", "counting", "95%", "border", "video stream"]
+    },
+    {
+      "id": "a_ocr_declaration",
+      "kind": "achievement",
+      "text": "Built a system that extracts structured fields from scanned documents via OCR and cross-checks them against declaration data, flagging mismatches automatically and cutting manual inspection time.",
+      "tokens": ["ocr", "document processing", "structured extraction", "validation", "declaration", "automation"]
+    },
+    {
+      "id": "a_hack_intl",
+      "kind": "achievement",
+      "text": "First place at the international hackathon 'Applying Artificial Intelligence in Cybersecurity', part of the Future Engineers international festival, April 2026, representing Uzbekistan with team DoppiX.",
+      "tokens": ["first place", "hackathon", "international", "cybersecurity", "2026", "doppix"]
+    },
+    {
+      "id": "a_hack_realholat",
+      "kind": "achievement",
+      "text": "First place at the REAL HOLAT hackathon, March 2026, run by the Agency for Strategic Reforms with GIZ and School 21 — built Geoportal, a Telegram mini-app for geolocated citizen complaints. Won a development grant.",
+      "tokens": ["first place", "hackathon", "geoportal", "telegram", "mini-app", "geolocation", "grant", "2026"]
+    },
+
+    {
+      "id": "e_institute",
+      "kind": "education",
+      "text": "Bachelor's degree in Customs Affairs, Customs Institute of the State Customs Committee, Tashkent, 2022–2026. Worked in the field for one year during the programme.",
+      "tokens": ["bachelor", "customs institute", "2022", "2026", "tashkent", "degree"]
+    },
+    {
+      "id": "e_china",
+      "kind": "education",
+      "text": "One-month professional development programme in the People's Republic of China (November–December).",
+      "tokens": ["china", "professional development", "training programme"]
+    },
+
+    {
+      "id": "l_uzbek",
+      "kind": "language",
+      "text": "Uzbek — native.",
+      "tokens": ["uzbek", "native"]
+    },
+    {
+      "id": "l_english",
+      "kind": "language",
+      "text": "English — B2.",
+      "tokens": ["english", "b2"]
+    }
+  ],
+
+  "deliberatelyAbsent": {
+    "note": "Not facts. This list documents, for the team only, what the profile does NOT support. These are the claims the fact guard must refuse, and they are the ones most likely to appear in real ML job postings. Do not ship this key to the client bundle.",
+    "terms": [
+      "TensorFlow", "Keras", "JAX",
+      "Kubernetes", "Terraform", "Helm",
+      "AWS", "GCP", "Azure", "SageMaker",
+      "Spark", "Kafka", "Airflow", "MLflow", "Kubeflow",
+      "React", "TypeScript", "Node.js", "frontend",
+      "Java", "C++", "Go", "Rust",
+      "Snowflake", "dbt", "BigQuery",
+      "5 years experience", "10 years experience", "team lead", "managed a team"
+    ]
+  }
+}

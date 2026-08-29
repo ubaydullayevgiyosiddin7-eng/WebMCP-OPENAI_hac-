@@ -1,0 +1,428 @@
+# Tailor — WebMCP Tool Contract
+
+> Specification document. This is the single source of truth for the agent-facing
+> surface of the app. Code follows this document; if code and document disagree,
+> the document wins until it is deliberately amended.
+
+## 1. What the product is
+
+Tailor is a job board where the resume is a first-class, editable object and an AI
+agent is a first-class user of the page — alongside the human, not instead of them.
+
+The agent can search jobs, read the user's fact bank, and **propose** resume
+rewrites tailored to a specific posting. It cannot silently change the resume, and
+it cannot invent experience the user never claimed. Every write is either
+reviewable (a diff the human accepts or rejects) or gated behind an explicit
+confirmation.
+
+**The differentiator is not "AI writes your resume." It is "AI writes your resume
+and cannot lie, and you approve every line."**
+
+### Non-goals
+
+- No server-side LLM calls. The intelligence lives in the user's agent. The page
+  exposes capability, not cognition.
+- No user accounts, no backend database. All state is local (`localStorage`).
+- No live job API at runtime. Job data is a build-time snapshot of real postings.
+
+## 2. State model
+
+```ts
+type Fact = {
+  id: string;              // "f_react_5y"
+  kind: "skill" | "role" | "achievement" | "education" | "language";
+  text: string;            // "Built and shipped 4 React SPAs at Acme, 2021-2024"
+  tokens: string[];        // ["react", "spa", "acme"] — normalized, used by the guard
+};
+
+type ResumeBlock = {
+  id: string;              // "b_summary", "b_exp_acme_1"
+  section: "summary" | "experience" | "skills" | "education";
+  text: string;
+  sourceFactIds: string[]; // provenance; empty only for the untailored baseline
+};
+
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  remote: boolean;
+  seniority: "junior" | "mid" | "senior" | "lead";
+  minYears: number | null;
+  tags: string[];          // normalized tech tags
+  description: string;
+  url: string;
+  postedAt: string;        // ISO date
+};
+
+type PendingEdit = {
+  id: string;              // "e_1"
+  jobId: string;
+  targetBlockId: string;
+  before: string;
+  after: string;
+  rationale: string;       // why this helps for THIS job
+  sourceFactIds: string[];
+  status: "pending" | "accepted" | "rejected";
+};
+
+type Application = {
+  jobId: string;
+  resumeSnapshot: ResumeBlock[];
+  coverNote: string;
+  status: "draft" | "ready" | "submitted";
+  submittedAt: string | null;
+};
+```
+
+## 3. Tool inventory
+
+| Tool | Kind | Available when | Purpose |
+|---|---|---|---|
+| `get_workspace_state` | read | always | Orientation: what's on screen right now |
+| `get_profile_facts` | read | always | The fact bank — the only legal source of resume claims |
+| `get_resume` | read | always | Current resume blocks with ids |
+| `get_applications` | read | always | Application tracker |
+| `search_jobs` | write | always | Apply filters, update the visible list |
+| `open_job` | write | always | Select a job, open the detail pane |
+| `get_job_details` | read | a job is open | Full posting text + parsed requirements |
+| `get_fit_gaps` | read | a job is open | Deterministic match: covered vs missing requirements |
+| `propose_resume_edits` | write | a job is open | Queue a reviewable diff. **Never applies directly.** |
+| `withdraw_edit` | write | ≥1 pending edit | Retract a proposal (e.g. to replace it after a rejection) |
+| `request_profile_fact` | write | always | Ask the human to add a fact. Agent cannot add one itself. |
+| `prepare_application` | write | a job is open, 0 pending edits | Fill the application form, return a preview |
+| `submit_application` | write | application is `ready` | Send it — blocks on a human confirmation dialog |
+
+13 tools: 6 read, 7 write. Read tools carry `annotations: { readOnlyHint: true }`.
+
+## 4. Tool specifications
+
+Common rules for every tool:
+
+- `inputSchema` uses `additionalProperties: false` and marks required fields.
+- `execute` receives `(args, { signal })` and must honour the `AbortSignal`.
+- Every return value is an object with a `summary` string (one line, human
+  readable, what the agent will likely quote back) plus structured fields.
+- Errors are returned, never thrown: `{ ok: false, error: "...", hint: "..." }`.
+  The `hint` tells the agent how to fix its own call.
+- Tools reuse the same application logic the UI buttons call. No parallel code path.
+
+---
+
+### `get_workspace_state`
+
+Orientation tool. The agent is expected to call this first in a new task.
+
+**Input:** `{}`
+
+**Returns:**
+```json
+{
+  "summary": "Job list showing 12 of 84 jobs. 'Senior React Engineer at Linear' is open. 3 pending edits await your review.",
+  "activeFilters": { "query": "react", "remote": true, "seniority": null, "maxYears": 3 },
+  "visibleJobCount": 12,
+  "totalJobCount": 84,
+  "openJobId": "j_linear_react" ,
+  "pendingEditCount": 3,
+  "applicationCounts": { "draft": 1, "ready": 0, "submitted": 2 }
+}
+```
+
+---
+
+### `get_profile_facts`
+
+**Input:** `{ kind?: "skill" | "role" | "achievement" | "education" | "language" }`
+
+**Returns:** the fact bank. Each fact carries its `id`. The agent must reference
+these ids in `propose_resume_edits`.
+
+```json
+{
+  "summary": "17 facts on file: 9 skills, 4 roles, 3 achievements, 1 education.",
+  "facts": [
+    { "id": "f_react_4y", "kind": "skill", "text": "React, 4 years, production" }
+  ]
+}
+```
+
+---
+
+### `get_resume`
+
+**Input:** `{ section?: "summary" | "experience" | "skills" | "education" }`
+
+**Returns:** resume blocks with ids, current text, and which job (if any) the
+current version was tailored for.
+
+---
+
+### `get_applications`
+
+**Input:** `{ status?: "draft" | "ready" | "submitted" }`
+
+**Returns:** the tracker rows. Used for "what have I already applied to?"
+
+---
+
+### `search_jobs`
+
+Applies filters to the live UI and returns matching summaries. This is a write
+tool because it changes what the human sees on screen — that is the point.
+
+**Input:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "query":      { "type": "string", "description": "Free text over title, company, description." },
+    "remote":     { "type": "boolean" },
+    "seniority":  { "type": "string", "enum": ["junior", "mid", "senior", "lead"] },
+    "maxYears":   { "type": "integer", "minimum": 0, "maximum": 20,
+                    "description": "Exclude postings demanding more than this many years." },
+    "tags":       { "type": "array", "items": { "type": "string" }, "maxItems": 8 },
+    "limit":      { "type": "integer", "minimum": 1, "maximum": 25, "default": 10 }
+  },
+  "additionalProperties": false
+}
+```
+
+**Behaviour:** replaces the current filter set (not additive — the agent passes the
+full intended filter state each time; this keeps it predictable). Scrolls the list
+to top. Returns at most `limit` summaries.
+
+**Returns:**
+```json
+{
+  "summary": "12 jobs match. Showing 10. Filters are now visible in the sidebar.",
+  "matchCount": 12,
+  "jobs": [
+    { "id": "j_linear_react", "title": "Senior React Engineer", "company": "Linear",
+      "remote": true, "minYears": 3, "tags": ["react", "typescript"] }
+  ]
+}
+```
+
+---
+
+### `open_job`
+
+**Input:** `{ jobId: string }`
+
+**Behaviour:** selects the job, opens the detail pane, and **registers the
+job-scoped tools** (`get_job_details`, `get_fit_gaps`, `propose_resume_edits`,
+`prepare_application`). Closing the job or opening a different one aborts the
+previous registrations.
+
+**Returns:** `{ summary, job, newlyAvailableTools: [...] }`
+
+Naming the newly available tools in the return value is deliberate: it tells the
+agent that its capability set just changed without waiting for a `toolchange`
+round trip.
+
+---
+
+### `get_job_details`
+
+**Input:** `{}` — operates on the open job.
+
+**Returns:** full description plus the app's parsed requirement list
+(`requiredTags`, `niceToHaveTags`, `minYears`). Parsing is done by existing app
+logic so the agent and the human see the same interpretation.
+
+---
+
+### `get_fit_gaps`
+
+Deterministic, app-computed comparison. No language model judgement involved —
+this is what makes the agent's later claims checkable.
+
+**Input:** `{}`
+
+**Returns:**
+```json
+{
+  "summary": "Covered 6 of 8 requirements. Missing: Kubernetes, GraphQL.",
+  "covered":  [ { "tag": "react", "factIds": ["f_react_4y"] } ],
+  "missing":  [ "kubernetes", "graphql" ],
+  "yearsGap": 0
+}
+```
+
+The `missing` list is the agent's cue to call `request_profile_fact` rather than to
+invent something.
+
+---
+
+### `propose_resume_edits`
+
+The core tool. **It queues a diff for human review. It never mutates the resume.**
+
+**Input:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "edits": {
+      "type": "array", "minItems": 1, "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "targetBlockId": { "type": "string" },
+          "newText":       { "type": "string", "maxLength": 400 },
+          "rationale":     { "type": "string", "maxLength": 200,
+                             "description": "Why this wording helps for THIS posting." },
+          "sourceFactIds": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        },
+        "required": ["targetBlockId", "newText", "rationale", "sourceFactIds"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["edits"],
+  "additionalProperties": false
+}
+```
+
+**The fact guard.** Before an edit is queued, the app validates:
+
+1. Every `sourceFactIds` entry exists in the fact bank.
+2. Every capitalised term, technology token, and number in `newText` appears
+   either in the referenced facts' `tokens` or in the original block text.
+3. `newText` differs meaningfully from `before` (not a whitespace change).
+
+An edit failing any check is **not queued**. It comes back as a rejection with a
+reason, so the agent can correct itself in the next turn.
+
+**Returns:**
+```json
+{
+  "summary": "2 of 3 edits queued for review. 1 rejected: unsupported claim 'Kubernetes'.",
+  "queued":   [ { "editId": "e_4", "targetBlockId": "b_summary" } ],
+  "rejected": [ { "targetBlockId": "b_skills", "reason": "unsupported_claim",
+                  "offendingTokens": ["kubernetes"],
+                  "hint": "No fact supports this. Call request_profile_fact to ask the user, or drop the claim." } ]
+}
+```
+
+---
+
+### `withdraw_edit`
+
+**Input:** `{ editId: string }`
+
+Removes a still-pending proposal. Used when the human rejects an edit and the
+agent wants to offer a different wording, or when the agent changes its mind.
+Cannot touch an already-accepted edit.
+
+---
+
+### `request_profile_fact`
+
+The agent may **never** write to the fact bank. It can only open a pre-filled form
+and ask.
+
+**Input:**
+```json
+{
+  "claim": "string — the fact as the agent understood it",
+  "kind":  "skill | role | achievement | education | language",
+  "why":   "string — why this job makes it worth adding"
+}
+```
+
+**Behaviour:** opens a small panel with the claim pre-filled and editable. The
+human saves, edits, or dismisses it. The tool resolves immediately with
+`awaiting_user`, it does not block — the agent should continue and re-read
+`get_profile_facts` later.
+
+**Returns:** `{ summary: "Asked the user to confirm: 'Kubernetes, production experience'.", status: "awaiting_user" }`
+
+---
+
+### `prepare_application`
+
+**Input:** `{ coverNote: string (max 900 chars) }`
+
+**Preconditions:** a job is open, and there are **zero pending edits** — the human
+must have cleared the review queue first. If edits are pending, the tool returns
+an error naming the count. This ordering constraint is the whole human-in-the-loop
+story in one rule.
+
+**Behaviour:** builds the application from the *accepted* resume state, fills the
+form fields visibly on screen, sets status to `ready`, and registers
+`submit_application`.
+
+**Returns:** `{ summary, preview: { fields... }, missingRequiredFields: [] }`
+
+---
+
+### `submit_application`
+
+The only consequential action in the app.
+
+**Input:** `{}`
+
+**Behaviour:** opens a modal showing exactly what will be sent. Resolves only when
+the human clicks Submit or Cancel. Honours `signal` — if the agent turn is aborted,
+the modal closes and the promise rejects.
+
+**Returns on confirm:** `{ ok: true, summary: "Application to Linear submitted.", applicationId, submittedAt }`
+**Returns on cancel:** `{ ok: false, error: "user_declined", hint: "The user cancelled. Ask what they want changed." }`
+
+`annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false }`
+
+## 5. Dynamic tool lifecycle
+
+Tools are not registered once at boot. The registered set mirrors what is
+actually possible right now.
+
+```
+always                         → get_workspace_state, get_profile_facts, get_resume,
+                                 get_applications, search_jobs, open_job,
+                                 request_profile_fact
+job open                       → + get_job_details, get_fit_gaps, propose_resume_edits
+≥1 pending edit                → + withdraw_edit
+job open AND 0 pending edits   → + prepare_application
+application status = ready     → + submit_application
+```
+
+Implementation: one `AbortController` per scope. Closing a job calls
+`controller.abort()`, which unregisters that scope's tools in one operation.
+The UI shows a small "N tools available to your agent" indicator so the human can
+see the surface change too — this is worth demoing.
+
+## 6. Rules the implementation must follow
+
+From OpenAI's site-tools guidance, applied to this project:
+
+- **Keep inputs narrow.** Enums over free strings wherever the domain is closed.
+- **Describe side effects in the description string.** The agent reads it, and so
+  does the human in the Site tools panel. Write descriptions for both audiences.
+- **Return enough to verify.** Every write tool returns the resulting state, not
+  just "ok".
+- **Reuse existing logic.** A tool calls the same store action the UI button calls.
+  If a tool can do something the UI cannot, that is a bug.
+- **Preserve the normal interface.** The app must be fully usable with zero agent
+  involvement, in a browser with no WebMCP support. Feature-detect
+  `document.modelContext?.registerTool` and degrade silently.
+- **No tools inside iframes.** ChatGPT's built-in browser does not discover them.
+  Everything registers on the top-level page.
+- **No declarative API.** Not supported in the built-in browser. JavaScript only.
+
+## 7. Demo script this contract is built to serve
+
+1. `get_workspace_state` → agent orients itself.
+2. "Find remote React roles that don't demand 5+ years" → `search_jobs`.
+   Filters visibly move in the sidebar.
+3. "Open the Linear one" → `open_job`. Tool count on screen goes from 7 to 10.
+4. "Tailor my resume for it" → `get_profile_facts`, `get_fit_gaps`,
+   `propose_resume_edits`. Three diffs appear, each with a rationale.
+5. Human rejects one → agent calls `withdraw_edit` and proposes different wording.
+6. "Say I know Kubernetes" → **rejected by the fact guard.** Agent calls
+   `request_profile_fact` instead. This is the moment the demo is built around.
+7. Human accepts remaining edits → `prepare_application` unlocks.
+8. "Send it" → `submit_application` → confirmation modal → human clicks → done.
+
+Roughly 150 seconds. Every beat exercises a different part of the contract.

@@ -152,7 +152,13 @@ const TECH = {
   },
   'image classification': {
     aliases: ['image classification', 'classification model', 'cnn', 'convolutional', 'transfer learning'],
-    profileAliases: ['resnet', 'resnet18'],
+    // 'classification' is profile-only. Measured across the corpus its 16 hits
+    // are ~80% natural-language work — "Text Classification, RAG, LLMs",
+    // "content classification", "text classification, entity recognition,
+    // sentiment analysis". As a job-text matcher it would label NLP roles as
+    // image classification and then credit this candidate's vision work
+    // against them. On a resume the same word is unambiguous.
+    profileAliases: ['resnet', 'resnet18', 'classification'],
   },
   ocr: {
     aliases: [
@@ -213,8 +219,14 @@ const TECH = {
   numpy: { aliases: ['numpy'] },
   pandas: { aliases: ['pandas'] },
   'real-time inference': {
+    // 'latency' (42 hits, essentially all genuine performance work) and
+    // 'real-time' (42 hits) added on review. Caveat on 'real-time': roughly
+    // half its hits are real-time DATA rather than real-time inference
+    // ("real-time data processing", "real-time behavioral data"), so this
+    // concept now reads a little broader than strict inference latency.
     aliases: [
       'real-time inference', 'real time inference', 'low latency', 'low-latency',
+      'latency', 'real-time', 'real time',
       'edge deployment', 'edge device', 'edge inference',
       'onnx', 'tensorrt', 'openvino', 'quantization',
     ],
@@ -257,6 +269,22 @@ const TECH = {
   gemini: { aliases: ['gemini'] },
   flink: { aliases: ['flink'] },
   tableau: { aliases: ['tableau'] },
+
+  // ---- second review round ----
+  'prompt engineering': { aliases: ['prompt engineering', 'prompt design', 'prompt versioning'] },
+  databricks: { aliases: ['databricks'] },
+  'power bi': { aliases: ['power bi', 'powerbi'] },
+  chatbot: { aliases: ['chatbot', 'chat bot', 'conversational ai'] },
+  mysql: { aliases: ['mysql'] },
+  'on-premise': {
+    // The candidate's air-gapped/offline deployment experience. Job-text
+    // matching uses only the unambiguous forms: 'offline' is profile-only
+    // because all 18 of its corpus hits mean offline EVALUATION or offline RL
+    // ("offline and online evaluation", "offline RL, actor-critic methods",
+    // "offline experiments"), never on-premise hosting.
+    aliases: ['on-prem', 'on-premise', 'on premise', 'self-hosted', 'self hosted', 'air-gapped', 'air gapped'],
+    profileAliases: ['offline', 'closed network', 'local server'],
+  },
 }
 
 /**

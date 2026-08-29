@@ -42,6 +42,13 @@ type ResumeBlock = {
   sourceFactIds: string[]; // provenance; empty only for the untailored baseline
 };
 
+type JobTag = {
+  tag: string;             // canonical vocabulary name, e.g. "kubernetes"
+  evidence: string;        // ~140-char window quoted from the FULL posting
+  required: boolean | null;// true = hard requirement, false = nice-to-have,
+                           // null = could not be determined. Never guessed.
+};
+
 type Job = {
   id: string;
   title: string;
@@ -50,10 +57,12 @@ type Job = {
   remote: boolean;
   seniority: "junior" | "mid" | "senior" | "lead";
   minYears: number | null;
-  tags: string[];          // normalized tech tags
-  description: string;
+  tags: JobTag[];          // normalized tech tags, each carrying its evidence
+  tagNames: string[];      // derived — tags.map(t => t.tag), for cheap filtering
+  description: string;     // truncated to 1400 chars; full text stays at `url`
   url: string;
   postedAt: string;        // ISO date
+  source: string;          // which public API this posting came from
 };
 
 type PendingEdit = {
@@ -75,6 +84,19 @@ type Application = {
   submittedAt: string | null;
 };
 ```
+
+> **Amendment (deliberate).** `tags` was originally `string[]`. It is now
+> `JobTag[]`, with `tagNames: string[]` derived alongside so filtering stays as
+> cheap as it was, plus a `source` field for attribution.
+>
+> **Why evidence exists.** `description` is truncated to 1400 characters, but a
+> tag is detected against the *full* posting text. Without a quoted window, the
+> app could tell the user "this job requires Kubernetes" while the requirement
+> sits in text the user cannot see — an unverifiable claim, which is precisely
+> the failure mode this product exists to prevent. The guard must not commit the
+> error it refuses on the agent's behalf. Every tag therefore carries the
+> sentence it came from, and `required` is left `null` rather than guessed when
+> the posting's structure does not make it clear.
 
 ## 3. Tool inventory
 
@@ -231,6 +253,35 @@ round trip.
 (`requiredTags`, `niceToHaveTags`, `minYears`). Parsing is done by existing app
 logic so the agent and the human see the same interpretation.
 
+Those three lists are **derived from `Job.tags`, not parsed a second time**:
+
+```ts
+requiredTags    = tags.filter(t => t.required === true)
+niceToHaveTags  = tags.filter(t => t.required === false)
+unclassifiedTags= tags.filter(t => t.required === null)
+```
+
+Each entry keeps its `evidence` string, so the agent can quote the sentence a
+requirement came from and the human can check it against the linked posting.
+`unclassifiedTags` is deliberately a third list rather than being folded into
+either of the other two: the build step could not determine the requirement's
+strength, and silently promoting it to "required" would manufacture a
+requirement the posting never stated.
+
+```json
+{
+  "summary": "Senior ML Engineer at US LBM. 9 required, 3 nice-to-have, 4 unclassified.",
+  "requiredTags": [
+    { "tag": "computer vision", "evidence": "…Build computer vision models, OCR, and parsing techniques for images and PDFs…" }
+  ],
+  "niceToHaveTags": [
+    { "tag": "docker", "evidence": "…is a plus. Deployment & Infrastructure - AWS/Azure/GCP; Docker, Kubernetes…" }
+  ],
+  "unclassifiedTags": [ { "tag": "python", "evidence": "…Stack: Python, SQL, Pandas, NumPy…" } ],
+  "minYears": 5
+}
+```
+
 ---
 
 ### `get_fit_gaps`
@@ -252,6 +303,28 @@ this is what makes the agent's later claims checkable.
 
 The `missing` list is the agent's cue to call `request_profile_fact` rather than to
 invent something.
+
+**Both sides resolve through one alias table.** A job tag and a fact token are
+compared only after each is mapped to its canonical vocabulary name. This is not
+a refinement; without it the tool reports false gaps. The market writes "TTS",
+"STT" and "ASR"; this profile writes "text to speech" and "speech recognition",
+and those spelled-out forms appear in **zero** of the 175 fetched postings. A
+literal string comparison therefore told a candidate with shipped speech systems
+that he lacked speech experience.
+
+A false negative is as damaging as a false positive here. A false positive makes
+the agent claim something untrue; a false negative makes the app tell the user to
+go and acquire a skill he already has — and, worse, suppresses the fact that
+would have supported a legitimate resume line. The guard exists to keep claims
+honest in both directions.
+
+Aliases are derived from the corpus by measurement, never from intuition. Forms
+whose corpus usage is dominated by another meaning are excluded from job-text
+matching even when they look obvious — `cv` is résumé roughly half the time,
+`serving` is "serving 50,000+ customers", `classification` is overwhelmingly
+*text* classification, and `offline` means offline *evaluation*. Such forms may
+still resolve a profile token, where they are unambiguous, but they must never
+tag a posting.
 
 ---
 

@@ -51,7 +51,7 @@
       "id": "f_dataset_work",
       "kind": "skill",
       "text": "Dataset collection, annotation and augmentation — full cycle from raw footage to a training-ready set.",
-      "tokens": ["dataset", "annotation", "labeling", "augmentation", "data collection"]
+      "tokens": ["dataset", "annotation", "labeling", "augmentation", "data collection", "computer vision"]
     },
     {
       "id": "f_ocr",
@@ -100,7 +100,7 @@
       "id": "r_customs_scope",
       "kind": "role",
       "text": "Owned the full model lifecycle at Customs: dataset preparation, training, evaluation and production deployment. Shipped more than six AI systems now in live operational use.",
-      "tokens": ["full cycle", "deployment", "production", "six systems", "lifecycle", "end-to-end"]
+      "tokens": ["full cycle", "deployment", "production", "six systems", "lifecycle", "end-to-end", "model deployment"]
     },
     {
       "id": "r_customs_team",
@@ -113,7 +113,7 @@
       "id": "a_wagon_pipeline",
       "kind": "achievement",
       "text": "Built a three-stage computer vision pipeline that counts railway wagons and reads their identification numbers automatically.",
-      "tokens": ["railway", "wagon", "pipeline", "counting", "number recognition", "three-stage"]
+      "tokens": ["railway", "wagon", "pipeline", "counting", "number recognition", "three-stage", "computer vision", "object detection", "real-time inference"]
     },
     {
       "id": "a_wagon_metrics",
@@ -131,13 +131,13 @@
       "id": "a_xray_loaded",
       "kind": "achievement",
       "text": "Trained a ResNet classifier on customs X-ray scans to determine whether a wagon is loaded or empty — around 95% accuracy, made robust to poor-quality scans through cleaning, balancing and augmentation.",
-      "tokens": ["x-ray", "xray", "classification", "95%", "resnet", "robustness", "class balancing"]
+      "tokens": ["x-ray", "xray", "classification", "95%", "resnet", "robustness", "class balancing", "computer vision", "image classification"]
     },
     {
       "id": "a_xray_threat",
       "kind": "achievement",
       "text": "Built detection and classification models that flag dangerous or prohibited goods in hand-luggage X-ray images at around 95% accuracy, highlighting the suspicious region for the inspector.",
-      "tokens": ["x-ray", "xray", "threat detection", "prohibited goods", "95%", "security screening"]
+      "tokens": ["x-ray", "xray", "threat detection", "prohibited goods", "95%", "security screening", "computer vision", "object detection", "image classification"]
     },
     {
       "id": "a_rag_chatbot",
@@ -155,7 +155,7 @@
       "id": "a_anpr",
       "kind": "achievement",
       "text": "Built an ANPR system for border checkpoints: detects and counts vehicles from video, extracts and reads the licence plate, around 95% accuracy.",
-      "tokens": ["anpr", "licence plate", "license plate", "vehicle detection", "counting", "95%", "border", "video stream"]
+      "tokens": ["anpr", "licence plate", "license plate", "vehicle detection", "counting", "95%", "border", "video stream", "computer vision", "ocr", "object detection"]
     },
     {
       "id": "a_ocr_declaration",

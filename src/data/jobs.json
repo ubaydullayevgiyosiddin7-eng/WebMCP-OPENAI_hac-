@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-29T19:51:59.060Z",
+  "fetchedAt": "2026-08-29T20:07:30.058Z",
   "count": 120,
   "attribution": "Job data from the public Jobicy, Himalayas, Arbeitnow and Remotive APIs. Each posting links to its original page.",
   "jobs": [
@@ -48,6 +48,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…Language Models (LLM) Work on GPU model serving, optimizing latency, throughput, and cost to support larger and more capable models…",
+          "required": null
+        },
+        {
           "tag": "model deployment",
           "evidence": "…Models (LRM) to Large Language Models (LLM) Work on GPU model serving, optimizing latency, throughput, and cost to support larger…",
           "required": null
@@ -81,6 +86,7 @@
         "docker",
         "kubernetes",
         "aws",
+        "real-time inference",
         "model deployment",
         "gpu",
         "triton",
@@ -122,6 +128,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…in production, addressing challenges around response quality, latency, cost, security, traceability, observability, and resilience. We…",
+          "required": null
+        },
+        {
           "tag": "typescript",
           "evidence": "…This is a hands-on backend engineering role combining Node.js/TypeScript, AWS cloud architecture, and Generative AI. You will design and…",
           "required": null
@@ -137,6 +148,7 @@
         "rag",
         "kubernetes",
         "aws",
+        "real-time inference",
         "typescript",
         "bedrock"
       ],
@@ -190,6 +202,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…for prompt quality, hallucination detection, response accuracy, latency, and user experience. Develop reusable SDKs, APIs, and developer…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…workflows, and complex tool-use systems. Familiarity with LLM fine-tuning, parameter-efficient tuning (LoRA/QLoRA), and model alignment…",
           "required": true
@@ -218,6 +235,16 @@
           "tag": "gemini",
           "evidence": "…LLM APIs and models such as OpenAI GPT, Anthropic Claude, Google Gemini, Llama, or Mistral . Strong experience with agent frameworks such…",
           "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…practices for designing intelligent conversational systems, prompt engineering frameworks, and AI-powered applications. This role combines…",
+          "required": null
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "Conversational AI Engineer. Bright Vision Technologies is a technology…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -228,12 +255,15 @@
         "aws",
         "gcp",
         "azure",
+        "real-time inference",
         "fine-tuning",
         "langchain",
         "langgraph",
         "llamaindex",
         "ci/cd",
-        "gemini"
+        "gemini",
+        "prompt engineering",
+        "chatbot"
       ],
       "description": "Bright Vision Technologies is a technology consulting and software development company delivering cloud, AI, data, and enterprise solutions across the United States. This is a fantastic opportunity to join an established and well-respected organization offering tremendous career growth potential. Job Title Conversational AI Engineer Location: Remote (U.S.) Position Type: Full-time, Direct W2 Salary Range: $130,000–$180,000 Annually (based on experience) Experience Required: 10+ Years Sponsorship: U.S. Citizens, Green Card Holders, EAD Holders, and H-1B transfer candidates are encouraged to apply. We are unable to sponsor new H-1B visa petitions for this position. Job Summary Bright Vision Technologies is seeking a highly experienced Conversational AI Engineer with 10+ years of software engineering experience , including extensive expertise in Large Language Models (LLMs), agentic AI, and enterprise AI application development. The ideal candidate will define and lead the strategy, architecture, and engineering best practices for designing intelligent conversational systems, prompt engineering frameworks, and AI-powered applications. This role combines deep technical expertise in modern LLMs with the ability to build reusable AI platforms, evaluation frameworks, and developer tooling that enable scalable, secure, and production-ready conversational AI solutions. Key Responsibilit",
       "url": "https://himalayas.app/companies/bright-vision-technologies/jobs/conversational-ai-engineer-7723079624",
@@ -320,6 +350,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…extensive datasets, extracting insights and patterns, in real-time, near-real-time, or batch processing mode. Implementing proof of…",
+          "required": null
+        },
+        {
           "tag": "model deployment",
           "evidence": "…and similar. Familiarity with MLOps best practices, e.g. Model deployment and reproducible research. Mastering data science needed…",
           "required": true
@@ -353,6 +388,11 @@
           "tag": "kafka",
           "evidence": "…project. Experience in event sourcing patterns and tools i.e. Kafka, RabbitMQ, or similar is a plus. Experience with LLM frameworks…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…Experience with LLM frameworks (i.e. LangChain) and prompt engineering techniques. Familiar with code versioning tools such as GIT,…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -370,13 +410,15 @@
         "git",
         "numpy",
         "pandas",
+        "real-time inference",
         "model deployment",
         "fine-tuning",
         "langchain",
         "langgraph",
         "hugging face",
         "ci/cd",
-        "kafka"
+        "kafka",
+        "prompt engineering"
       ],
       "description": "Proudly voted a Great Place to Work®, we are a dynamic startup in the SaaS space that is revolutionizing the way businesses communicate. Our team is made up of 500 energetic and passionate Unifones who are dedicated to delivering the best possible experience to 5000+ customer-centric companies. We pride ourselves on our fun and collaborative work environment, where creativity and new ideas are constantly encouraged. As shareholders in the business, we’re so much more than a group of passionate communicators. We are Unifones. Join our team and be a part of something big! Meet the team! Our Engineering team is responsible for designing, developing, and maintaining the systems and technologies that drive Unifonic ’s solutions. We work closely with other departments to ensure our products and services meet the needs of our customers. If you are passionate about technology and are excited about working on cutting-edge communication and engagement solutions, we want you on our team. As a Senior Machine Learning (AI) Engineer, you will be responsible for designing, developing, and deploying advanced machine learning solutions across various domains, including NLP, Text Classification, RAG, LLMs, Recommender engines, and Anomaly detection. This role involves end-to-end project ownership, from data preprocessing to the creation of service APIs, and offers opportunities to work on cuttin",
       "url": "https://himalayas.app/companies/unifonic/jobs/senior-machine-learning-engineer",
@@ -441,6 +483,11 @@
           "tag": "triton",
           "evidence": "…GLM, Kimi, NeMo, NIM, NVIDIA Agent Toolkit, Dynamo, TensorRT-LLM, Triton, vLLM, SGLang, Hugging Face, or similar ecosystems. Experience…",
           "required": true
+        },
+        {
+          "tag": "on-premise",
+          "evidence": "…architectures and enablement for enterprise, sovereign, air-gapped, regulated cloud, private cloud, hyperscaler, and secure…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -453,7 +500,8 @@
         "hugging face",
         "cuda",
         "gpu",
-        "triton"
+        "triton",
+        "on-premise"
       ],
       "description": "NVIDIA has been transforming computer graphics, PC gaming, and accelerated computing for more than 25 years. It’s a unique legacy of innovation that’s fueled by great technology—and amazing people. Today, we’re tapping into the unlimited potential of AI to define the next era of computing. An era in which our GPU acts as the brains of computers, robots, and self-driving cars that can understand the world. Doing what’s never been done before takes vision, innovation, and the world’s best talent. As an NVIDIA N, you’ll be immersed in a diverse, supportive environment where everyone is inspired to do their best work. Come join the team and see how you can make a lasting impact on the world. This role owns the EMEA go-to-market motion for NVIDIA 's Agentic AI Platform, helping customers and partners adopt, deploy, secure, and scale agentic AI on NVIDIA . The role works across enterprise, AI-native, ISV, cloud provider, public sector, defense, and regulated environments, translating NVIDIA software into practical adoption motions for priority workloads. The person should bring strong breadth across open and sovereign models, Nemotron, NVIDIA Agent Toolkit, NeMo, NIM, secure agent runtimes, evaluation harnesses, guardrails, confidential computing, cybersecurity, legal/commercial guidance, and AI Factory reference architectures What you'll be doing: Execute the EMEA Agentic AI Platfor",
       "url": "https://himalayas.app/companies/nvidia/jobs/agentic-ai-platform-senior-account-manager-uk-i",
@@ -576,8 +624,8 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…AWS/Azure/GCP; Docker, Kubernetes; Torch Serve/TensorFlow Serving; ONNX Runtime. Preferred Technology - CI/CD pipelines, Git; REST APIs;…",
-          "required": false
+          "evidence": "…and CRM integration. Implement APIs and microservices for real-time data exchange. Sales Forecasting (Future Scope) - Create…",
+          "required": true
         },
         {
           "tag": "langchain",
@@ -603,6 +651,16 @@
           "tag": "tableau",
           "evidence": "…Google ADK, PydanticAI. Exposure to reporting tools using Tableau. Machine Learning - Experience in Supervised/unsupervised…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…Language Models (LLMs) to interpret extracted data. Develop prompt engineering strategies. Data Engineering & Integration - Develop…",
+          "required": true
+        },
+        {
+          "tag": "mysql",
+          "evidence": "…Technology - CI/CD pipelines, Git; REST APIs; PostgreSQL/MySQL for metadata storage. Strong problem-solving, analytical thinking,…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -632,7 +690,9 @@
         "langgraph",
         "llamaindex",
         "ci/cd",
-        "tableau"
+        "tableau",
+        "prompt engineering",
+        "mysql"
       ],
       "description": "US LBM is one of the leading and fastest growing distributors of specialty building materials in the United States, with a team of over 13,000 employees located throughout the country. Since our founding in 2009, we have acquired over 100 companies and have expanded to more than 450 locations serving 37 states. US LBM is a progressive organization that promotes a unique culture that focuses on the value of its customers and associates. Developing our people is critical to our strategy and fostering our culture of empowerment. . A Brief Overview The US LBM AI Engineer will help drive US LBM 's initiatives and provide meaningful insight to deliver business value. As a member of the US LBM Enterprise Data and Analytics team, you help cultivate the culture of data-driven decision-making across our business. From business analytics to demand planning to pricing optimization to purchasing decisions, the Analytics team brings the power of our extensive data assets and capabilities to bear on US LBM 's important decisions. As an AI Engineer at US LBM , you will leverage your analytical skills and expertise in AI & data science to help with sales, pricing, optimize supply chain, improve inventory management, logistics, enhance customer insights, and support strategic business decisions. You will work closely with cross-functional teams, including operations, finance, sales, and supply c",
       "url": "https://himalayas.app/companies/us-lbm/jobs/us-lbm-ai-engineer",
@@ -719,6 +779,11 @@
           "required": false
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…optimization engine to streamline airport operations, using real-time data from sources like radar, air traffic, and passenger…",
+          "required": null
+        },
+        {
           "tag": "kafka",
           "evidence": "…Experience with Big Data technologies like Spark, Hadoop, and Kafka is a plus. 🎁 Discover our perks & benefits: Work in a supportive…",
           "required": false
@@ -726,6 +791,16 @@
         {
           "tag": "snowflake",
           "evidence": "…Working experience in SQL and NoSQL databases (MongoDB, Snowflake, Databricks). Good knowledge of CI / CD principles (GitHub and…",
+          "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…Azure ). Knowledge in applying LLMs (semantic search, prompt engineering, multimodal embeddings, RAG). High proficiency in English…",
+          "required": true
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…experience in SQL and NoSQL databases (MongoDB, Snowflake, Databricks). Good knowledge of CI / CD principles (GitHub and GitHub…",
           "required": true
         }
       ],
@@ -744,8 +819,11 @@
         "azure",
         "git",
         "spark",
+        "real-time inference",
         "kafka",
-        "snowflake"
+        "snowflake",
+        "prompt engineering",
+        "databricks"
       ],
       "description": "Addepto is a leading AI consulting () and data engineering () company that builds scalable, ROI-focused AI solutions for some of the world's largest enterprises and pioneering startups, including Rolls Royce, Continental, Porsche, ABB, and WGU. With an exclusive focus on Artificial Intelligence and Big Data, Addepto helps organizations unlock the full potential of their data through systems designed for measurable business impact and long-term growth. The company's work extends beyond client engagements. Drawing from real-world challenges and insights, Addepto has developed its own product - ContextClue - and actively contributes open-source solutions to the AI community. This commitment to transforming practical experience into scalable innovation has earned Addepto recognition by Forbes as one of the top 10 AI consulting companies worldwide. As part of KMS Technology, a US-based global technology group, Addepto combines deep AI specialization with enterprise-scale delivery capabilities—enabling the partnership to move clients from AI experimentation to production impact, securely and at scale. As a Lead Data Scientist / AI Engineer / Tech Lead , you will have the exciting opportunity to work with a team of technology experts on challenging projects across various industries, leveraging cutting-edge technologies. Here are some of the projects we are seeking talented individual",
       "url": "https://himalayas.app/companies/addepto/jobs/data-scientist-ai-engineer",
@@ -830,260 +908,6 @@
       "source": "Himalayas"
     },
     {
-      "id": "j_instacart_senior-machine-learning-engineer-digital-twin-platform",
-      "title": "Senior Machine Learning Engineer, Digital Twin Platform",
-      "company": "Instacart",
-      "location": "Canada",
-      "remote": true,
-      "seniority": "senior",
-      "minYears": 5,
-      "tags": [
-        {
-          "tag": "python",
-          "evidence": "…learning models in production environments. Strong proficiency in Python and experience with ML frameworks such as TensorFlow, PyTorch, or…",
-          "required": true
-        },
-        {
-          "tag": "pytorch",
-          "evidence": "…in Python and experience with ML frameworks such as TensorFlow, PyTorch, or scikit-learn. Demonstrated experience with large-scale data…",
-          "required": true
-        },
-        {
-          "tag": "tensorflow",
-          "evidence": "…proficiency in Python and experience with ML frameworks such as TensorFlow, PyTorch, or scikit-learn. Demonstrated experience with…",
-          "required": true
-        },
-        {
-          "tag": "computer vision",
-          "evidence": "…working in close collaboration with software engineers, computer vision engineers, product leads, and data scientists. If you're…",
-          "required": null
-        },
-        {
-          "tag": "aws",
-          "evidence": "…unstructured data at scale. Experience with cloud infrastructure (AWS, GCP, or Azure) and familiarity with ML platform tooling for model…",
-          "required": true
-        },
-        {
-          "tag": "gcp",
-          "evidence": "…data at scale. Experience with cloud infrastructure (AWS, GCP, or Azure) and familiarity with ML platform tooling for model…",
-          "required": true
-        },
-        {
-          "tag": "azure",
-          "evidence": "…data at scale. Experience with cloud infrastructure (AWS, GCP, or Azure) and familiarity with ML platform tooling for model training,…",
-          "required": true
-        },
-        {
-          "tag": "real-time inference",
-          "evidence": "…spatial/temporal modeling problems. Familiarity with real-time inference systems and the architectural considerations of serving ML…",
-          "required": true
-        }
-      ],
-      "tagNames": [
-        "python",
-        "pytorch",
-        "tensorflow",
-        "computer vision",
-        "aws",
-        "gcp",
-        "azure",
-        "real-time inference"
-      ],
-      "description": "We're transforming the grocery industry At Instacart , we invite the world to share love through food because we believe everyone should have access to the food they love and more time to enjoy it together. Where others see a simple need for grocery delivery, we see exciting complexity and endless opportunity to serve the varied needs of our community. We work to deliver an essential service that customers rely on to get their groceries and household goods, while also offering safe and flexible earnings opportunities to Instacart Personal Shoppers. Instacart has become a lifeline for millions of people, and we’re building the team to help push our shopping cart forward. If you’re ready to do the best work of your life, come join our table. Instacart is a Flex First team There’s no one-size fits all approach to how we do our best work. Our employees have the flexibility to choose where they do their best work—whether it’s from home, an office, or your favorite coffee shop—while staying connected and building community through regular in-person events. Learn more about our flexible approach to where we work. Overview The Digital Twin Platform team at Instacart is on a mission to understand exactly what is on store shelves at all times — bringing the precision and depth of a smart warehouse to every local grocery store across North America. Inventory estimates power some of the mo",
-      "url": "https://himalayas.app/companies/instacart/jobs/senior-machine-learning-engineer-digital-twin-platform",
-      "postedAt": "2026-08-29",
-      "source": "Himalayas"
-    },
-    {
-      "id": "j_tspi_data-scientist-4",
-      "title": "Data Scientist 4",
-      "company": "TSPi",
-      "location": "United States",
-      "remote": true,
-      "seniority": "senior",
-      "minYears": 9,
-      "tags": [
-        {
-          "tag": "python",
-          "evidence": "…data analytics, and data management languages including SQL, Python, SAS, and/or R. Proficiency with version control tools including…",
-          "required": true
-        },
-        {
-          "tag": "sql",
-          "evidence": "…data analytics, and data management languages including SQL, Python, SAS, and/or R. Proficiency with version control tools…",
-          "required": true
-        },
-        {
-          "tag": "llm",
-          "evidence": "…promote the adoption and effective use of artificial intelligence, LLMs, machine learning, automation tools, and emerging analytical…",
-          "required": null
-        },
-        {
-          "tag": "git",
-          "evidence": "…including SQL, Python, SAS, and/or R. Proficiency with version control tools including Git, Bitbucket, and SourceTree. Stay current…",
-          "required": true
-        }
-      ],
-      "tagNames": [
-        "python",
-        "sql",
-        "llm",
-        "git"
-      ],
-      "description": "Opportunity TSPi is seeking a Data Scientist 4 with experience supporting federal data science and analytics programs. TSPi excels in meeting the needs of our clients by offering advanced technology solutions utilizing our industry-specific knowledge, iterative Agile approach, commitment and passion to serve, collaborative and fun team atmosphere, and pride in our work. The successful candidate will support AI implementations in data-intensive federal government projects. Projects may include work involving social science, public health, natural resources, and other federal program data. This individual will be responsible for AI and data science solutioning and delivery, supporting client engagements, and ensuring the production of high-quality data products and actionable insights. The ideal candidate combines strong technical expertise in data analytics and data science, with demonstrated experience managing project execution and embracing emerging technologies, including artificial intelligence and machine learning capabilities, to improve analytical outcomes and operational efficiency. The candidate will also support technical solution development, project planning, and implementation of advanced analytical methodologies that support client objectives and organizational growth. Responsibilities Implement and promote the adoption and effective use of artificial intelligence",
-      "url": "https://himalayas.app/companies/tspi/jobs/data-scientist-4",
-      "postedAt": "2026-08-29",
-      "source": "Himalayas"
-    },
-    {
-      "id": "j_kainos_principal-data-scientist-healthcare",
-      "title": "Principal Data Scientist - Healthcare",
-      "company": "Kainos",
-      "location": "United Kingdom",
-      "remote": true,
-      "seniority": "lead",
-      "minYears": null,
-      "tags": [
-        {
-          "tag": "pytorch",
-          "evidence": "…ESIRABLE : Experience with modern deep learning frameworks (e.g.PyTorch, TensorFlow), fine-tuning or distillation of LLMs (e.g., GPT,…",
-          "required": true
-        },
-        {
-          "tag": "tensorflow",
-          "evidence": "…: Experience with modern deep learning frameworks (e.g.PyTorch, TensorFlow), fine-tuning or distillation of LLMs (e.g., GPT, Llama, Claude,…",
-          "required": true
-        },
-        {
-          "tag": "llm",
-          "evidence": "…(e.g.PyTorch, TensorFlow), fine-tuning or distillation of LLMs (e.g., GPT, Llama, Claude, Gemini), and advanced ML libraries…",
-          "required": true
-        },
-        {
-          "tag": "rag",
-          "evidence": "…AI engineering approaches such as prompt engineering, retrieval-augmented generation (RAG)and orchestration of agentic AI systems.…",
-          "required": true
-        },
-        {
-          "tag": "aws",
-          "evidence": "…Kainos is at the forefront of AI innovation, trusted by Microsoft, AWS, and others to deliver advanced AI and data solutions at citizen…",
-          "required": null
-        },
-        {
-          "tag": "fine-tuning",
-          "evidence": "…modern deep learning frameworks (e.g.PyTorch, TensorFlow), fine-tuning or distillation of LLMs (e.g., GPT, Llama, Claude, Gemini), and…",
-          "required": true
-        },
-        {
-          "tag": "rl",
-          "evidence": "…including time series, supervised/unsupervised learning, reinforcement learning, LLMsand agentic AI. Experience with the latest AI…",
-          "required": true
-        },
-        {
-          "tag": "gemini",
-          "evidence": "…fine-tuning or distillation of LLMs (e.g., GPT, Llama, Claude, Gemini), and advanced ML libraries (e.g.scikit-learn,XGBoost). Experience…",
-          "required": true
-        }
-      ],
-      "tagNames": [
-        "pytorch",
-        "tensorflow",
-        "llm",
-        "rag",
-        "aws",
-        "fine-tuning",
-        "rl",
-        "gemini"
-      ],
-      "description": "Join Kainos and Shape the Future At Kainos , we’re problem solvers, innovators, and collaborators - driven by a shared mission to create real impact. Whether we’re transforming digital services for millions, delivering cutting-edge Workday solutions, or pushing the boundaries of technology, we do it together. We believe in a people-first culture , where your ideas are valued, your growth is supported, and your contributions truly make a difference. Here, you’ll be part of a diverse, ambitious team that celebrates creativity and collaboration. Ready to make your mark? Join us and be part of something bigger. Kainos is recognised as one of the UK’s leading AI and data businesses, with a decade-longtrack recordof delivering impactful, production-grade AI solutions for clients across government, healthcare, defence, and commercial sectors. Kainos is at the forefront of AI innovation, trusted by Microsoft, AWS, and others to deliver advanced AI and data solutions at citizen scale. Our 150-strong AI and Data Practicebringstogether deepexpertisein machine learning, generative AI, agenticAIand data. We are pioneers in responsible AI, having authored the UK government’s AI Cyber Security Code of Practice implementation guide and we partner with leading organisations to ensure AI is deployed ethically, securely and with measurable business value. Our teams are at thecutting edgeof AI res",
-      "url": "https://himalayas.app/companies/kainos/jobs/principal-data-scientist-healthcare",
-      "postedAt": "2026-08-29",
-      "source": "Himalayas"
-    },
-    {
-      "id": "j_general-dynamics-information-technology_data-scientist-principal",
-      "title": "Data Scientist Principal",
-      "company": "General Dynamics Information Technology",
-      "location": "United States",
-      "remote": true,
-      "seniority": "lead",
-      "minYears": 8,
-      "tags": [
-        {
-          "tag": "python",
-          "evidence": "…AWS, including Bedrock, Lambda, and SageMaker) Experienced with Python data science stack (Pandas, NumPy, scikit-learn,…",
-          "required": true
-        },
-        {
-          "tag": "sql",
-          "evidence": "…stack (Pandas, NumPy, scikit-learn, PyTorch/TensorFlow) and SQL Experience integrating AI solutions with legacy enterprise systems…",
-          "required": true
-        },
-        {
-          "tag": "pytorch",
-          "evidence": "…with Python data science stack (Pandas, NumPy, scikit-learn, PyTorch/TensorFlow) and SQL Experience integrating AI solutions with…",
-          "required": true
-        },
-        {
-          "tag": "tensorflow",
-          "evidence": "…Python data science stack (Pandas, NumPy, scikit-learn, PyTorch/TensorFlow) and SQL Experience integrating AI solutions with legacy…",
-          "required": true
-        },
-        {
-          "tag": "llm",
-          "evidence": "…knowledge management Implement generative AI (GenAI) with large language models (LLMs) and retrieval augmented generation (RAG) to deliver…",
-          "required": true
-        },
-        {
-          "tag": "rag",
-          "evidence": "…AI (GenAI) with large language models (LLMs) and retrieval augmented generation (RAG) to deliver precise, data-driven responses…",
-          "required": true
-        },
-        {
-          "tag": "aws",
-          "evidence": "…data Expertise in AI/ML cloud technologies (preferably on AWS, including Bedrock, Lambda, and SageMaker) Experienced with Python…",
-          "required": true
-        },
-        {
-          "tag": "numpy",
-          "evidence": "…SageMaker) Experienced with Python data science stack (Pandas, NumPy, scikit-learn, PyTorch/TensorFlow) and SQL Experience integrating…",
-          "required": true
-        },
-        {
-          "tag": "pandas",
-          "evidence": "…and SageMaker) Experienced with Python data science stack (Pandas, NumPy, scikit-learn, PyTorch/TensorFlow) and SQL Experience…",
-          "required": true
-        },
-        {
-          "tag": "etl",
-          "evidence": "…increasing user/tool adoption Familiarity with data engineering, ETL processes, data pipelines, and APIs Strong communication skills…",
-          "required": true
-        },
-        {
-          "tag": "bedrock",
-          "evidence": "…in AI/ML cloud technologies (preferably on AWS, including Bedrock, Lambda, and SageMaker) Experienced with Python data science…",
-          "required": true
-        }
-      ],
-      "tagNames": [
-        "python",
-        "sql",
-        "pytorch",
-        "tensorflow",
-        "llm",
-        "rag",
-        "aws",
-        "numpy",
-        "pandas",
-        "etl",
-        "bedrock"
-      ],
-      "description": "Type of Requisition: Regular Clearance Level Must Currently Possess: None Clearance Level Must Be Able to Obtain: None Public Trust/Other Required: BI Full 6C (T4) Job Family: Data Science and Data Engineering Job Qualifications: Skills: Artificial Intelligence (AI), Big Data, Data Engineering Certifications: None Experience: 8 + years of related experience US Citizenship Required: No Job Description: Build the AI/ML solutions that help our clients turn data into action as a Data Scientist Principal at GDIT. Your work will deliver transformative solutions to our clients' big data obstacles and help advance the mission. Here, you can make a meaningful impact on our clients' mission and on your career. At GDIT, people are our differentiator. GDIT Technology Shared Services (TSS) is seeking a Data Scientist Principal to transform how government agencies use data. Our work depends on a hands-on data scientist joining our team to design and implement artificial intelligence solutions supporting the Centers for Medicare & Medicaid Services (CMS) Hosting, Operations & Maintenance (HOM) program. HOW THE DATA SCIENTIST PRINCIPAL WILL MAKE AN IMPACT: Accelerate our work by integrating advanced AI capabilities across our suite Accelerate the use of and evaluate the efficacy of AI coding tools across the team Implement both custom-built and vendor/COTS AI solutions, hands-on, from prototyp",
-      "url": "https://himalayas.app/companies/general-dynamics-information-technology/jobs/data-scientist-principal",
-      "postedAt": "2026-08-29",
-      "source": "Himalayas"
-    },
-    {
       "id": "j_centurylink_senior-lead-data-scientist-remote-us",
       "title": "Senior Lead Data Scientist (Remote, US)",
       "company": "CenturyLink",
@@ -1126,6 +950,16 @@
           "tag": "tableau",
           "evidence": "…business intelligence and visualization tools such as Power BI, Tableau, or similar platforms. Experience working with both structured…",
           "required": null
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…Azure AI, Azure OpenAI, Copilot Studio, Microsoft Fabric, Databricks, Snowflake, Palantir Foundry, Palantir AIP, or similar modern…",
+          "required": true
+        },
+        {
+          "tag": "power bi",
+          "evidence": "…with business intelligence and visualization tools such as Power BI, Tableau, or similar platforms. Experience working with both…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -1135,7 +969,9 @@
         "rag",
         "azure",
         "snowflake",
-        "tableau"
+        "tableau",
+        "databricks",
+        "power bi"
       ],
       "description": "Lumen is the trusted network for the AI‑powered world, connecting people, data, and applications through our expansive fiber network and connected ecosystem. We enable secure, high‑performance connectivity across cloud, edge, and AI workloads for enterprises, governments, and communities. At Lumen, you’ll work on infrastructure customers rely on today and build for what’s next, where performance, security, and resilience matter. This is a high accountability environment where bold ideas drive real innovation for our customers, partners, and industry. The work is challenging, expectations are clear, and trust is built into how we operate. If you’re ready to take ownership, deliver meaningful impact, and help shape the future of AI‑ready connectivity, join us today. The Role Lumen is seeking a strategic and technically versatile Senior Lead Data Scientist to lead advanced analytics, AI-driven innovation, and decision intelligence initiatives across the Product organization. This role will serve as a bridge between traditional analytics, modern data science, and emerging AI technologies, transforming complex data into actionable insights, predictive models, and intelligent solutions that improve business outcomes. The ideal candidate combines deep analytical expertise with practical experience developing quantitative analytics models, automating workflows, and leveraging AI platfo",
       "url": "https://himalayas.app/companies/centurylink/jobs/senior-lead-data-scientist-remote-us",
@@ -1262,6 +1098,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…Architect high-performance inference systems, optimizing latency, GPU utilization, memory, cost, and reliability. Build data…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…inference, and deployment. Build and evolve training and fine-tuning pipelines for large models. Design evaluation systems that…",
           "required": null
@@ -1276,6 +1117,7 @@
         "python",
         "pytorch",
         "jax",
+        "real-time inference",
         "fine-tuning",
         "gpu"
       ],
@@ -1309,6 +1151,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…Architect high-performance inference systems, optimizing latency, GPU utilization, memory, cost, and reliability. Build data…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…inference, and deployment. Build and evolve training and fine-tuning pipelines for large models. Design evaluation systems that…",
           "required": null
@@ -1323,6 +1170,7 @@
         "python",
         "pytorch",
         "jax",
+        "real-time inference",
         "fine-tuning",
         "gpu"
       ],
@@ -1356,6 +1204,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…Architect high-performance inference systems, optimizing latency, GPU utilization, memory, cost, and reliability. Build data…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…inference, and deployment. Build and evolve training and fine-tuning pipelines for large models. Design evaluation systems that…",
           "required": null
@@ -1370,6 +1223,7 @@
         "python",
         "pytorch",
         "jax",
+        "real-time inference",
         "fine-tuning",
         "gpu"
       ],
@@ -1403,6 +1257,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…Architect high-performance inference systems, optimizing latency, GPU utilization, memory, cost, and reliability. Build data…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…inference, and deployment. Build and evolve training and fine-tuning pipelines for large models. Design evaluation systems that…",
           "required": null
@@ -1417,6 +1276,7 @@
         "python",
         "pytorch",
         "jax",
+        "real-time inference",
         "fine-tuning",
         "gpu"
       ],
@@ -1488,6 +1348,11 @@
           "tag": "hugging face",
           "evidence": "…systems, Text2SQL, fine-tuning, etc., with tools such as HuggingFace, LangChain, and DSPy Expertise in deploying production-grade…",
           "required": null
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…FDE) team is a highly specialized customer-facing AI team at Databricks. We deliver professional services engagements to help our…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -1501,10 +1366,81 @@
         "model deployment",
         "fine-tuning",
         "langchain",
-        "hugging face"
+        "hugging face",
+        "databricks"
       ],
       "description": "AI Engineer - FDE (Forward Deployed Engineer) Req ID: CSQ427R191 Location: United Kingdom - Remote (must be based in the UK for this role) Mission The AI Forward Deployed Engineering (AI FDE) team is a highly specialized customer-facing AI team at Databricks. We deliver professional services engagements to help our customers build and productionize first-of-its-kind AI applications. We work cross-functionally to shape long-term strategic priorities and initiatives alongside engineering, product, and developer relations, as well as support internal subject matter expert (SME) teams. We view our team as an ensemble: we look for individuals with strong, unique specializations to improve the overall strength of the team. This team is the right fit for you if you love working with customers, teammates, and fueling your curiosity for the latest trends in GenAI, LLMOps, and ML more broadly. We welcome remote applicants located near our offices. Preferred locations: London (UK), Reporting to: Senior Manager - AI FDE, EMEA The impact you will have: Develop cutting-edge GenAI solutions, incorporating the latest techniques from Databricks AI research to solve customer problems Own production rollouts of consumer and internally facing GenAI applications Serve as a trusted technical advisor to customers across a variety of domains Present at conferences such as Data + AI Summit, recognized ",
       "url": "https://jobicy.com/jobs/151935-ai-engineer-fde-forward-deployed-engineer-2",
+      "postedAt": "2026-08-28",
+      "source": "Jobicy"
+    },
+    {
+      "id": "j_revenuecat_senior-data-scientist-fraud-risk",
+      "title": "Senior Data Scientist, Fraud & Risk",
+      "company": "RevenueCat",
+      "location": "LATAM,  Canada,  USA",
+      "remote": true,
+      "seniority": "senior",
+      "minYears": 5,
+      "tags": [
+        {
+          "tag": "python",
+          "evidence": "…highly analytical and technical. You are an expert in SQL and Python. You can build, deploy, and monitor models in production. You…",
+          "required": true
+        },
+        {
+          "tag": "sql",
+          "evidence": "…data. You're highly analytical and technical. You are an expert in SQL and Python. You can build, deploy, and monitor models in…",
+          "required": true
+        },
+        {
+          "tag": "real-time inference",
+          "evidence": "…purchase flow — the highest stakes moment in any user journey. Real-time, verifiable data: Cross-platform revenue plus leading indicators…",
+          "required": null
+        }
+      ],
+      "tagNames": [
+        "python",
+        "sql",
+        "real-time inference"
+      ],
+      "description": "RevenueCat removes the headaches of building and scaling in‑app subscriptions. Since graduating from YC’s S18 batch we’ve grown into the default monetization platform for mobile: we’re in >40% of newly shipped subscription apps, we process $12B+ in annual purchase volume, and we help everyone from a solo dev in Brazil to the OpenAI mobile team understand and grow their revenue. We’re a remote‑first crew of 150+, spread across 25+ countries, and guided by values we actually practice: Customer Obsession, Always Be Shipping, Own It, and Balance. If you want your work to touch hundreds of millions of end‑users (and help the developers behind them get paid), you’ll fit right in. The Role We're looking for a Data Scientist to support product initiatives for RevenueCat Capital , with deep experience in lead qualification, anomaly detection, fraud prevention, and underwriting. This is a chance to be the founding Data Scientist embedded within the Capital team, a greenfield opportunity to scale our new fintech business lines from You'll partner directly with leadership, collaborate across teams, and bring a new product to life inside RevenueCat. Your work will touch real money, real developers, and a product that is just getting started. Read more about the opportunity here . The Opportunity: RC Capital RevenueCat is on a mission to help developers make more money. We build software tha",
+      "url": "https://jobicy.com/jobs/151942-senior-data-scientist-fraud-risk",
+      "postedAt": "2026-08-28",
+      "source": "Jobicy"
+    },
+    {
+      "id": "j_revenuecat_senior-data-scientist-rc-capital",
+      "title": "Senior Data Scientist, RC Capital",
+      "company": "RevenueCat",
+      "location": "LATAM,  Canada,  USA",
+      "remote": true,
+      "seniority": "senior",
+      "minYears": 5,
+      "tags": [
+        {
+          "tag": "python",
+          "evidence": "…highly analytical and technical. You are an expert in SQL and Python. You can build, deploy, and monitor models in production. You…",
+          "required": true
+        },
+        {
+          "tag": "sql",
+          "evidence": "…data. You're highly analytical and technical. You are an expert in SQL and Python. You can build, deploy, and monitor models in…",
+          "required": true
+        },
+        {
+          "tag": "real-time inference",
+          "evidence": "…purchase flow — the highest stakes moment in any user journey. Real-time, verifiable data: Cross-platform revenue plus leading indicators…",
+          "required": null
+        }
+      ],
+      "tagNames": [
+        "python",
+        "sql",
+        "real-time inference"
+      ],
+      "description": "RevenueCat removes the headaches of building and scaling in‑app subscriptions. Since graduating from YC’s S18 batch we’ve grown into the default monetization platform for mobile: we’re in >40% of newly shipped subscription apps, we process $10B+ in annual purchase volume, and we help everyone from a solo dev in Brazil to the OpenAI mobile team understand and grow their revenue. We’re a remote‑first crew of 120+, spread across 25 countries, and guided by values we actually practice: Customer Obsession, Always Be Shipping, Own It, and Balance. If you want your work to touch hundreds of millions of end‑users (and help the developers behind them get paid), you’ll fit right in. The Role We're looking for a Data Scientist to support product initiatives for RevenueCat Capital , with deep experience in lead qualification, anomaly detection, fraud prevention, and underwriting. This is a chance to be the founding Data Scientist embedded within the Capital team, a greenfield opportunity to scale our new fintech business lines from You'll partner directly with leadership, collaborate across teams, and bring a new product to life inside RevenueCat. Your work will touch real money, real developers, and a product that is just getting started. Read more about the opportunity here . The Opportunity: RC Capital RevenueCat is on a mission to help developers make more money. We build software that",
+      "url": "https://jobicy.com/jobs/143120-senior-data-scientist-rc-capital",
       "postedAt": "2026-08-28",
       "source": "Jobicy"
     },
@@ -1543,6 +1479,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…technical vision and architect the next generation of scalable real-time bidding systems powered by cutting-edge AI, marketplace…",
+          "required": null
+        },
+        {
           "tag": "ray",
           "evidence": "…large datasets and distributed computing frameworks (e.g., Spark, Ray, BigQuery, Flink) Experience building real-time ad systems,…",
           "required": true
@@ -1564,6 +1505,7 @@
         "gcp",
         "git",
         "spark",
+        "real-time inference",
         "ray",
         "rl",
         "flink"
@@ -1604,7 +1546,7 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…Familiarity with large-scale, real-time decision systems and low-latency production environments. Background in feature engineering,…",
+          "evidence": "…(e.g., CTR/CVR, CPA, ROAS) Familiarity with large-scale, real-time decision systems and low-latency production environments.…",
           "required": true
         },
         {
@@ -1730,6 +1672,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…lifespan equal for all by translating science into medicine in real-time, all while bringing humanity back into health care. Delivering…",
+          "required": null
+        },
+        {
           "tag": "model deployment",
           "evidence": "…data standards (FHIR, HL7). • Experience with self-hosted model serving (vLLM, Triton, TGI, SGLang) and inference optimization. •…",
           "required": false
@@ -1743,6 +1690,16 @@
           "tag": "snowflake",
           "evidence": "…actually work. • Working knowledge of a cloud data warehouse (Snowflake strongly preferred) and modern data tooling such as dbt,…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…Own production health: trace- and span-level observability, prompt versioning, drift detection, cost monitoring, replay-from-production…",
+          "required": true
+        },
+        {
+          "tag": "on-premise",
+          "evidence": "…with custom skills and harnesses, using frontier LLMs and self-hosted models where appropriate, and resisting the urge to reach for…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -1753,9 +1710,12 @@
         "fastapi",
         "flask",
         "airflow",
+        "real-time inference",
         "model deployment",
         "triton",
-        "snowflake"
+        "snowflake",
+        "prompt engineering",
+        "on-premise"
       ],
       "description": "The Atria Health Institute is a membership-based primary and specialty health care practice with a focus on prevention and longevity. We bring together a multidisciplinary team of renowned physicians to provide proactive, preventive, and precision-based care for Atria members and their families. All care, including primary care, advanced screening and diagnostics, urgent care, specialty care, 24/7 home visits, and imaging is included in members’ annual fee. Our mission is to make healthspan and lifespan equal for all by translating science into medicine in real-time, all while bringing humanity back into health care. Delivering such robust, personalized, and preventive health care is complex and requires a team-wide dedication to excellence. We have state-of-the-art facilities with imaging and diagnostics on-site in New York City, Palm Beach, and Los Angeles, with home services hubs in Miami, Greenwich/Westchester, and the Hamptons in summer. Additional locations are forthcoming in the Bay Area, Miami, and in downtown Manhattan. At each of our Institutes, we deliver personalized preventive medicine grounded in up-to-the-minute science — all in serene environments designed for trust and comfort. About this role As a Senior AI Engineer at Atria, you will own the design, development, and production deployment of the LLM-powered systems that put AI directly in front of clinicians a",
       "url": "https://himalayas.app/companies/atria-physician-practice-new-york-pc/jobs/senior-ai-engineer",
@@ -1881,6 +1841,11 @@
           "tag": "bedrock",
           "evidence": "…with international teams. Nice to have: Familiarity with AWS Bedrock and any experience with SageMaker will be a big plus. Familiarity…",
           "required": false
+        },
+        {
+          "tag": "mysql",
+          "evidence": "…FastAPI. Good with relational databases, preferably PostgreSQL or MySQL. Experience with AWS services, like EC2, EKS, S3, RDS, ELB.…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -1897,7 +1862,8 @@
         "llamaindex",
         "ci/cd",
         "terraform",
-        "bedrock"
+        "bedrock",
+        "mysql"
       ],
       "description": "Senior Python Engineer (Gen AI) $ 84,000.00 - 95,000.00 gross per year (USD) Our culture isn't something people join, it's something they build and shape. We believe that every person deserves to be heard and empowered. If you're on the fence about whether you're a fit, we say go for it. Lets build something great together! Join a team where you can make a difference! Do we have your attention yet? Lets see if youre the right candidate We are looking to complete our team with passionate people that are willing to expand their skills by working on multi-domain projects. Is this you? If yes, then one or more technologies of the following would bring you closer to a talk: To succeed in the company, youll need a positive and open-minded, collaborative mindset. We are a TEAM. As part of this, its must be natural to you to say what you do and do as you say. If you have a problem, you raise the flag in due time and together we find a solution. What should you bring to the table: At least 7 years of overall developer experience with at least 4 years of experience in Python development in the Data, ML and AI areas. Strong experience with Python and its ecosystem. Any prior experience with LLMs and/or building the RAG with LlamaIndex, LangChain, LangGraph, or similar solutions. Strong debugging and troubleshooting skills. Proficient in designing and developing RESTful APIs using Flask or",
       "url": "https://himalayas.app/companies/ams-accelerate-it/jobs/senior-python-engineer-gen-ai-l344y638",
@@ -1960,8 +1926,8 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…experience in parameter-efficient fine-tuning, model quantization, and quantization-aware fine-tuning of LLM models Hands-on…",
-          "required": null
+          "evidence": "…use cases while optimizing for inference costs and latency Develop intelligent routing and orchestration systems to manage…",
+          "required": true
         },
         {
           "tag": "model deployment",
@@ -2012,6 +1978,16 @@
           "tag": "flink",
           "evidence": "…frameworks/tools and technologies such as Apache Airflow, Spark, Flink, Kafka/Kinesis, Snowflake, and Databricks. Demonstrable experience…",
           "required": null
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…exposed as gRPC and/or GraphQL endpoints Experience with Databricks MLflow for ML lifecycle management and model versioning Hands-on…",
+          "required": true
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "…TensorFlow, Hugging Face Transformers) Experience building conversational AI (Text, Voice) , content generation, or code generation…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -2034,7 +2010,9 @@
         "rl",
         "kafka",
         "snowflake",
-        "flink"
+        "flink",
+        "databricks",
+        "chatbot"
       ],
       "description": "Credit Acceptance is proud to be an award-winning company with workplace recognition in multiple categories! Our world-class culture is shaped by dedicated Team Members who share a drive to succeed as professionals and together as a company. A great product, amazing people and our stable financial history have made us one of the largest used car finance companies in the United States. In this role, you will work as a dedicated member of a globally distributed team, partnering closely with business partners in the U.S. to design, build, and scale solutions that directly impact our customers and operations. While your legal employer will be our EoR partner, you will be fully integrated into our Credit Acceptance team for day-to-day work and collaboration. We are seeking a highly motivated and experienced Staff MLE within AI team. The ideal candidate will have a strong technical background in decision science, machine learning, and generative AI with a proven track record in solving business problems and implementing large-scale automated solutions in partnership with the respective engineering teams. In this role, you will partner with business and engineering stakeholders to formulate the vision to achieve the company’s strategic goals and co-lead the roadmap to deliver innovative solutions for dealers, consumers and team members. As a Staff, MLE at Credit Acceptance , you will ",
       "url": "https://himalayas.app/companies/credit-acceptance/jobs/staff-machine-learning-engineer-employer-of-record",
@@ -2114,6 +2092,11 @@
           "tag": "ci/cd",
           "evidence": "…AI-powered dashboards and visualization tools Familiarity with CI/CD and DevOps practices . Experience designing enterprise-grade,…",
           "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…scalability, and efficiency . AI Optimization & Prompt Engineering Optimize generative AI models for improved accuracy and…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -2129,81 +2112,11 @@
         "azure",
         "git",
         "hugging face",
-        "ci/cd"
+        "ci/cd",
+        "prompt engineering"
       ],
       "description": "Role Overview We are seeking a highly skilled Senior AI/ML Developer to design, architect, and deliver enterprise-grade Generative AI solutions , with a strong focus on healthcare use cases . The ideal candidate will combine deep technical expertise in machine learning, large language models (LLMs), and software engineering to build scalable, secure, and responsible AI systems. Key Responsibilities AI/ML Development & Architecture Design and develop scalable AI/ML solutions using LLMs and other machine learning models . Architect and implement Generative AI systems that are scalable, resilient, and aligned with ethical AI practices. Work as a Subject Matter Expert (SME) for Generative AI, partnering with Product and Engineering teams. Develop and maintain end-to-end AI pipelines , including: Data preprocessing Feature engineering Model training and evaluation Solution Design & Integration Build extensible APIs and integrations to connect AI models with enterprise systems. Develop low-code/no-code UI/UX solutions for rapid delivery cycles. Design structured outputs (JSON, arrays, HTML) with nested nodes , ensuring seamless frontend/dashboard consumption . Implement solutions integrating LLMs (e.g., GPT models) to extract insights and deliver actionable data. Cloud & Distributed Systems Architect and deploy solutions on cloud platforms such as AWS, Azure, or GCP. Build and mainta",
       "url": "https://himalayas.app/companies/valce-talent-solutions/jobs/ai-ml-developer",
-      "postedAt": "2026-08-28",
-      "source": "Himalayas"
-    },
-    {
-      "id": "j_grafana-labs_staff-ai-engineer-grafana-ai-ml-usa-remote",
-      "title": "Staff AI Engineer - Grafana AI/ML | USA | Remote",
-      "company": "Grafana Labs",
-      "location": "United States",
-      "remote": true,
-      "seniority": "lead",
-      "minYears": null,
-      "tags": [
-        {
-          "tag": "llm",
-          "evidence": "…and validate with real users, including shipping and evolving LLM- or agent-powered workflows for incident lifecycle management and…",
-          "required": null
-        },
-        {
-          "tag": "docker",
-          "evidence": "…with infrastructure / devops related tooling: Kubernetes, Docker, Terraform or similar for deployments. Familiarity with model…",
-          "required": false
-        },
-        {
-          "tag": "kubernetes",
-          "evidence": "…Experience with infrastructure / devops related tooling: Kubernetes, Docker, Terraform or similar for deployments. Familiarity with…",
-          "required": false
-        },
-        {
-          "tag": "aws",
-          "evidence": "…by users. Exposure to working in cloud-native environments (e.g., AWS, GCP, Azure). Experience using observability tools to understand…",
-          "required": true
-        },
-        {
-          "tag": "gcp",
-          "evidence": "…Exposure to working in cloud-native environments (e.g., AWS, GCP, Azure). Experience using observability tools to understand and…",
-          "required": false
-        },
-        {
-          "tag": "azure",
-          "evidence": "…Exposure to working in cloud-native environments (e.g., AWS, GCP, Azure). Experience using observability tools to understand and…",
-          "required": false
-        },
-        {
-          "tag": "fine-tuning",
-          "evidence": "…Terraform or similar for deployments. Familiarity with model fine-tuning techniques. Experience building observability tooling.…",
-          "required": false
-        },
-        {
-          "tag": "terraform",
-          "evidence": "…infrastructure / devops related tooling: Kubernetes, Docker, Terraform or similar for deployments. Familiarity with model fine-tuning…",
-          "required": false
-        },
-        {
-          "tag": "gemini",
-          "evidence": "…access to frontier models (e.g., GPT-Codex 5/3, Claude Opus 4.6, Gemini 3 Pro). What Makes You a Great Fit: Strong engineering skills:…",
-          "required": null
-        }
-      ],
-      "tagNames": [
-        "llm",
-        "docker",
-        "kubernetes",
-        "aws",
-        "gcp",
-        "azure",
-        "fine-tuning",
-        "terraform",
-        "gemini"
-      ],
-      "description": "Grafana Labs , the company behind the open observability cloud, is founded on the principles of open source, open standards, open ecosystems, and open culture. Grafana Cloud, our fully managed observability platform, is flexible and built for scale. With Grafana Cloud's actually useful AI, organizations can see, understand, and act on all their disparate data to move at the speed of their ambitions. Today, more than 35 million users and 7,000+ customers – including Anthropic, Bloomberg, NVIDIA, Microsoft, and Salesforce – trust Grafana Labs to ensure reliability of their applications and systems, resolve incidents quickly, and optimize their telemetry to reduce noise and cost. We are a 100% remote company with 1,600+ team members across 40+ countries, and we’re backed by leading investors including Lightspeed Venture Partners, Sequoia Capital, GIC, Coatue, J.P. Morgan, CapitalG, and Lead Edge Capital. Learn more at and follow us on LinkedIn and X. We’re scaling fast and staying true to what makes us different: an open-source legacy, a global collaborative culture, and a passion for meaningful work. Our team thrives in an innovation-driven environment where transparency, autonomy, and trust fuel everything we do. You may not meet every requirement, and that’s okay. If this role excites you, we’d love you to raise your hand for what could be a truly career-defining opportunity. T",
-      "url": "https://himalayas.app/companies/grafana-labs/jobs/staff-ai-engineer-grafana-ai-ml-usa-remote",
       "postedAt": "2026-08-28",
       "source": "Himalayas"
     },
@@ -2332,6 +2245,16 @@
           "tag": "model deployment",
           "evidence": "…and adversarial real-world conditions Infrastructure for model deployment, monitoring, and rollback Apps and services that customers…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…Monitoring: Grafana, Prometheus NLP/LLM: Prompt engineering, conversational AI IoT/sensor data experience, startup…",
+          "required": false
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "…memory management Model optimization: NLP & LLM: enhance conversational AI bots with intelligent query generation Build monitoring…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -2348,7 +2271,9 @@
         "numpy",
         "pandas",
         "real-time inference",
-        "model deployment"
+        "model deployment",
+        "prompt engineering",
+        "chatbot"
       ],
       "description": "This is a remote position. About Monaire Monaire is building the infrastructure layer for intelligent commercial HVAC. We combine on-device sensors, smart thermostats, and machine-learning systems to automate control, surface real operational insight, and materially reduce energy waste at scale. This is not offline modeling or notebook ML. Models run in production, interact with physical systems, and must be observable, debuggable, and correct. The platform spans edge devices, cloud services, streaming pipelines, control logic, and ML inference. Engineers here work on: Data ingestion and streaming at scale from heterogeneous hardware Low-latency decision pipelines and control loops ML systems that survive missing data, drift, and adversarial real-world conditions Infrastructure for model deployment, monitoring, and rollback Apps and services that customers depend on to run their buildings every day The market is large, broken, and technically underserved. We’re scaling the system and need engineers who care about correctness, performance, and ownership — people who want to build infrastructure that actually controls the physical world, not just dashboards that look good in demos. Role Overview As a Data Scientist / Senior Data Scientist , you will play a critical role in building production-grade ML systems that drive real-world outcomes—energy efficiency, predictive maintenanc",
       "url": "https://himalayas.app/companies/monaire/jobs/data-scientist",
@@ -2433,6 +2358,11 @@
           "tag": "gpu",
           "evidence": "…pandas, scikit-learn, keras, nltk, and TensorFlow/PyTorch, GPU. Experience building production-grade machine learning deployments…",
           "required": true
+        },
+        {
+          "tag": "on-premise",
+          "evidence": "…is delivered in the United States. With access to dedicated on premise and cloud based big data solutions, the team can work with a…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -2449,7 +2379,8 @@
         "fine-tuning",
         "langchain",
         "hugging face",
-        "gpu"
+        "gpu",
+        "on-premise"
       ],
       "description": "Overview The Sr Data Scientist - Generative AI II will apply knowledge and expertise to real world problems to enable healthcare organizations to deliver better care at lower cost through advanced technology and data analytics, helping to ensure the quality and sustainability of how healthcare is delivered in the United States. With access to dedicated on premise and cloud based big data solutions, the team can work with a vast amount of structured and unstructured data including claims, membership, physician demographics, medical records and others to begin to solve some of the most pressing healthcare issues of our time. A Data Scientist at Cotiviti will be given the opportunity to work directly with a team of healthcare professionals including analysts, clinicians, coding specialists , auditors and innovators to set aggressive goals and execute them with the team. This is for an ambitious technologist, with the flexibility and personal drive to succeed in a dynamic environment where they are judged based on their direct impact on business outcomes. Please note: We are currently hiring multiple positions at various levels for our Artificial Intelligence teams. Please use the chart below as a guide for the amount of experience required for each level, and apply to the req(s) that are most appropriate for your level of experience. Responsibilities As a Sr GenAI Scientist within",
       "url": "https://himalayas.app/companies/cotiviti/jobs/senior-generative-ai-scientist-ii-3395861426",
@@ -2569,7 +2500,7 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…ML model serving infrastructure, ensuring high-performance and low-latency. Collaborate with ML and product teams to scale backend…",
+          "evidence": "…conversations into structured clinical notes in real-time, with deep EMR integrations. Powered by Linked Evidence and our…",
           "required": null
         },
         {
@@ -2651,6 +2582,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…Experience evaluating LLM applications for quality, safety, latency, and cost. Familiarity with data engineering concepts, analytics…",
+          "required": false
+        },
+        {
           "tag": "langchain",
           "evidence": "…working with AI/ML tooling and frameworks such as OpenAI APIs, LangChain, LlamaIndex, Hugging Face, TensorFlow, PyTorch, or similar .…",
           "required": true
@@ -2674,6 +2610,11 @@
           "tag": "java",
           "evidence": "…in one or more programming languages such as Python and Java Experience building and deploying production software systems.…",
           "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…products. Improve AI reliability through techniques such as prompt engineering, model evaluation, monitoring, guardrails, and feedback…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -2682,11 +2623,13 @@
         "tensorflow",
         "llm",
         "rag",
+        "real-time inference",
         "langchain",
         "llamaindex",
         "hugging face",
         "ci/cd",
-        "java"
+        "java",
+        "prompt engineering"
       ],
       "description": "Hello. We’re Teya . Teya was founded on a simple belief: local businesses deserve better. They are the cafés, restaurants, salons, shops and entrepreneurs that bring character to our high streets, create jobs and keep communities moving. Yet for too long, financial services has made life harder for them - with clunky tools, poor support and complexity that gets in the way of running a business. Teya exists to change that. We’re building a financial platform for local businesses across Europe - one built around simple tools, thoughtful design and real human support. Our Members rely on us to help them run their business with confidence, and that responsibility shapes the way we work. We move fast. We care about quality. We stay close to the detail. And we believe great performance and genuine hospitality should go hand in hand. If you want to build meaningful products, solve real problems and make a genuine difference for local businesses, we’d love to hear from you Your Mission As an AI Engineer , you will help build and scale AI-powered products that directly improve how our customers interact with our platform and how our teams operate. You’ll join our AI Research & Development team focused on creating intelligent systems where AI is core to the experience — including customer onboarding and due diligence, risk and fraud monitoring, pricing and customer lifetime value optimis",
       "url": "https://himalayas.app/companies/teya/jobs/senior-ai-engineer-3142930885",
@@ -2875,6 +2818,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…detection and response with clarity and speed. By combining real-time analytics, intelligent automation, and a unified data…",
+          "required": null
+        },
+        {
           "tag": "model deployment",
           "evidence": "…local models: stand up and operate self-hosted/open-weight model serving infrastructure (e.g. vLLM, NVIDIA Triton/NIM, TGI, Ollama) for…",
           "required": null
@@ -2903,6 +2851,11 @@
           "tag": "terraform",
           "evidence": "…Enterprise). Working knowledge of infrastructure-as-code (Terraform) and cloud platforms (AWS/EKS). Experience deploying and…",
           "required": true
+        },
+        {
+          "tag": "on-premise",
+          "evidence": "…Host and serve local models: stand up and operate self-hosted/open-weight model serving infrastructure (e.g. vLLM, NVIDIA…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -2912,12 +2865,14 @@
         "kubernetes",
         "aws",
         "git",
+        "real-time inference",
         "model deployment",
         "fine-tuning",
         "gpu",
         "triton",
         "ci/cd",
-        "terraform"
+        "terraform",
+        "on-premise"
       ],
       "description": "Our Purpose At SentinelOne , we are driven by a clear purpose: to give the advantage to those who secure our future. As AI reshapes how organizations build, operate, and innovate, the responsibility to protect them becomes more critical than ever. When you join SentinelOne , your work helps protect global enterprises, critical infrastructure, and the technologies shaping tomorrow. If you are motivated by meaningful challenges and want your impact to be real, measurable, and global, you will find purpose here. About Us SentinelOne is a company at the intersection of AI and security, pioneering a new operating model for cybersecurity. Our AI-native platform unifies protection across endpoint, cloud, identity, data, and AI systems to deliver autonomous detection and response with clarity and speed. By combining real-time analytics, intelligent automation, and a unified data foundation, we reduce noise, simplify complexity, and empower security teams to focus on what truly matters. Our teams are builders, problem-solvers, and innovators committed to shaping the future of security. If you are excited to solve hard problems alongside talented, mission-driven people, we invite you to help us build a safer future for humanity. What Are We Looking For? We’re looking for people who are relentlessly curious and committed to continuous learning. AI is reshaping every function across our bu",
       "url": "https://himalayas.app/companies/sentinelone/jobs/staff-ai-platform-engineer-infrastructure-services-3589337138",
@@ -3017,6 +2972,11 @@
           "tag": "llamaindex",
           "evidence": "…in production use cases Experience with LangChain, LangGraph, LlamaIndex, or similar frameworks Experience designing and implementing RAG…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…chatbots, intelligent systems) Developing and optimizing prompt engineering strategies, including evaluation and iteration Building RAG…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -3029,7 +2989,8 @@
         "azure",
         "langchain",
         "langgraph",
-        "llamaindex"
+        "llamaindex",
+        "prompt engineering"
       ],
       "description": "Project – the aim you’ll have We are looking for a talented AI Engineer to join our team and work on innovative projects for our clients. Our mission is to help organizations unlock the full potential of artificial intelligence and Generative AI, delivering real business value through modern AI-driven solutions. You will work on diverse projects, ranging from rapid prototyping to production-grade deployments, with a strong focus on LLM-based applications, intelligent automation, and AI-powered products. As a consulting-driven team, we collaborate closely with clients, combining technical expertise with business understanding to deliver impactful solutions. If you are passionate about cutting-edge AI technologies and want to build real-world AI systems at scale, join us! Position – how you’ll contribute Designing, building, and deploying AI and Generative AI solutions (e.g., LLM-powered applications, chatbots, intelligent systems) Developing and optimizing prompt engineering strategies, including evaluation and iteration Building RAG pipelines using vector databases Integrating LLMs and AI models into cloud-based applications and APIs Implementing agent-based workflows and AI automation solutions Continuously researching, evaluating, and applying new AI tools, models, and frameworks Expectations – the experience you need Strong experience with Python for AI application developme",
       "url": "https://himalayas.app/companies/software-mind/jobs/cmi-ai-engineer",
@@ -3380,6 +3341,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…expansion modeling — into production environments with defined latency and accuracy SLAs. Building and maintaining MLOps pipelines…",
+          "required": null
+        },
+        {
           "tag": "model deployment",
           "evidence": "…feature drift monitoring, automated retraining, and model registry management. Collaborating with Product and Data Engineering…",
           "required": null
@@ -3396,6 +3362,7 @@
         "mlflow",
         "kubeflow",
         "pandas",
+        "real-time inference",
         "model deployment"
       ],
       "description": "What You Can Expect Lead the development of a system converting raw telemetry into actionable insights using automation and scalable MLOps principles within a multi-product SaaS environment. Responsibilities include data exploration, model development, deployment, production monitoring, and incident response. The role focuses on scaling predictive analytics for PQL scoring, expansion modeling, and churn prediction. Collaborate with teams to translate insights into impactful business actions for Sales, Product, and Leadership stakeholders. Deliver a full-lifecycle solution that moves beyond ad hoc analyses to create a robust, production-grade intelligence engine supporting strategic decision-making across the organization. About the Team We build data products that power revenue decisions across a multi-product SaaS platform. Our team partners closely with Sales, Product, and Engineering to turn telemetry into action. Responsibilities Designing and deploying end-to-end ML models — including PQL scoring, churn prediction, and expansion modeling — into production environments with defined latency and accuracy SLAs. Building and maintaining MLOps pipelines covering dataset versioning, feature drift monitoring, automated retraining, and model registry management. Collaborating with Product and Data Engineering teams to establish telemetry schemas, data contracts, and quality validat",
@@ -3433,6 +3400,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…model calls, tool calls, agent execution paths, failures, latency, and production behavior. Experience with platforms or standards…",
+          "required": true
+        },
+        {
           "tag": "react",
           "evidence": "…Our Stack: Rightway 's platform spans TypeScript, Node.js, React, React Native, Ruby, PostgreSQL, Kafka, and Kubernetes, with gRPC…",
           "required": true
@@ -3458,6 +3430,7 @@
         "speech",
         "kubernetes",
         "postgresql",
+        "real-time inference",
         "react",
         "typescript",
         "kafka",
@@ -3518,6 +3491,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…AI expertise and strong judgment on trade-offs (quality vs latency/cost, build vs buy, agent patterns vs simpler approaches) and…",
+          "required": true
+        },
+        {
           "tag": "typescript",
           "evidence": "…Python, SQL on the Data side and AWS, Kotlin, Javascript, Typescript on the Product side while our infrastructure is containerised…",
           "required": true
@@ -3532,6 +3510,7 @@
         "aws",
         "gcp",
         "airflow",
+        "real-time inference",
         "typescript"
       ],
       "description": "About Pleo Messy spend management is tricky business. And tedious processes are a lose-lose situation for all involved, not just finance. At Pleo, we're changing that. We build spend solutions that make managing money seamless, empowering, and surprisingly effective for finance teams and employees alike - with a vision to help all businesses ‘go beyond’. The word ‘Pleo’ actually means ‘more than you’d expect’, and living by that mantra has been the secret to our success over the last 10 years. Now, we’re at a pivotal moment in our journey; every move we make has a direct impact on our 40,000+ customers, our business, and our collective success. We need people who take pride in uncovering customer needs, who turn complex problems into simple solutions, challenge the way things are done (respectfully), and always aim high. With great ambitions driving us forward, we can’t say we’ve got this whole thing figured out. And frankly, that’s half the fun! What we can say is that we’re a driven, progressive, and, importantly, a kind bunch of 850+ people from over 100 nationalities, all committed to delivering the future of business spending, together. About the role This is an exciting opportunity to help shape how Pleo builds AI-powered product features, working alongside software engineers, data engineers and data scientists to take ideas from prototype to production. Pleo has over 40,",
@@ -4046,6 +4025,11 @@
           "tag": "java",
           "evidence": "…Strong software engineering background in Python (and ideally Java/Go); experience building reliable services/APIs Deep knowledge of…",
           "required": true
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…Hands-on expertise with AI/ML tooling and orchestration (e.g., Databricks, Azure ML, MLflow, VertexAI, Kubeflow, Airflow) Strong software…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -4063,7 +4047,8 @@
         "model deployment",
         "gpu",
         "ci/cd",
-        "java"
+        "java",
+        "databricks"
       ],
       "description": "At Cloudflight , we’re committed to making a digital difference. It’s a difference that impacts businesses and society alike and one that’s fueled by our passion for technology and our dedication to sparking the brightest ideas in ourselves and others. Role Overview We are looking for a Platform AI Engineer who will design, build, and scale our AI platform capabilities, enabling seamless model development, deployment, monitoring, and lifecycle management across the organization. You will bring together engineering excellence, MLOps best practices, and a product mindset to turn AI into a reliable, secure, and operational capability. Responsibilities Design and operate scalable AI/ML platforms, including training, inference, pipelines, and feature stores Automate MLOps workflows (deployment, orchestration, CI/CD, monitoring, observability) Optimize GPU/accelerated environments for high-performance model workloads Build reusable services, APIs, and tooling to boost engineering and data science productivity Ensure security, compliance, governance, and Responsible AI across the full model lifecycle Evaluate and adopt emerging AI technologies to continuously improve the platform Collaborate with cross-functional teams to deliver reliable, scalable AI products Improve cost efficiency and performance of training, experimentation, and inference Perform LLM evaluation to ensure quality a",
       "url": "https://himalayas.app/companies/cloudflight/jobs/ai-engineer-agentic-plattform-m-f-x",
@@ -4126,7 +4111,7 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…real-time conversational workflows that deliver accuracy and low latency at scale. Design and implement APIs, services, and…",
+          "evidence": "…Build and scale the AI Agent platform — enabling high-volume, real-time conversational workflows that deliver accuracy and low latency…",
           "required": null
         },
         {
@@ -4138,6 +4123,11 @@
           "tag": "langgraph",
           "evidence": "…agent behavior. Experience with modern agent frameworks such as LangGraph, CrewAI, or AutoGen, including multi-step reasoning, memory, and…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…reliability, and cost monitoring. Strong understanding of prompt design, context engineering, and guardrail strategies for dependable,…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -4145,7 +4135,8 @@
         "llm",
         "real-time inference",
         "fine-tuning",
-        "langgraph"
+        "langgraph",
+        "prompt engineering"
       ],
       "description": "At Podium , we bring AI Employees to local businesses that turn every conversation into revenue. Trusted by 60,000+ businesses across Auto, Home Services, and Aesthetics, Podium captures and converts leads 24/7, driving both new business and repeat customers. In under 24 months, we crossed $100M in AI Agent ARR, scaling 300% year-over-year. During this time, we’ve deployed 10,000 AI employees to empower real business outcomes for our customers. Podium is building what we believe will be the most impactful AI employee ecosystem for local business. Podium has been recognized as the Best AI Implementation by Inc. Magazine, highlighted by OpenAI for building revenue-driving AI Agents, and awarded the #1 AI Agent for Business Operations by G2. Our growth is fueled by hiring exceptional people, holding them to high standards, and creating opportunities for them to grow and make an impact. Our operating principles guide daily behavior and ensure we hire people who will thrive at Podium . If you're hungry for growth, aligned to our operating principles, and ready to get to work, you won't find a better place to learn and accelerate your career. Staff AI Engineer The Role We are looking for a talented Staff AI Engineer to help build and scale our AI Agent platform—a powerful system that autonomously interacts with customers, handling millions of conversations every month. In this role, ",
       "url": "https://himalayas.app/companies/podium/jobs/staff-ai-engineer-usa",
@@ -4192,6 +4183,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…vision. Experience with image and video analysis, as well as real-time processing. Strong analytical and problem-solving skills.…",
+          "required": true
+        },
+        {
           "tag": "c++",
           "evidence": "…Strong proficiency in programming languages such as Python and C++. Experience with computer vision libraries and frameworks such as…",
           "required": true
@@ -4204,6 +4200,7 @@
         "keras",
         "opencv",
         "computer vision",
+        "real-time inference",
         "c++"
       ],
       "description": "Job Summary: Creative Chaos is seeking a Senior Computer Vision Engineer to join our dynamic team. The ideal candidate will have extensive experience in developing and deploying computer vision algorithms and solutions. You will be working on exciting projects that involve image and video analysis, enabling advanced functionalities and enhancing product experiences through cutting-edge technology. Key Responsibilities: Design, develop, and implement computer vision algorithms and systems. Work on projects involving object detection, image segmentation, and facial recognition. Collaborate with cross-functional teams to integrate vision solutions into broader applications. Conduct research to stay abreast of the latest trends and advancements in computer vision technologies. Optimize existing algorithms for performance and efficiency in real-world applications. Analyze and process large datasets to training and evaluation of computer vision models. Document your work for reproducibility and knowledge sharing among teams. Mentor junior engineers and share best practices for developing computer vision solutions. Participate in code reviews and ensure adherence to best coding practices and standards. Requirements Bachelor's or Master's degree in Computer Science, Computer Vision, or a related field. 5+ years of experience in computer vision or image processing. Strong proficiency in",
@@ -4251,6 +4248,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…tasks, retrieving information, and interacting with users in real time Develop Retrieval-Augmented Generation (RAG) pipelines that pull…",
+          "required": null
+        },
+        {
           "tag": "langchain",
           "evidence": "…Flask, or similar frameworks) Hands-on experience with LangChain or OpenAI Function Calling / Assistants API Proven track record…",
           "required": true
@@ -4263,6 +4265,7 @@
         "vector database",
         "fastapi",
         "flask",
+        "real-time inference",
         "langchain"
       ],
       "description": "Category: Technology Location: Please note: We are not actively hiring for this position at the moment, but we are accepting applications for future openings. We’re looking for a systems-minded AI Engineer to lead the development of intelligent internal tools and agents at My Amazon Guy . This role is focused on building production-grade AI automations that improve our team’s efficiency from SOP lookups to task automation and internal communications. If you’re experienced with LLMs, APIs, and building real-world AI workflows, this role is for you. About My Amazon Guy My Amazon Guy is a growing digital marketing agency with more than 500 employees and clients! We are engaging, rewarding, and innovative. Our company’s goal is to grow sales while giving our clients the peace of mind that everything on Amazon is taken care of. Key Responsibilities Design and build scalable, production-ready AI Agents that integrate seamlessly into My Amazon Guy ’s internal workflows Leverage OpenAI’s GPT-4 and Assistants API to create intelligent agents capable of executing tasks, retrieving information, and interacting with users in real time Develop Retrieval-Augmented Generation (RAG) pipelines that pull knowledge from internal SOPs (stored in BookStack) and client data, embedding them into vector databases like Chroma or Pinecone for fast and relevant retrieval Automate critical business action",
@@ -4334,12 +4337,18 @@
           "tag": "model deployment",
           "evidence": "…Develop reusable AI components and workflows Prototype and productionize AI use cases Support development teams on AI implementations…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…AI implementation experience LLM integration experience Prompt engineering expertise Experience building agents or AI workflows…",
+          "required": null
         }
       ],
       "tagNames": [
         "llm",
         "rag",
-        "model deployment"
+        "model deployment",
+        "prompt engineering"
       ],
       "description": "About Accelerant Accelerant is a data-driven risk exchange connecting underwriters of specialty insurance risk with risk capital providers. Accelerant was founded in 2018 by a group of longtime insurance industry executives and technology experts who shared a vision of rebuilding the way risk is exchanged – so that it works better, for everyone. The Accelerant risk exchange does business across more than 20 different countries and 250 specialty products, and we are proud that our insurers have been awarded an AM Best A- (Excellent) rating. For more information, please visit . Role Summary The AI Platform Engineer is a senior, hands-on technical leader responsible for building production AI agents, reusable AI components, and cross-organizational AI implementations. This role works across squads, AI Guilds, and AI driven development initiatives to translate AI strategy into practical, scalable solutions. Core Responsibilities Build production AI agents and services Develop reusable AI components and workflows Prototype and productionize AI use cases Support development teams on AI implementations Collaborate with Compliance and ARX PS teams Co-own AI workflow environments (e.g., n8n) with DevOps Contribute to AI pattern development alongside AI Platform Architect Maintain reference implementations Improve AI reliability and observability Design and implement Retrieval-Augmented ",
       "url": "https://himalayas.app/companies/accelerant/jobs/ai-platform-engineer-global",
@@ -4439,6 +4448,11 @@
           "tag": "bedrock",
           "evidence": "…nube (preferentemente AWS). Cloud & DevOps: AWS Amplify, Lambda, Bedrock, Vercel, Supabase. Data y ETL: Pandas, Airbyte, DBT, Airflow,…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…otras herramientas de visualización. AI & Generative Tools: Prompt Engineering y generación de guardrails (PII, seguridad). Frameworks de…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -4458,7 +4472,8 @@
         "snowflake",
         "etl",
         "mcp",
-        "bedrock"
+        "bedrock",
+        "prompt engineering"
       ],
       "description": "¡Trabaja en DaCodes ! Somos una firma de expertos en software y transformación digital de alto impacto. Durante 10 años hemos creado soluciones enfocadas en la tecnología e innovación gracias a nuestro equipo de +220 talentosos #DaCoders, incluyendo desarrolladores, arquitectos, diseñadores UX/UI, PMs, QA testers y más. Nuestro equipo colabora en proyectos con clientes en LATAM y Estados Unidos, logrando resultados sobresalientes. En DaCodes , tendrás la oportunidad de impulsar tu desarrollo profesional, trabajar en diversos proyectos dentro de distintas industrias, y contribuir al diseño, implementación y optimización de infraestructuras en la nube. Nuestros DaCoders tienen un gran impacto en el éxito de nuestro negocio y el de nuestros clientes. Serás el experto que participará en nuestros proyectos y tendrás acceso a startups disruptivas y marcas globales. ¿Te interesa? Misión del Rol Diseñar, prototipar y entregar aplicaciones funcionales potenciadas con inteligencia artificial —como asistentes, tableros interactivos y soluciones con componentes generativos— en ciclos cortos de desarrollo. Serás responsable de convertir ideas en prototipos navegables y escalables, integrando herramientas de desarrollo asistido por IA y servicios en la nube, manteniendo altos estándares de calidad, diseño y experiencia de usuario. Principales Responsabilidades Diseñar y entregar prototipos f",
       "url": "https://himalayas.app/companies/dacodes/jobs/genai-application-engineer",
@@ -4523,6 +4538,11 @@
           "tag": "tableau",
           "evidence": "…visual formats Familiarity with data visualization tools such as Tableau, Power BI, Plotly, or Altair Perks and Benefits Compensation: The…",
           "required": true
+        },
+        {
+          "tag": "power bi",
+          "evidence": "…Familiarity with data visualization tools such as Tableau, Power BI, Plotly, or Altair Perks and Benefits Compensation: The pay range…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -4535,7 +4555,8 @@
         "pandas",
         "snowflake",
         "etl",
-        "tableau"
+        "tableau",
+        "power bi"
       ],
       "description": "Overview We are seeking a Staff Data Scientist who is deeply curious about our product, our customers, and the employee relations data that sits at the heart of what we do. Reporting to the Director of Platform and Data Engineering, you will own the development of an authoritative, end-to-end understanding of our data: what it represents, how it’s structured, where it’s reliable, and what it can tell us about workplace issues at scale. From that foundation, you’ll build the analytical models and customer-facing data products that help organizations understand patterns in their employee relations (ER) programs and benchmark against industry peers. This is a high-impact role where genuine product curiosity isn’t a nice-to-have; it’s the prerequisite for doing the work well. You'll bring rigorous statistical thinking and strong engineering fundamentals to everything from building the models that power our product to presenting benchmark findings directly to customers. About Us At HR Acuity ®, we empower our team to #BeBold —embracing innovation and new challenges. With the right tools, we help you #WorkSmarter , fostering collaboration so we can all be #BetterTogether . If you’re excited about being part of our growth story, we’d love to chat! HR Acuity ® is the leading provider of employee relations case management and investigation software. We help organizations standardize how",
       "url": "https://himalayas.app/companies/hr-acuity/jobs/staff-data-scientist",
@@ -4632,6 +4653,11 @@
           "required": false
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…Own the production performance of AI features, including latency, cost, reliability, and model behavior monitoring. Architect,…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…programming skills (Python preferred). Experience training and finetuning models using PyTorch/Hugging Face. Some proficiency applying…",
           "required": true
@@ -4645,6 +4671,16 @@
           "tag": "gemini",
           "evidence": "…work boosting tools in your day-to-day job (ChatGPT, Claude, Gemini, etc). Strong programming skills (Python preferred). Experience…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…Some proficiency applying LLMOps best practices, incl. prompt engineering. Solid backend engineering skills and experience building…",
+          "required": true
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "…user engagement and/or business outcomes. Experience with conversational AI, safety/guardrails, and privacy-aware handling of user data.…",
+          "required": false
         }
       ],
       "tagNames": [
@@ -4657,9 +4693,12 @@
         "aws",
         "git",
         "airflow",
+        "real-time inference",
         "fine-tuning",
         "hugging face",
-        "gemini"
+        "gemini",
+        "prompt engineering",
+        "chatbot"
       ],
       "description": "Why Kubbly At Kubbly , we're changing how businesses actually talk to their customers. We built a predictive AI platform that lets brands have real conversations with people through email, text, and WhatsApp. Our system figures out what each person will probably want next and knows when they're most likely to care. We're not sending marketing spam, instead we're starting actual conversations. People can even finish their orders right there in the chat, which we still think is pretty wild. We need someone who can help us scale this whole personalized engagement. If you have a knack for building systems that can predict what people want and actually care whether conversations feel real or like talking to a bot, you'll fit right in. You'd be joining at that perfect stage: proven enough that we know it works, early enough that you'll shape how it grows. Reasons to join us: The founders actually built similar stuff before. Piyush and Giorgos have previous experience building similar startups, licensing technologies to Fortune 1000 companies, and 10+ years experience building ML and recommendation systems at Amazon and Goldman Sachs. We're backed by Bek Ventures (formerly Earlybird Digital East) . They backed UiPath and Payhawk before they were cool. They're founder friendly, provide immense value to their portfolio companies and don't micromanage. You'll own the full pipeline, not t",
       "url": "https://himalayas.app/companies/kubbly/jobs/senior-ai-ml-engineer-remote",
@@ -4736,6 +4775,11 @@
           "required": false
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…and Scalability Continuously optimize model inference for latency, cost efficiency, and throughput at scale Identify bottlenecks…",
+          "required": null
+        },
+        {
           "tag": "model deployment",
           "evidence": "…LangChain, CrewAI, or similar Solid understanding of model deployment and serving (e.g., vLLM, TGI, or managed endpoints)…",
           "required": null
@@ -4769,6 +4813,11 @@
           "tag": "bedrock",
           "evidence": "…Weights & Biases Familiarity with cloud AI ecosystems (e.g., AWS Bedrock, GCP Vertex AI, Azure OpenAI) Contributions to open-source AI/ML…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…with large language models (LLMs) and LLMOps, including prompt engineering, fine-tuning, and evaluation (e.g., GPT, Claude) Strong…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -4784,13 +4833,15 @@
         "fastapi",
         "git",
         "mlflow",
+        "real-time inference",
         "model deployment",
         "fine-tuning",
         "langchain",
         "langgraph",
         "hugging face",
         "ci/cd",
-        "bedrock"
+        "bedrock",
+        "prompt engineering"
       ],
       "description": "Data Scientist (m/f/x) Location: EU (Remote) Who You’ll Work For : At Makersite, we're pioneering the future of sustainable product development and digital collaboration. As a leading platform for product lifecycle management (PLM), we empower companies to make smarter, more sustainable decisions across their entire supply chain. Our cutting-edge software enables teams to design, prototype, and manufacture with transparency, efficiency, and responsibility—reducing environmental impact while optimizing performance. We're a fast-growing, innovative company that thrives on creativity, collaboration, and continuous learning. If you're passionate about technology, sustainability, and creating meaningful impact, we’d love to hear from you. Join us and be a part of shaping the future of manufacturing and product innovation. Who we're looking for: As part of our growing team, you will play a key role in shaping the future of sustainable product development. We’re looking for innovative, driven Data Scientists who are passionate about technology and sustainability to join us in building tools that enable companies to make smarter, more responsible decisions. In this role, you’ll have the opportunity to collaborate with talented professionals, contribute to cutting-edge projects, and help drive the digital transformation of industries worldwide. Ifyou're ready to make an impact and contr",
       "url": "https://www.arbeitnow.com/jobs/companies/makersite-gmbh/remote-senior-data-scientist-berlin-194751",
@@ -4852,8 +4903,18 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…to production while balancing accuracy, interpretability, latency, maintainability, and business impact. Ecosystem Ownership &…",
+          "required": null
+        },
+        {
           "tag": "snowflake",
           "evidence": "…monitoring, drift detection) and modern data platforms (e.g., Snowflake, BigQuery, Redshift, Databricks). Cloud Infrastructure: Hands-on…",
+          "required": true
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…and modern data platforms (e.g., Snowflake, BigQuery, Redshift, Databricks). Cloud Infrastructure: Hands-on experience operating within…",
           "required": true
         }
       ],
@@ -4867,7 +4928,9 @@
         "gcp",
         "azure",
         "airflow",
-        "snowflake"
+        "real-time inference",
+        "snowflake",
+        "databricks"
       ],
       "description": "We are looking for a product-minded Applied Data Scientist or Machine Learning Engineer to help build, ship, and scale ML-powered products that directly improve how our customers make decisions, operate their businesses, and serve their own users. This is not a research-only role, nor is it a service-oriented internal analytics position. We want someone who has taken machine learning from problem definition through experimentation, production deployment, measurement, iteration, and long-term ownership. You understand that great models are not just accurate in notebooks—they are usable, explainable, measurable, scalable, and valuable inside a real product. Whether your background leans heavily toward Data Engineering/ML Ops or Applied Data Science, you have a strong bias toward shipping and an interest in bridging both worlds to bring AI to life. WHAT YOU'LL DO: Engineering & AI Enablement End-to-End ML Ownership: Drive the development of machine learning capabilities (forecasting, recommendation, ranking, optimization, or decision intelligence) powering customer-facing SaaS products. Pipeline & Model Development: Design reliable data and feature pipelines alongside models from discovery through experimentation, validation, deployment, and monitoring. Product Integration: Partner with Product Managers and Software Engineers to embed ML directly into product workflows, user exper",
       "url": "https://jobicy.com/jobs/147495-applied-data-scientist-machine-learning-engineer-decision-intelligence",
@@ -4970,6 +5033,11 @@
           "required": false
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…outcomes — not just models. You care about performance, quality, latency, and cost in production. Most importantly, you're motivated by…",
+          "required": null
+        },
+        {
           "tag": "langchain",
           "evidence": "…deployed services on large production systems. Experience with LangChain/LangGraph or similar agent frameworks. Hands-on experience with…",
           "required": true
@@ -4988,16 +5056,23 @@
           "tag": "bedrock",
           "evidence": "…and backend engineers. Nice to Have Familiarity with AWS (Bedrock, ECR, CloudFront, S3, Cognito) or other cloud agent hosting.…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…frameworks. Hands-on experience with LLMs in production: prompt engineering, tool/function calling, structured output, evaluation.…",
+          "required": true
         }
       ],
       "tagNames": [
         "python",
         "llm",
         "aws",
+        "real-time inference",
         "langchain",
         "langgraph",
         "terraform",
-        "bedrock"
+        "bedrock",
+        "prompt engineering"
       ],
       "description": "About Us: Future is building a personalized guidance system for lifelong health. We help people understand what to do next for their body, goals, and stage of life — then support them in turning those decisions into sustained behavior change. By combining AI, human expertise, personal health data, and accountability, Future helps members improve performance today while building the resilience, capacity, and healthspan they need for decades to come. About the Role We're looking for an Applied AI Engineer to help us build and ship AI-powered features that directly improve our product experience and business outcomes. This is a hands-on, product-focused role where you'll take ideas from concept to production — designing intelligent systems, validating them with real users, and turning them into reliable, scalable services. You'll work at the intersection of AI, product, and engineering — partnering closely with cross-functional teams to identify high-impact opportunities, prototype quickly, and iterate based on data. This isn't a research-only role. You'll own the full lifecycle: experimentation, evaluation, deployment, monitoring, and continuous improvement. The ideal candidate is excited about applying LLMs and modern ML tooling to real-world problems. You think in terms of systems, tradeoffs, and outcomes — not just models. You care about performance, quality, latency, and cost",
       "url": "https://jobicy.com/jobs/151692-applied-ai-engineer",
@@ -5067,6 +5142,11 @@
           "tag": "mcp",
           "evidence": "…and pipeline reliability for the agents you are responsible for. MCP Connector Work:Operate within and extend the MCP connector library…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…defined by the Lead AI Engineer. Own your agents end-to-end: prompt design, tool wiring, context routing, failure handling, and output…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -5080,7 +5160,8 @@
         "azure",
         "airflow",
         "etl",
-        "mcp"
+        "mcp",
+        "prompt engineering"
       ],
       "description": "EU BASED ONLY! WHO WE ARE Delve Deeper is a performance media agency focused on the charity and nonprofit sector, partnering with organizations that invest $5M–$20M annually in media. We help mission-driven teams maximize impact through advanced digital strategies that drive measurable, scalable results. Our expertise includes advanced analytics, intent-based audience segmentation, full-service media management, and personalized creative—delivering a fully integrated, data-driven approach to growth. More than a vendor, we serve as a strategic partner, helping organizations solve complex media challenges and turn them into clear outcomes. With decades of leadership experience, Delve Deeper is a trusted voice in the charity space. We’ve also been named Built In Colorado’s “Best Places to Work” for five consecutive years, reflecting a culture that values performance, growth, and people. As a privately owned company, we move quickly, support our team holistically, and create meaningful opportunities for advancement. ROLE OVERVIEW Dedicated individual contributor focused entirely on building and maintaining a multi-agent AI system that automates performance media trading decisions. This is not a generalist developer role. You will work within a complex multi-agent codebase, operate under strict evaluation-first protocols, and develop deep enough understanding of the business domain ",
       "url": "https://himalayas.app/companies/delve-deeper/jobs/ai-engineer",
@@ -5141,6 +5222,95 @@
       "source": "Himalayas"
     },
     {
+      "id": "j_stord_staff-data-scientist",
+      "title": "Staff Data Scientist",
+      "company": "Stord",
+      "location": "United States",
+      "remote": true,
+      "seniority": "lead",
+      "minYears": null,
+      "tags": [
+        {
+          "tag": "python",
+          "evidence": "…analysis What You'll Need Required Technical Skills Expert-level Python programming with production code experience Strong SQL skills with…",
+          "required": true
+        },
+        {
+          "tag": "sql",
+          "evidence": "…Python programming with production code experience Strong SQL skills with Postgres and BigQuery experience Deep understanding of…",
+          "required": true
+        },
+        {
+          "tag": "kubernetes",
+          "evidence": "…or functional programming paradigms Familiarity with Kubernetes, CI/CD, and DataOps tooling Experience helping define standards…",
+          "required": true
+        },
+        {
+          "tag": "aws",
+          "evidence": "…and experimentation frameworks Experience with cloud platforms (AWS, GCP, or Azure) Proficiency with Git/GitHub and collaborative…",
+          "required": true
+        },
+        {
+          "tag": "gcp",
+          "evidence": "…production code experience Strong SQL skills with Postgres and BigQuery experience Deep understanding of statistical analysis and machine…",
+          "required": true
+        },
+        {
+          "tag": "azure",
+          "evidence": "…frameworks Experience with cloud platforms (AWS, GCP, or Azure) Proficiency with Git/GitHub and collaborative development…",
+          "required": true
+        },
+        {
+          "tag": "git",
+          "evidence": "…with cloud platforms (AWS, GCP, or Azure) Proficiency with Git/GitHub and collaborative development workflows Required Soft Skills…",
+          "required": true
+        },
+        {
+          "tag": "postgresql",
+          "evidence": "…with production code experience Strong SQL skills with Postgres and BigQuery experience Deep understanding of statistical…",
+          "required": true
+        },
+        {
+          "tag": "real-time inference",
+          "evidence": "…systems or customer profile modeling at scale Experience with real-time model serving and high-availability ML systems Experience with…",
+          "required": true
+        },
+        {
+          "tag": "model deployment",
+          "evidence": "…production systems and ship features Work with engineers to deploy models as microservices or API endpoints and own their performance…",
+          "required": null
+        },
+        {
+          "tag": "typescript",
+          "evidence": "…and high-availability ML systems Experience with Elixir, TypeScript, or functional programming paradigms Familiarity with…",
+          "required": true
+        },
+        {
+          "tag": "ci/cd",
+          "evidence": "…or functional programming paradigms Familiarity with Kubernetes, CI/CD, and DataOps tooling Experience helping define standards or…",
+          "required": true
+        }
+      ],
+      "tagNames": [
+        "python",
+        "sql",
+        "kubernetes",
+        "aws",
+        "gcp",
+        "azure",
+        "git",
+        "postgresql",
+        "real-time inference",
+        "model deployment",
+        "typescript",
+        "ci/cd"
+      ],
+      "description": "Stord is The Consumer Experience Company, powering seamless checkout through delivery for today's leading brands. Stord is rapidly growing and is on track to double our revenue in the next 18 months. To meet and exceed this target, Stord is strategically scaling teams across the entire company, and seeking energetic experts to help us achieve our mission. By combining comprehensive commerce-enablement technology with high-volume fulfillment services, Stord provides brands a platform to compete with retail giants. Stord manages over $10 billion of commerce annually through its fulfillment, warehousing, transportation, and operator-built software suite including OMS, Pre- and Post-Purchase, and WMS platforms. Stord is leveling the playing field for all brands to deliver the best consumer experience at scale. With Stord , brands can increase cart conversion, improve unit economics, and drive sustained customer loyalty. Stord ’s end-to-end commerce solutions combine best-in-class omnichannel fulfillment and shipping with leading technology to ensure fast shipping, reliable delivery promises, easy access to more channels, and improved margins on every order. Hundreds of leading DTC and B2B companies like AG1, True Classic, Native, Seed Health, quip, goodr, Sundays for Dogs, and more trust Stord to deliver industry-leading consumer experiences on every order. Stord is headquartered i",
+      "url": "https://himalayas.app/companies/stord/jobs/staff-data-scientist",
+      "postedAt": "2026-08-26",
+      "source": "Himalayas"
+    },
+    {
       "id": "j_high-5-games_machine-learning-engineer-with-an-agentic-focus",
       "title": "Machine Learning Engineer with an Agentic Focus",
       "company": "High 5 Games",
@@ -5190,6 +5360,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…scalable data and feature pipeline infrastructure for real time and batch processing using tools like BigQuery, BigTable,…",
+          "required": null
+        },
+        {
           "tag": "model deployment",
           "evidence": "…AI models from research to production, ensuring smooth model deployment, monitoring, and lifecycle management across our Google Cloud…",
           "required": null
@@ -5214,12 +5389,84 @@
         "gcp",
         "airflow",
         "mlflow",
+        "real-time inference",
         "model deployment",
         "langchain",
         "langgraph"
       ],
       "description": "We are looking for a Machine Leaning Engineer (MLE) to design, build, and optimize our machine learning operation. You will play a crucial role in scaling AI models from research to production, ensuring smooth model deployment, monitoring, and lifecycle management across our Google Cloud Platform (GCP) infrastructure. You'll work closely with data scientists, ML Ops, and data engineers to automate workflows, improve model performance, and ensure reliability for our AI that serves millions of players worldwide. What You'll Do Design, develop, and deploy machine learning models and solutions, leveraging tools such as LangGraph and MLflow for orchestration and lifecycle management. Collaborate on building and maintaining scalable data and feature pipeline infrastructure for real time and batch processing using tools like BigQuery, BigTable, Dataflow, Composer(Airflow), PubSub, and Cloud Run to support ML model training and inference. Develop and implement robust strategies for model monitoring and observability to detect model drift, bias, and performance degradation, leveraging tools like Vertex AI Model Monitoring and custom dashboards. Optimize ML model inference performance to improve latency and cost-efficiency of AI applications. Ensure the overall reliability, performance, and scalability of the ML models and data infrastructure platform, including proactive identification ",
       "url": "https://himalayas.app/companies/high-5-games/jobs/machine-learning-engineer-with-an-agentic-focus",
+      "postedAt": "2026-08-26",
+      "source": "Himalayas"
+    },
+    {
+      "id": "j_high-5-games_senior-data-scientist",
+      "title": "Senior Data Scientist",
+      "company": "High 5 Games",
+      "location": "India",
+      "remote": true,
+      "seniority": "senior",
+      "minYears": 4,
+      "tags": [
+        {
+          "tag": "python",
+          "evidence": "…field Programming experience in a scripting language such as Python or R Fundamental understanding of statistics and machine learning…",
+          "required": true
+        },
+        {
+          "tag": "sql",
+          "evidence": "…components (at least one among AWS, GCP, Azure etc) Proficiency in SQL Strong problem-solving skills Resilience against difficult tasks…",
+          "required": true
+        },
+        {
+          "tag": "aws",
+          "evidence": "…computing environments and their components (at least one among AWS, GCP, Azure etc) Proficiency in SQL Strong problem-solving skills…",
+          "required": true
+        },
+        {
+          "tag": "gcp",
+          "evidence": "…environments and their components (at least one among AWS, GCP, Azure etc) Proficiency in SQL Strong problem-solving skills…",
+          "required": true
+        },
+        {
+          "tag": "azure",
+          "evidence": "…environments and their components (at least one among AWS, GCP, Azure etc) Proficiency in SQL Strong problem-solving skills Resilience…",
+          "required": true
+        },
+        {
+          "tag": "real-time inference",
+          "evidence": "…Explore and apply state-of-the-art AI and ML techniques, in real-time processes, proposing innovative approaches for real-world…",
+          "required": null
+        },
+        {
+          "tag": "etl",
+          "evidence": "…and maintain robust data pipelines, from event generation through ETL to clean, intelligent storage. Retrieve, process, and integrate…",
+          "required": null
+        },
+        {
+          "tag": "c++",
+          "evidence": "…learning algorithms to business problems Experience in Java and/or C++ Experience in AI productionisation and Agentic deployment…",
+          "required": false
+        },
+        {
+          "tag": "java",
+          "evidence": "…machine learning algorithms to business problems Experience in Java and/or C++ Experience in AI productionisation and Agentic…",
+          "required": false
+        }
+      ],
+      "tagNames": [
+        "python",
+        "sql",
+        "aws",
+        "gcp",
+        "azure",
+        "real-time inference",
+        "etl",
+        "c++",
+        "java"
+      ],
+      "description": "We’re looking for a Senior Data Scientist to help shape and expand the analytics backbone of our games ecosystem. This role is both deeply technical and highly collaborative—you’ll work across teams and disciplines to transform complex data into actionable insights that drive product innovation, player engagement, and business growth. The ideal candidate will have a solid quantitative background, specifically including a mature understanding of statistics, logic, measurement theory, linear algebra and practical, demonstrated experience in modeling and machine learning. Further, strong analytical and problem-solving and troubleshooting skills are required; fluency in coding, algorithms, and systems design; clean and effective communication skills; genuine interest in solving complex problems. A resilience against failure and constructive criticism to iterate through difficult problems efficiently. You’ll thrive here if you combine strong quantitative expertise with a curious, problem-solving mindset, the ability to work in ambiguous, evolving contexts, and the determination to own projects end to end, from research to real-world impact.You will play a crucial role in scalingdata science products that have a direct impact on the success of High 5 Games ! What You’ll Do Design, implement, and maintain robust data pipelines, from event generation through ETL to clean, intelligent s",
+      "url": "https://himalayas.app/companies/high-5-games/jobs/senior-data-scientist",
       "postedAt": "2026-08-26",
       "source": "Himalayas"
     },
@@ -5730,6 +5977,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…our AI applications to interact with millions of vehicles in real-time. We need a \"builder\" who thrives on the technical details of…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…expertise in the AI area including LLM, Time Series, RAG, fine-tune large models, traditional ML models, etc. (AI depth) Stay…",
           "required": null
@@ -5757,6 +6009,7 @@
         "gcp",
         "azure",
         "git",
+        "real-time inference",
         "fine-tuning",
         "c++",
         "java"
@@ -5953,12 +6206,18 @@
           "tag": "ci/cd",
           "evidence": "…(MLOps) Own production deployments of agentic systems, including CI/CD pipelines, environment promotion, and rollback strategies. Define…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…production readiness. Define team‑level best practices for prompt engineering, retrieval grounding, evaluation metrics, and observability.…",
+          "required": null
         }
       ],
       "tagNames": [
         "llm",
         "rag",
-        "ci/cd"
+        "ci/cd",
+        "prompt engineering"
       ],
       "description": "We’re on a mission to change the future of clinical research. At Perceptive , we help the biopharmaceutical industry bring medical treatments to the market, faster. Our mission is to change the world but to do this, we need people like you. What can we offer you? Apart from job satisfaction, we can offer you: YOURSELF • 25 days’ holiday (with the option to buy more) HEALTH • Health Cash Plan • Optional private health, dental insurance, and health screens • Cycle to work scheme WEALTH • Generous pension scheme with up to 10% employer contribution • Life assurance • Season ticket loan About the role As Senior Agentic AI Engineer, you will own the design, implementation, and operationalization of complex agentic AI systems that drive automation, scalability, and data quality across medical imaging clinical trials. This role leads the delivery of multi‑step, production‑grade agentic workflows supporting imaging intake, quality control, protocol compliance, data validation, and structured decision support. The Senior Agentic AI Engineer also plays a key role in advancing the company’s AI‑driven Product Development Life Cycle (PDLC)—from discovery and design automation to delivery, deployment, and production operations. In addition to hands‑on technical contributions, this role provides technical leadership, mentoring engineers, shaping best practices for agent reliability and evalua",
       "url": "https://himalayas.app/companies/perceptive/jobs/senior-agentic-ai-engineer",
@@ -6023,6 +6282,16 @@
           "tag": "ci/cd",
           "evidence": "…microservices , and API-first development Familiarity with CI/CD , DevOps , and observability tools for AI systems PREFERRED…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…graph-based agent orchestration tools Knowledge of LLMOps , prompt engineering , and fine-tuning or RAG optimization Experience with…",
+          "required": true
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "…and engineering teams to build the next generation of conversational AI that empowers our members throughout their health journeys.…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -6035,7 +6304,9 @@
         "fine-tuning",
         "langchain",
         "langgraph",
-        "ci/cd"
+        "ci/cd",
+        "prompt engineering",
+        "chatbot"
       ],
       "description": "Greetings Everyone Who are we? For the past 20 years, we have powered many Digital Experiences for the Fortune 500. Since 1999, we have grown from a few people to more than 4000 team members across the globe that are engaged in various Digital Modernization. For a brief 1 minute video about us, you can check . What will you do? What are we looking for? We are seeking a Senior Generative AI Engineer with a passion for building intelligent, agentic systems that transform how consumers interact with healthcare. This role is ideal for hands-on, driven individuals who want to be at the forefront of AI innovation—designing and deploying LLM-powered agents that provide dynamic, context-aware, and personalized chat experiences. As a Senior Engineer, you will contribute to the development of agentic AI platforms that leverage LangGraph , multi-agent orchestration , and LLM tool use to deliver scalable, secure, and human-centric solutions. You will work across architecture, product, and engineering teams to build the next generation of conversational AI that empowers our members throughout their health journeys. What We Expect of You: Proven experience designing and deploying agentic AI systems using LLMs, vector databases, and orchestration frameworks like LangGraph or LangChain Deep understanding of LLM tool use , memory management , retrieval-augmented generation (RAG) , and multi-age",
       "url": "https://himalayas.app/companies/photon-interactive-uk-limited/jobs/sr-gen-ai-engineer-tx-usa-724127695",
@@ -6347,6 +6618,11 @@
           "tag": "ci/cd",
           "evidence": "…lingua italiana e inglese. Plus: Esperienza con pratiche MLOps, CI/CD e monitoraggio modelli. Esperienza in contesti Agile…",
           "required": null
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "…RAG e utilizzo di Vector Database. Esperienza nello sviluppo di chatbot e/o voicebot, con conoscenza di tecnologie STT/TTS. Esperienza su…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -6360,7 +6636,8 @@
         "azure",
         "typescript",
         "langchain",
-        "ci/cd"
+        "ci/cd",
+        "chatbot"
       ],
       "description": "Questa è una posizione remota. Chi siamo? Relewant è una società di consulenza specializzata in ambito informatico con sede a Chiasso, in Svizzera. Con noi, potrai mettere a frutto il tuo potenziale in un team coeso e vincente ed esplorare tecnologie sempre più innovative in contesti multinazionali. Per un'importante progetto cerchiamo una figura con una solida esperienza di sviluppo software che abbia successivamente evoluto il proprio percorso professionale verso il mondo AI, Generative AI e Agentic AI. Requisiti Ottima conoscenza di Python e/o TypeScript. Esperienza nello sviluppo di applicazioni basate su LLM, Generative AI e Agentic AI. Conoscenza di framework quali LangChain, Semantic Kernel, Google ADK, Microsoft 365 Agents SDK o equivalenti. Esperienza nella progettazione e implementazione di soluzioni RAG e utilizzo di Vector Database. Esperienza nello sviluppo di chatbot e/o voicebot, con conoscenza di tecnologie STT/TTS. Esperienza su piattaforme cloud (AWS, Azure o GCP). Capacità di raccogliere requisiti di business e tradurli in soluzioni AI concrete. Buona conoscenza della lingua italiana e inglese. Plus: Esperienza con pratiche MLOps, CI/CD e monitoraggio modelli. Esperienza in contesti Agile (Scrum/Kanban). Forte orientamento all'innovazione e alla customer experience. Cosa offriamo? Contratto di assunzione a tempo indeterminato Modalità di lavoro ibrida Ambient",
       "url": "https://himalayas.app/companies/relewant/jobs/ai-engineer",
@@ -6593,6 +6870,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…and smart compute allocation. Data collection infrastructure: Real-time multi-modal capture (vision, force, proprioception) with tight…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…optimization. Large-scale pretraining, post-training, and finetuning of foundation models. Design evaluation benchmarks grounded in…",
           "required": null
@@ -6612,6 +6894,7 @@
         "pytorch",
         "jax",
         "llm",
+        "real-time inference",
         "fine-tuning",
         "rl",
         "ci/cd"
@@ -6684,6 +6967,16 @@
           "tag": "langchain",
           "evidence": "…with agentic AI frameworks or orchestration tools (e.g., LangChain, AutoGen, or similar) Familiarity with prompt engineering, LLM…",
           "required": false
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…(e.g., LangChain, AutoGen, or similar) Familiarity with prompt engineering, LLM fine-tuning, or retrieval-augmented generation (RAG) in…",
+          "required": false
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…guide delivery from prototype to production Leverage tools like Databricks, Python, R, and SQL across the project lifecycle — including…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -6697,7 +6990,9 @@
         "mlflow",
         "model deployment",
         "fine-tuning",
-        "langchain"
+        "langchain",
+        "prompt engineering",
+        "databricks"
       ],
       "description": "OneMagnify is an AI native, platform-enabled B2B digital agency operating at the intersection of data, technology, and creativity. We help complex organizations drive measurable business outcomes by building smarter customer experiences and delivering highly integrated solutions across digital, media, and technology. By combining deep industry expertise with advanced analytics and artificial intelligence, we enable our clients to make better decisions, move faster, and compete more effectively in dynamic markets. The Manager of Artificial Intelligence sits at the center of OneMagnify 's AI practice — leading technical delivery, guiding client strategy, and translating complex data into decisions that move the needle. You'll work directly with clients to help them unlock the value in their data, while managing and mentoring a team of data scientists, AI engineers, and software engineers. This role shapes both how we deliver AI solutions and how our clients experience them. The Impact You'll Have: You'll be the connective tissue between what's technically possible and what clients actually need. That means pushing beyond theoretical AI capabilities to help organizations — many of them large, data-rich B2B enterprises — build practical systems that inform strategy, automate workflows, and create measurable business outcomes. On the delivery side, you'll lead generative AI projects",
       "url": "https://himalayas.app/companies/onemagnify/jobs/manager-artificial-intelligence",
@@ -6752,6 +7047,11 @@
           "tag": "bedrock",
           "evidence": "Senior Enterprise AI Engineer (AWS Bedrock). Join Our Team Oowlish, one of Latin America's rapidly expanding…",
           "required": null
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…enterprise workflow automation. Experience implementing Prompt Engineering techniques. Experience building GenAI CI/CD pipelines.…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -6762,7 +7062,8 @@
         "git",
         "react",
         "ci/cd",
-        "bedrock"
+        "bedrock",
+        "prompt engineering"
       ],
       "description": "Join Our Team Oowlish, one of Latin America's rapidly expanding software development companies, is seeking experienced technology professionals to enhance our diverse and vibrant team. As a valued member of Oowlish, you will collaborate with premier clients from the United States and Europe, contributing to pioneering digital solutions. Our commitment to creating a nurturing work environment is recognized by our certification as a Great Place to Work, where you will have opportunities for professional development, growth, and a chance to make a significant international impact. We offer the convenience of remote work, allowing you to craft a work-life balance that suits your personal and professional needs. We're looking for candidates who are passionate about technology, proficient in English, and excited to engage in remote collaboration for a worldwide presence. About the Role: We are looking for an experienced Senior Enterprise AI Engineer to design and build enterprise-grade AI solutions that automate complex business workflows using AWS Bedrock and modern cloud technologies. This role focuses on developing end-to-end AI-powered automation workflows that integrate enterprise systems such as ServiceNow and SAP while leveraging Retrieval-Augmented Generation (RAG), knowledge bases, and Responsible AI practices. The ideal candidate combines strong software engineering skills ",
       "url": "https://jobicy.com/jobs/151510-senior-enterprise-ai-engineer-aws-bedrock",
@@ -7048,6 +7349,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…platforms, ETL/ELT pipelines, data lakes, feature stores, and real-time data processing. Experience implementing responsible AI…",
+          "required": true
+        },
+        {
           "tag": "model deployment",
           "evidence": "…data preparation, model training, experiment tracking, model deployment, monitoring, evaluation, and lifecycle management. Integrate…",
           "required": null
@@ -7101,6 +7407,11 @@
           "tag": "gemini",
           "evidence": "…experience using LLMs via APIs, such as OpenAI, Anthropic, Gemini , or similar providers. Experience with ML pipelines and MLOps ,…",
           "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…hallucination detection, safety, and reliability. Support prompt engineering, prompt versioning, function calling, tool use, memory…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -7114,6 +7425,7 @@
         "aws",
         "fastapi",
         "flask",
+        "real-time inference",
         "model deployment",
         "react",
         "fine-tuning",
@@ -7124,7 +7436,8 @@
         "terraform",
         "etl",
         "bedrock",
-        "gemini"
+        "gemini",
+        "prompt engineering"
       ],
       "description": "emerchantpay is a leading global payment service provider and acquirer for online, mobile, in-store and over the phone payments. Our global payments solution is available through a simple integration, offering a diverse range of features, including global acquiring, global and local payment methods, advanced fraud management and performance optimisation. We empower businesses to design seamless and engaging payment experiences for their consumers. We are looking for a Senior AI Engineer to join our AI Engineering team and help design, build, and roll out production-grade AI solutions, with a strong focus on AI engineering, AI agents, agentic workflows, machine learning, GenAI, and LLM-based applications . This is a senior individual contributor role within the AI Engineering team. The Senior AI Engineer will work closely with the AI Tech Lead , engineering teams, product stakeholders, data teams, cloud/platform teams, and security teams to deliver reliable AI capabilities into real business systems. The technology stack is diverse and can include Python (FastAPI/Flask/Django) or equivalent frameworks; React on the frontend side, and various ML/AI frameworks, APIs, cloud-native services, along with modern AI tooling . The role will have a strong focus on AWS , including Amazon Bedrock , Amazon Bedrock AgentCore , Amazon SageMaker , and other AWS AI/ML services. Responsibilities ",
       "url": "https://jobicy.com/jobs/144139-senior-ai-engineer-3",
@@ -7146,6 +7459,11 @@
           "required": null
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…approach to healthcare built for medical reasoning, safety, and real-time treatment, not generic technology applied after the fact. As…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…fits the problem: prompting, retrieval, distillation, or fine-tuning, chosen on evidence rather than habit; Work across the full AI…",
           "required": null
@@ -7158,6 +7476,7 @@
       ],
       "tagNames": [
         "llm",
+        "real-time inference",
         "fine-tuning",
         "rlhf"
       ],
@@ -7234,6 +7553,11 @@
           "tag": "ci/cd",
           "evidence": "…Python proficiency and strong engineering fundamentals (testing, CI/CD, architecture). Cloud AI deployment experience (AWS, Azure, or…",
           "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…reliability. Own AI observability via LangFuse: tracing, prompt versioning, evaluation, and performance benchmarking across all model…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -7248,7 +7572,8 @@
         "langchain",
         "langgraph",
         "llamaindex",
-        "ci/cd"
+        "ci/cd",
+        "prompt engineering"
       ],
       "description": "About Acquia Acquia empowers the world’s most ambitious brands to create digital customer experiences that matter. With open source Drupal at its core, the Acquia Digital Experience Platform (DXP) enables marketers, developers, and IT operations teams at thousands of global organizations to rapidly compose and deploy digital products and services that engage customers, enhance conversions, and help businesses stand out. Headquartered in Boston, MA, Acquia is a Great Place to Work-CertifiedTM company, is listed as one of the world’s top software companies by The Software Report, and is positioned as a market leader by the analyst community. We are Acquia. We are building for the future and we want you to be a part of it! Career Exploration at Acquia Our recruitment process is designed to empower you in making the most informed decisions. Acquia is committed to providing an inclusive, transparent, efficient, and educational interview experience that cultivates exploration into career opportunities at Acquia You will discover the opportunity to grow your career here and learn from a global team that empowers you to exceed boundaries and achieve the extraordinary. Acquia is the digital experience platform built for a world where your audience isn't only human. Its agents too. As AI agents become active participants in how people discover, consume, and act on digital content, Acquia",
       "url": "https://jobicy.com/jobs/151267-staff-ai-engineer",
@@ -7288,6 +7613,11 @@
           "tag": "gcp",
           "evidence": "…in LLM workflows. Familiarity with public cloud providers (AWS, GCP) We operate a polyglot platform, with components written in Kotlin…",
           "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…and quality evaluation. Own the full AI-product lifecycle: prompt design, context and state management, agentic loops, output parsing,…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -7295,7 +7625,8 @@
         "llm",
         "rag",
         "aws",
-        "gcp"
+        "gcp",
+        "prompt engineering"
       ],
       "description": "About Pleo Messy spend management is tricky business. And tedious processes are a lose-lose situation for all involved, not just finance. At Pleo, we're changing that. We build spend solutions that make managing money seamless, empowering, and surprisingly effective for finance teams and employees alike - with a vision to help all businesses ‘go beyond’. The word ‘Pleo’ actually means ‘more than you’d expect’, and living by that mantra has been the secret to our success over the last 10 years. Now, we’re at a pivotal moment in our journey; every move we make has a direct impact on our 40,000+ customers, our business, and our collective success. We need people who take pride in uncovering customer needs, who turn complex problems into simple solutions, challenge the way things are done (respectfully), and always aim high. With great ambitions driving us forward, we can’t say we’ve got this whole thing figured out. And frankly, that’s half the fun! What we can say is that we’re a driven, progressive, and, importantly, a kind bunch of 850+ people from over 100 nationalities, all committed to delivering the future of business spending, together. About the role This is an exciting opportunity to help shape how Pleo builds AI-powered product features, working alongside software engineers, data engineers and data scientists to take ideas from prototype to production. Pleo has over 40,",
       "url": "https://jobicy.com/jobs/151129-senior-applied-ai-engineer",
@@ -7382,6 +7713,11 @@
           "tag": "flink",
           "evidence": "…considered as a plus. Knowledge and experience with data job like Flink/Spark are considered as a plus. Working at Binance• Be a part of…",
           "required": false
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "Java Backend Engineer (AI/LLM Chatbot, Customer Service). Binance is the leading global blockchain…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -7389,7 +7725,8 @@
         "llm",
         "spark",
         "java",
-        "flink"
+        "flink",
+        "chatbot"
       ],
       "description": "Binance is the leading global blockchain ecosystem and cryptocurrency infrastructure provider whose suite of financial products includes the world’s largest digital-asset exchange.Our mission is to accelerate cryptocurrency adoption and increase the freedom of money. If you’re looking for a fast-paced, mission-driven organization where opportunities to learn and excel are endless, then Binance is the place for you. Responsibilities Development and implementation Backend service for the AI Chatbot products. Build large scale software system, which can impact daily life of millions of customers. Explore and integrate the LLM applications to improve chatbot performance and user experience. Underlying infra/arch upgrade performance tuning, online incidents troubleshooting, and system refactoring. Write high-quality, clean, and maintainable code using engineering best practices guide junior engineers’ daily work and do knowledge share, etc. Requirements Bachelor's/Master's degree in computer science, engineering, or equivalent industry experience. Over 8 years of professional experience in a related field. Core Java programming skills and willingness to do hands on coding are a must. Knowledge and experience with Python and familiar with collaborating with algorithm engineers. Capable to cope with stress, and quickly learn new knowledge. Good cross-team communication skills. Familia",
       "url": "https://jobicy.com/jobs/142198-java-backend-engineer-ai-llm-chatbot-customer-service",
@@ -7454,6 +7791,16 @@
           "tag": "mcp",
           "evidence": "…frameworks such as LangChain, LangGraph, Semantic Kernel , and MCP-style orchestration patterns. Design and optimize prompt…",
           "required": true
+        },
+        {
+          "tag": "prompt engineering",
+          "evidence": "…, and MCP-style orchestration patterns. Design and optimize prompt engineering strategies, RAG pipelines, embeddings, vector search, and…",
+          "required": true
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…and incrementally. Preferred Certifications & Training Databricks Certified Generative AI Engineer Associate Microsoft Azure AI…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -7466,7 +7813,9 @@
         "langchain",
         "langgraph",
         "ci/cd",
-        "mcp"
+        "mcp",
+        "prompt engineering",
+        "databricks"
       ],
       "description": "Job Title: GenAI Engineer Location Preference: 100% remote in Mexico, Brasil, Peru, Chile working EST Time Zone OR onsite in Washington, D.C. Duration: 1-Year Assignment with possibility of extension NTT DATA is a team of more than 139,000 diverse professionals operating in more than 50 countries worldwide. Our sectors of activity include telecommunications, finance, industry, utilities, energy, public administration, and health. Our mission? Offer technological solutions, business, strategy, development, and application maintenance while being a benchmark in consulting. Thanks to the collaboration between teams, the human quality of our people, and the fact that we do not conform to what is established, we always seek innovation that brings us closer to the future. Our essence has led us to the forefront of technology, breaking paradigms and providing solutions that truly respond to each client's needs. Our talent has led us to be one of the top six technology companies in the world. Because #Greattech, needs #GreatPeople, like you NTT Data seeks high-achieving team players who quickly adapt to new challenges and entrepreneurial ventures. We are looking fora GenAI Engineer to work with our global client for a fully remote opportunity in LATAM working EST hours. Position Summary The GenAI Engineer is a core technical contributor responsible for designing, building, deploying, a",
       "url": "https://jobicy.com/jobs/145940-genai-engineer",
@@ -7660,7 +8009,7 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…or model serving systems such as Airflow, Ray, MLflow, Triton, ONNX, Kubernetes, or similar. Improving model quality through labeling…",
+          "evidence": "…and real production traffic. Improve model precision, recall, latency, cost, calibration, and operational reliability for high-impact…",
           "required": null
         },
         {
@@ -7741,8 +8090,8 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…working with open-source inference engines (vLLM, SGLang, TensorRT-LLM), including contributions Experience with kernel languages or…",
-          "required": false
+          "evidence": "…hardware limits. Our mission is to maximize throughput, minimise latency, and optimise cost-per-token across tens of thousands of GPUs.…",
+          "required": null
         },
         {
           "tag": "fine-tuning",
@@ -7820,6 +8169,11 @@
           "tag": "flink",
           "evidence": "…considered as a plus. Knowledge and experience with data job like Flink/Spark are considered as a plus. Working at Binance • Be a part of…",
           "required": false
+        },
+        {
+          "tag": "chatbot",
+          "evidence": "Data/ Java Engineer (AI/LLM Chatbot, Customer Service). Binance is the leading global blockchain…",
+          "required": null
         }
       ],
       "tagNames": [
@@ -7827,7 +8181,8 @@
         "llm",
         "spark",
         "java",
-        "flink"
+        "flink",
+        "chatbot"
       ],
       "description": "Binance is the leading global blockchain ecosystem and cryptocurrency infrastructure provider whose suite of financial products includes the world’s largest digital-asset exchange. Our mission is to accelerate cryptocurrency adoption and increase the freedom of money. If you’re looking for a fast-paced, mission-driven organization where opportunities to learn and excel are endless, then Binance is the place for you. Responsibilities Development and implementation Backend service for the AI Chatbot products. Build large scale software system, which can impact daily life of millions of customers. Explore and integrate the LLM applications to improve chatbot performance and user experience. Underlying infra/arch upgrade performance tuning, online incidents troubleshooting, and system refactoring. Write high-quality, clean, and maintainable code using engineering best practices guide junior engineers’ daily work and do knowledge share, etc. Requirements Bachelor's/Master's degree in computer science, engineering, or equivalent industry experience. Over 8 years of professional experience in a related field. Core Java programming skills and willingness to do hands on coding are a must. Knowledge and experience with Python and familiar with collaborating with algorithm engineers. Capable to cope with stress, and quickly learn new knowledge. Good cross-team communication skills. Famili",
       "url": "https://jobicy.com/jobs/150065-data-java-engineer-ai-llm-chatbot-customer-service",
@@ -7938,6 +8293,11 @@
           "required": true
         },
         {
+          "tag": "real-time inference",
+          "evidence": "…detection across voice, video, and digital interactions in real time. Enterprises rely on Pindrop to secure billions of high-risk…",
+          "required": null
+        },
+        {
           "tag": "fine-tuning",
           "evidence": "…and safety environments. Experience working on building and/or fine-tuning multi-modal foundation models. Experience improving precision…",
           "required": false
@@ -7956,11 +8316,59 @@
         "llm",
         "nlp",
         "speech",
+        "real-time inference",
         "fine-tuning",
         "c++"
       ],
       "description": "Who We Are Pindrop is the Real Human + Right Human® Identity Trust Platform for the AI era. As AI-driven fraud and deepfakes erode trust in digital communication, Pindrop delivers continuous identity verification and deepfake detection across voice, video, and digital interactions in real time. Enterprises rely on Pindrop to secure billions of high-risk customer interactions each year, including top U.S. banks, as well as leading insurers and healthcare providers. Powered by models trained on more than 1.5 billion real-world interactions annually and protected by 300+ patents, Pindrop restores trust while reducing fraud, lowering operational costs, and improving customer experience. Recognized by TIME as one of the Top 10 Most Influential Software Companies of 2026 and by Inc. for Best in Business for Innovation, Pindrop is backed by leading investors including Andreessen Horowitz, IVP, and CapitalG. What you’ll do As a Research Scientist II on the Fraud Research team, you will help improve how Pindrop detects, scores, and investigates fraud and scams across voice and IVR interactions. You will work on applied machine learning problems that directly impact fraud and scam prevention for major enterprise customers, balancing core model development with real-world investigation and analysis. In this role, you will: Build and improve fraud risk models and scoring systems using a co",
       "url": "https://jobicy.com/jobs/147988-research-scientist-ii",
+      "postedAt": "2026-07-29",
+      "source": "Jobicy"
+    },
+    {
+      "id": "j_customer-io_senior-data-scientist",
+      "title": "Senior Data Scientist",
+      "company": "Customer.io",
+      "location": "LATAM,  Canada,  USA",
+      "remote": true,
+      "seniority": "senior",
+      "minYears": 5,
+      "tags": [
+        {
+          "tag": "python",
+          "evidence": "…to real product and business problems. Proficiency in SQL and Python for large-scale analysis, modeling, and exploration. Experience…",
+          "required": true
+        },
+        {
+          "tag": "sql",
+          "evidence": "…to real product and business problems. Proficiency in SQL and Python for large-scale analysis, modeling, and exploration.…",
+          "required": true
+        },
+        {
+          "tag": "gcp",
+          "evidence": "…Experience with modern cloud data platforms (Snowflake, BigQuery, or similar); familiarity with dbt is a plus. Strong…",
+          "required": false
+        },
+        {
+          "tag": "real-time inference",
+          "evidence": "…We help teams send smarter, more relevant messages using real-time behavioral data. About the role Hi, my name is Maria Culkin,…",
+          "required": null
+        },
+        {
+          "tag": "snowflake",
+          "evidence": "…and exploration. Experience with modern cloud data platforms (Snowflake, BigQuery, or similar); familiarity with dbt is a plus. Strong…",
+          "required": false
+        }
+      ],
+      "tagNames": [
+        "python",
+        "sql",
+        "gcp",
+        "real-time inference",
+        "snowflake"
+      ],
+      "description": "About Customer.io Over 8,000 companies — from scrappy startups to global brands — use our platform to send billions of emails, push notifications, in-app messages, and SMS every day. Customer.io powers automated communication that people actually want to receive. We help teams send smarter, more relevant messages using real-time behavioral data. About the role Hi, my name is Maria Culkin, Analytics Manager at Customer.io , and I'm looking for a Senior Data Scientist to help our teams make better decisions using customer and product data. You'll partner closely with Product, Marketing, and Customer Experience to evaluate product changes, design and analyze experiments, identify opportunities to improve the customer experience, and influence roadmap and business priorities. This is a hands-on role focused on analyzing behavior, building models, and turning data into clear, actionable direction. This role is ideal for someone who enjoys solving ambiguous problems, working closely with stakeholders, and applying data science pragmatically to support product and business decisions. We're looking for someone with an ownership mindset and a bias for action who balances technical rigor with practical decision-making. What we value Ownership: You take initiative and drive analytical work from concept to implementation. You don't wait for perfect requirements — you help define the proble",
+      "url": "https://jobicy.com/jobs/144856-senior-data-scientist-4",
       "postedAt": "2026-07-29",
       "source": "Jobicy"
     },
@@ -8027,6 +8435,16 @@
           "tag": "tableau",
           "evidence": "…modeling and create data visualizations using products like Tableau, Microsoft Power BI and R Shiny. • Research, design, and…",
           "required": true
+        },
+        {
+          "tag": "databricks",
+          "evidence": "…data management, data science, and ML platforms such as Databricks, IBM Cloud Pak, Cloudera, and Snowflake. • Communicate complex…",
+          "required": true
+        },
+        {
+          "tag": "power bi",
+          "evidence": "…data visualizations using products like Tableau, Microsoft Power BI and R Shiny. • Research, design, and implement algorithms to…",
+          "required": true
         }
       ],
       "tagNames": [
@@ -8040,7 +8458,9 @@
         "snowflake",
         "c++",
         "java",
-        "tableau"
+        "tableau",
+        "databricks",
+        "power bi"
       ],
       "description": "Clarity Innovations is a trusted national security partner, dedicated to safeguarding our nation’s interests and delivering innovative solutions that empower the Intelligence Community (IC) and Department of Defense (DoD) to transform data into actionable intelligence, ensuring mission success in an evolving world. Our mission-first software and data engineering platform modernizes data operations, utilizing advanced workflows, CI/CD, and secure DevSecOps practices. We focus on challenges in Information Warfare, Cyber Operations, Operational Security, and Data Structuring, enabling end-to-end solutions that drive operational impact. We are committed to delivering cutting-edge tools and capabilities that address the most complex national security challenges, empowering our partners to stay ahead of emerging threats and ensuring the success of their critical missions. At Clarity, we are people-focused and set on being a destination employer for top talent, offering an environment where innovation thrives, careers grow, and individuals are valued. Join us as we continue to lead innovation and tackle the most pressing challenges in national security. Role This role is for a Data Scientist on a close-knit team supporting Air Force Special Operations Command (AFSOC) at RAF Mildenhall, UK. This team is at the center of helping the command empower and leverage its data for more effecti",
       "url": "https://www.arbeitnow.co.uk/jobs/companies/clarityinnovates/senior-data-scientist-raf-mildenhall-84779",
@@ -8185,7 +8605,7 @@
         },
         {
           "tag": "real-time inference",
-          "evidence": "…latency, throughput, and cost, using techniques such as quantization, distillation, KV-cache optimization, batching strategies, and…",
+          "evidence": "…You will own the systems that turn research breakthroughs into real-time products used by millions. You will thrive in this role if you…",
           "required": null
         },
         {

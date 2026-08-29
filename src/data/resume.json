@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "note": "Untailored baseline. Ordering is the candidate's own: computer vision first, LLM/RAG lower down. Do not pre-optimise this file — re-emphasis is the agent's job, and it must happen through reviewable edits.",
+    "tailoredForJobId": null
+  },
+
+  "blocks": [
+    {
+      "id": "b_summary",
+      "section": "summary",
+      "text": "AI / ML engineer working in computer vision. I train and deploy detection and classification models on real video and X-ray streams at the State Customs Committee in Tashkent, and I own the whole cycle — dataset, training, evaluation, deployment. More than six of my systems are in live operational use.",
+      "sourceFactIds": ["r_customs", "f_opencv", "f_yolo", "r_customs_scope"]
+    },
+
+    {
+      "id": "b_exp_customs_role",
+      "section": "experience",
+      "text": "AI / ML Engineer — State Customs Committee, Department of Information Technology and Cybersecurity, Tashkent. September 2025 to present.",
+      "sourceFactIds": ["r_customs"]
+    },
+    {
+      "id": "b_exp_scope",
+      "section": "experience",
+      "text": "Own the full model lifecycle: dataset preparation, training, evaluation and production deployment. Work with colleagues to integrate models into the existing inspection systems, and improve results through hyperparameter tuning and augmentation.",
+      "sourceFactIds": ["r_customs_scope", "r_customs_team"]
+    },
+    {
+      "id": "b_exp_wagon",
+      "section": "experience",
+      "text": "Built a three-stage computer vision pipeline that counts railway wagons and reads their identification numbers automatically. Detection mAP@50 0.994, character detection mAP@50 0.995, and ResNet18 character recognition at 99.76% validation accuracy across 10 classes. Runs at roughly 5 ms per frame on an NVIDIA RTX 3060, fast enough for real-time operation.",
+      "sourceFactIds": ["a_wagon_pipeline", "a_wagon_metrics", "a_wagon_speed"]
+    },
+    {
+      "id": "b_exp_xray_loaded",
+      "section": "experience",
+      "text": "Trained a ResNet classifier on customs X-ray scans to determine whether a wagon is loaded or empty, at around 95% accuracy. Made it robust to poor-quality scans through cleaning, class balancing and augmentation.",
+      "sourceFactIds": ["a_xray_loaded", "f_dataset_work"]
+    },
+    {
+      "id": "b_exp_xray_threat",
+      "section": "experience",
+      "text": "Built detection and classification models that flag dangerous or prohibited goods in hand-luggage X-ray images at around 95% accuracy, highlighting the suspicious region for the inspector.",
+      "sourceFactIds": ["a_xray_threat"]
+    },
+    {
+      "id": "b_exp_anpr",
+      "section": "experience",
+      "text": "Built an ANPR system for border checkpoints: it detects and counts vehicles from video, then extracts and reads the licence plate, at around 95% accuracy.",
+      "sourceFactIds": ["a_anpr"]
+    },
+    {
+      "id": "b_exp_ocr",
+      "section": "experience",
+      "text": "Built a system that extracts structured fields from scanned documents with OCR and cross-checks them against the declaration data, flagging mismatches automatically and cutting manual inspection time.",
+      "sourceFactIds": ["a_ocr_declaration", "f_ocr"]
+    },
+    {
+      "id": "b_exp_rag",
+      "section": "experience",
+      "text": "Built a RAG chatbot over customs regulatory documents. Questions are matched to document chunks through a vector database, and answers are grounded strictly in those sources. It runs on a local server, so internal data never leaves the network.",
+      "sourceFactIds": ["a_rag_chatbot", "f_llm_rag", "f_airgapped"]
+    },
+    {
+      "id": "b_exp_voice",
+      "section": "experience",
+      "text": "Built a voice interface module — STT for the user's questions, TTS for the spoken answers — and integrated it into both the chatbot and a physical robot.",
+      "sourceFactIds": ["a_voice_interface", "f_speech"]
+    },
+    {
+      "id": "b_exp_awards",
+      "section": "experience",
+      "text": "First place at the international hackathon 'Applying Artificial Intelligence in Cybersecurity', part of the Future Engineers festival, April 2026, representing Uzbekistan with team DoppiX. First place at the REAL HOLAT hackathon, March 2026, run by the Agency for Strategic Reforms with GIZ and School 21 — built Geoportal, a Telegram mini-app for geolocated citizen complaints, and won a development grant.",
+      "sourceFactIds": ["a_hack_intl", "a_hack_realholat"]
+    },
+
+    {
+      "id": "b_skills",
+      "section": "skills",
+      "text": "Computer vision: YOLO (Ultralytics, up to YOLO26), OpenCV, ResNet and CNN architectures, object detection, image classification, transfer learning, dataset collection, annotation and augmentation. OCR: EasyOCR, Tesseract, PaddleOCR. Deep learning: PyTorch — training, fine-tuning and evaluation. LLM and RAG: local LLMs, vector databases, retrieval pipelines, prompt engineering, chatbot systems. Speech: STT and TTS. Backend and infrastructure: FastAPI, Flask, Docker, Linux, Git, Streamlit. Data: NumPy, Pandas, SQL with PostgreSQL and MySQL. Also build AI systems that run fully offline in a closed network, with no external API calls.",
+      "sourceFactIds": [
+        "f_yolo", "f_opencv", "f_resnet_cnn", "f_dataset_work", "f_ocr",
+        "f_pytorch", "f_llm_rag", "f_speech", "f_backend", "f_data_analysis",
+        "f_sql", "f_python", "f_airgapped"
+      ]
+    },
+
+    {
+      "id": "b_education",
+      "section": "education",
+      "text": "Bachelor's degree in Customs Affairs, Customs Institute of the State Customs Committee, Tashkent, 2022–2026. Worked in the field for one year during the programme. One-month professional development programme in the People's Republic of China (November–December).",
+      "sourceFactIds": ["e_institute", "e_china"]
+    },
+    {
+      "id": "b_languages",
+      "section": "education",
+      "text": "Uzbek — native. English — B2.",
+      "sourceFactIds": ["l_uzbek", "l_english"]
+    }
+  ]
+}

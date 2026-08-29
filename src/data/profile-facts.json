@@ -27,7 +27,7 @@
       "id": "f_pytorch",
       "kind": "skill",
       "text": "PyTorch — training, fine-tuning and evaluating detection and classification models in production projects.",
-      "tokens": ["pytorch", "torch"]
+      "tokens": ["pytorch", "torch", "fine-tuning"]
     },
     {
       "id": "f_yolo",
@@ -201,19 +201,5 @@
       "text": "English — B2.",
       "tokens": ["english", "b2"]
     }
-  ],
-
-  "deliberatelyAbsent": {
-    "note": "Not facts. This list documents, for the team only, what the profile does NOT support. These are the claims the fact guard must refuse, and they are the ones most likely to appear in real ML job postings. Do not ship this key to the client bundle.",
-    "terms": [
-      "TensorFlow", "Keras", "JAX",
-      "Kubernetes", "Terraform", "Helm",
-      "AWS", "GCP", "Azure", "SageMaker",
-      "Spark", "Kafka", "Airflow", "MLflow", "Kubeflow",
-      "React", "TypeScript", "Node.js", "frontend",
-      "Java", "C++", "Go", "Rust",
-      "Snowflake", "dbt", "BigQuery",
-      "5 years experience", "10 years experience", "team lead", "managed a team"
-    ]
-  }
+  ]
 }

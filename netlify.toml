@@ -1,3 +1,8 @@
+# Deployment is on Railway (see the README). This file is kept because the build
+# is platform-agnostic and Netlify remains a one-click alternative — but Railway
+# ignores it, and does not need it: its static serving already falls back to
+# index.html, which was verified against the live origin (a request to
+# /some/deep/link returns 200 and the app boots).
 # Static SPA. The build is entirely client-side: job data, the profile and the
 # baseline resume ship in the bundle, so a first visit needs no network beyond
 # the page itself and no empty state is possible.

@@ -5,6 +5,17 @@
 WebMCP turns the resume into an evidence-bound workspace: the agent proposes,
 the page constrains, the human approves.
 
+### ▸ [webmcp-openaihac-production.up.railway.app](https://webmcp-openaihac-production.up.railway.app/)
+
+Open it in ChatGPT's built-in browser and the status strip reads **WebMCP
+active**; the tools register against the live origin. In an ordinary browser it
+is fully usable by hand and says **WebMCP not detected** rather than implying a
+tool surface that is not there.
+
+No sign-in, no backend, no empty state — the profile, resume and 120 postings
+ship in the bundle. [`?reset=1`](https://webmcp-openaihac-production.up.railway.app/?reset=1)
+restores the demo to how you first found it.
+
 ---
 
 ## If you only have five minutes

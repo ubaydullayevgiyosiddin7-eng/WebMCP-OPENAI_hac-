@@ -1,76 +1,85 @@
-# Absent terms — what this profile does not support
+# The negative set — what the fact bank deliberately does not contain
 
-> **Team-only document.** This list is not part of the fact bank and must never
-> be shipped to the client bundle. It used to live inside `profile-facts.json`
-> under a `deliberatelyAbsent` key; it was split out so the shipped file is
-> simply clean rather than needing a build-time strip.
+A fact guard can only be demonstrated against something it genuinely refuses.
+This document lists the technologies the profile in `src/data/profile-facts.json`
+does **not** cover, and explains why that list is a designed part of the system
+rather than a gap to be filled in before a demo.
 
-## Why this document exists
+It is design rationale, kept in `docs/` rather than in the data. It is not
+shipped to the browser: `profile-facts.json` contains only positive facts, so
+the client bundle carries no list of absences. That is a build property you can
+verify — grep the bundle.
 
-`src/data/profile-facts.json` records what the candidate *has* done. This
-document records what he has *not* — and it exists because the product's whole
-claim rests on the second list being real.
+## Why a negative set is required
 
-Tailor's differentiator is that the agent cannot invent experience. That is only
-demonstrable if there is something genuine for it to refuse. If every technology
-a posting asked for happened to be somewhere in the fact bank, the fact guard
-would never fire, and the demo's central beat — *"Say I know Kubernetes"* →
-**rejected** — would be theatre.
+Tailor's claim is that the agent cannot invent experience. That claim is
+untestable unless some of what employers ask for is genuinely absent from the
+fact bank.
 
-So these terms are load-bearing. They are not a gap to be closed before the
-demo; they are the reason the demo means anything. They also happen to be the
-terms most likely to appear in real ML postings, which is why the refusal lands
-naturally rather than having to be staged.
+If every technology in the job corpus happened to appear somewhere in the
+profile, the guard would never fire. The central moment — an agent asked to
+write "familiar with Kubernetes" and refusing because nothing supports it —
+would be staged rather than real, and a reviewer would be right to discount it.
 
-Two consequences worth stating plainly:
+So these absences are load-bearing. They are also, deliberately, the terms that
+occur most often in real ML postings: of the 120 fetched jobs, 36 ask for
+TensorFlow, 50 for AWS and 29 for Kubernetes. The refusal happens naturally in the
+course of using the app, which is the only way it means anything.
+
+Two rules follow, and they are the reason this file exists as a written
+commitment rather than an assumption:
 
 - **Nothing here may be added to the fact bank to improve a match.** A fact is
-  added when the candidate did the work, never when a posting wants it.
-- **The guard must refuse these even when refusing looks unhelpful.** An agent
-  that quietly drops an unsupported claim is behaving correctly; an agent that
-  softens it into "familiar with Kubernetes" is not.
+  added because the work was done, never because a posting wants it. See the
+  leading-question warning in `request_profile_fact` — the app actively resists
+  being used to construct the opposite.
+- **The guard must refuse these even when refusing is unhelpful.** Silently
+  dropping an unsupported claim is correct behaviour. Softening it into
+  "exposure to Kubernetes" is not, and the guard rejects that too.
 
-## The terms
+## The absent terms, and why each one is a useful test
 
-**Deep-learning frameworks other than PyTorch**
-TensorFlow, Keras, JAX. The candidate trains in PyTorch. Postings routinely list
-PyTorch *or* TensorFlow as interchangeable, which makes this the single most
-frequent near-miss in the corpus — and the cleanest refusal to demonstrate.
+**Deep-learning frameworks other than PyTorch** — TensorFlow, Keras, JAX.
+The profile's training work is PyTorch. Postings routinely list "PyTorch or
+TensorFlow" as interchangeable, which makes this the most frequent near-miss in
+the corpus and the cleanest refusal to demonstrate: the sentence reads fine, one
+token is unsupported.
 
-**Orchestration and infrastructure-as-code**
-Kubernetes, Terraform, Helm. He ships with Docker on Linux, and deploys to
-on-premise servers inside a closed network. That is real deployment experience,
-but it is not cluster orchestration, and the two must not be conflated.
+**Orchestration and infrastructure-as-code** — Kubernetes, Terraform, Helm.
+The profile covers Docker on Linux, deployed to on-premise servers inside a
+closed network. That is real deployment experience and the guard credits it; it
+is not cluster orchestration, and the two must not be conflated. A good test of
+whether the alias layer over-reaches.
 
-**Public cloud**
-AWS, GCP, Azure, SageMaker. His work is deliberately air-gapped — models run on
-local hardware because the data cannot leave the network. The absence of cloud
-experience is a direct consequence of the domain he works in, not a gap in
-diligence.
+**Public cloud** — AWS, GCP, Azure, SageMaker.
+The deployment work in the profile is air-gapped by requirement: the models run
+on local hardware because the data cannot leave the network. The absence is a
+property of the problem domain, which makes it a realistic gap rather than an
+artificial one.
 
-**Data engineering at scale**
-Spark, Kafka, Airflow, MLflow, Kubeflow. He builds training and inference
-pipelines, but not distributed data platforms or managed experiment tracking.
+**Data platforms at scale** — Spark, Kafka, Airflow, MLflow, Kubeflow.
+Training and inference pipelines are covered; distributed data platforms and
+managed experiment tracking are not.
 
-**Frontend**
-React, TypeScript, Node.js, and frontend work generally. None. Postings that
-pair ML with frontend duties are a genuine mismatch, not a stretch.
+**Frontend** — React, TypeScript, Node.js.
+Absent entirely. Postings pairing ML with frontend duties are a genuine
+mismatch, and the app should report them as one.
 
-**Other languages**
-Java, C++, Go, Rust. Python is the working language.
+**Other languages** — Java, C++, Go, Rust. Python is the working language.
 
-**Warehousing and analytics platforms**
-Snowflake, dbt, BigQuery.
+**Warehousing and BI** — Snowflake, dbt, BigQuery.
 
-**Seniority and scale claims**
-"5 years experience", "10 years experience", "team lead", "managed a team".
-He started in the role in September 2025 and has worked in the field for about
-a year. Any posting demanding five-plus years is a real years-gap, and the app
-should report it as one rather than let it be written around.
+**Seniority and duration claims** — "5 years experience", "10 years
+experience", "team lead", "managed a team".
+The profile states one year in the current role. Postings asking for five-plus
+years produce a real years-gap, and `get_fit_gaps` reports it as a number with
+its basis rather than letting it be written around. The guard also refuses
+unquantified leadership verbs — "Led the team" carries a claim that no fact
+supports, and no number trips the numeric check.
 
 ## Maintenance
 
-When a fact is genuinely earned, move it: delete the line here and add a fact
-with an honest `tokens` list. The two documents must never both claim the same
-thing — if a term appears in the fact bank and here, the fact bank is wrong
+When something here is genuinely earned, move it: delete the entry and add a
+fact with an honest `tokens` list. The two documents must never both claim the
+same thing. If a term appears in the fact bank and here, the fact bank is wrong
 until proven otherwise.

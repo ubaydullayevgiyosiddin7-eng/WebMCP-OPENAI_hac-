@@ -102,6 +102,16 @@ export default function App() {
   const job = getOpenJob(state)
   const tools = toolsInScope(state)
 
+  // A skill filter arriving from the agent must be visible, not just counted:
+  // search_jobs is a write tool precisely because it changes what the human
+  // sees. Opening the section when a tag filter appears keeps that true even
+  // though the section is collapsed by default.
+  const [lastTagCount, setLastTagCount] = useState(state.filters.tags.length)
+  if (lastTagCount !== state.filters.tags.length) {
+    setLastTagCount(state.filters.tags.length)
+    if (state.filters.tags.length > 0 && !prefs.skills) setPref({ skills: true })
+  }
+
   const pending = state.pendingEdits.filter((e) => e.status === 'pending')
   // At recording width the panes cannot sit side by side, so whatever the human
   // must act on is pulled above the posting. Nothing that needs a decision may

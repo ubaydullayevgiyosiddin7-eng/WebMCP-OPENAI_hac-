@@ -1,0 +1,15 @@
+# Static SPA. The build is entirely client-side: job data, the profile and the
+# baseline resume ship in the bundle, so a first visit needs no network beyond
+# the page itself and no empty state is possible.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Single page, no router — but keep deep links working rather than 404ing.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

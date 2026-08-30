@@ -215,10 +215,21 @@ export function checkEdit(
     (p) => termRe(p).test(proposal.newText) && !termRe(p).test(grounding),
   )
 
-  const offending = [
+  // Deduplicate case-insensitively: the same term otherwise appears twice, once
+  // as the canonical concept and once as the surface spelling ("tensorflow,
+  // kubernetes, Kubernetes, TensorFlow"), which is noise for an agent trying to
+  // work out what to change.
+  const seen = new Set<string>()
+  const offending: string[] = []
+  for (const t of [
     ...ungroundedConcepts, ...ungroundedNumbers, ...ungroundedNames,
     ...ungroundedPuffery, ...ungroundedSeniority,
-  ]
+  ]) {
+    const key = t.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    offending.push(t)
+  }
   if (offending.length > 0) {
     return fail('unsupported_claim', offending,
       `Nothing in the cited facts or the original block supports: ${offending.join(', ')}. `

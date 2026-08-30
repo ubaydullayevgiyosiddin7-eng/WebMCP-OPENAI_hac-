@@ -3,12 +3,13 @@ import './App.css'
 import { conceptsIn } from './lib/guard'
 import { groupTags, profileCoverage } from './lib/match'
 import {
-  ATTRIBUTION, FACTS, JOBS, PROFILE, acceptEdit, closeJob, dismissFactRequest,
-  getState, openJob as getOpenJob, patchFilters, rejectEdit, resetFilters,
-  saveFactRequest, selectJob, subscribe, toolsInScope, visibleJobs,
+  ATTRIBUTION, FACTS, JOBS, PROFILE, acceptEdit, cancelSubmit, closeJob,
+  confirmSubmit, discardApplication, dismissFactRequest, getState,
+  openJob as getOpenJob, hasCustomState, patchFilters, rejectEdit, resetDemoData,
+  resetFilters, saveFactRequest, selectJob, subscribe, toolsInScope, visibleJobs,
 } from './store'
 import { initTools } from './tools'
-import type { FactRequest, Job, JobTag, PendingEdit, ResumeSection, Seniority } from './types'
+import type { Application, FactRequest, Job, JobTag, PendingEdit, ResumeSection, Seniority } from './types'
 import { EMPTY_FILTERS } from './types'
 
 const SENIORITIES: Seniority[] = ['junior', 'mid', 'senior', 'lead']
@@ -58,12 +59,16 @@ export default function App() {
           {job ? <JobDetail job={job} /> : <EmptyDetail />}
         </section>
 
-        <section className="pane pane--right" aria-label="Resume and review queue">
+        <section className="pane pane--right" aria-label="Resume, review queue and applications">
           <FactRequestPanel />
           <ReviewQueue edits={state.pendingEdits.filter((e) => e.status === 'pending')} />
+          <PreparedApplication apps={state.applications} />
           <ResumePane />
+          <Tracker apps={state.applications} />
         </section>
       </main>
+
+      {state.submitModalFor && <SubmitModal jobId={state.submitModalFor} apps={state.applications} />}
     </div>
   )
 }
@@ -87,7 +92,26 @@ function StatusStrip({ toolCount, tools, webmcp }: {
       <span className={`badge ${webmcp === 'active' ? 'badge--ok' : 'badge--off'}`}>
         {webmcp === 'active' ? 'WebMCP active' : 'WebMCP not detected'}
       </span>
+      <ResetControl />
     </header>
+  )
+}
+
+function ResetControl() {
+  const state = useSyncExternalStore(subscribe, getState)
+  const dirty = hasCustomState(state)
+  return (
+    <button
+      className="link strip__reset"
+      title="Clear accepted edits, added facts and applications, and restore the shipped demo data."
+      onClick={() => {
+        if (!dirty || window.confirm('Reset the demo? Accepted edits, added facts and applications will be discarded.')) {
+          resetDemoData()
+        }
+      }}
+    >
+      reset demo data{dirty ? ' •' : ''}
+    </button>
   )
 }
 
@@ -420,6 +444,92 @@ function FactRequestForm({ req }: { req: FactRequest }) {
           Add to fact bank
         </button>
         <button className="btn" onClick={() => dismissFactRequest()}>Dismiss</button>
+      </div>
+    </div>
+  )
+}
+
+
+function PreparedApplication({ apps }: { apps: Application[] }) {
+  const ready = apps.find((a) => a.status === 'ready')
+  if (!ready) return null
+  const job = JOBS.find((j) => j.id === ready.jobId)
+  return (
+    <div className="appform">
+      <header className="queue__head">
+        <h2 className="h2">Application — ready to send</h2>
+        <span className="queue__note">nothing is sent until you confirm</span>
+      </header>
+
+      <dl className="appform__fields">
+        <dt>Role</dt><dd>{job?.title ?? ready.jobId}</dd>
+        <dt>Company</dt><dd>{job?.company ?? '—'}</dd>
+        <dt>Resume</dt><dd>{ready.resumeSnapshot.length} blocks, as currently accepted</dd>
+        <dt>Cover note</dt><dd className="appform__note">{ready.coverNote}</dd>
+      </dl>
+
+      <div className="edit__actions">
+        <button className="btn" onClick={() => discardApplication(ready.jobId)}>Discard</button>
+      </div>
+    </div>
+  )
+}
+
+function Tracker({ apps }: { apps: Application[] }) {
+  if (apps.length === 0) return null
+  return (
+    <div className="tracker">
+      <h2 className="h2">Applications <span className="h2__n">{apps.length}</span></h2>
+      <ul className="tracker__list">
+        {apps.map((a) => {
+          const job = JOBS.find((j) => j.id === a.jobId)
+          return (
+            <li key={a.jobId} className="tracker__row">
+              <span className={`tracker__status tracker__status--${a.status}`}>{a.status}</span>
+              <span className="tracker__job">
+                {job?.title ?? a.jobId}
+                <span className="tracker__co">{job?.company ?? ''}</span>
+              </span>
+              {a.submittedAt && <span className="tick tick--dim">{a.submittedAt.slice(0, 10)}</span>}
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+function SubmitModal({ jobId, apps }: { jobId: string; apps: Application[] }) {
+  const app = apps.find((a) => a.jobId === jobId)
+  const job = JOBS.find((j) => j.id === jobId)
+  if (!app) return null
+
+  return (
+    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="submit-h">
+      <div className="modal__box">
+        <h2 className="h2" id="submit-h">Send this application?</h2>
+        <p className="modal__lede">
+          This is the only action that leaves the page. Everything below is exactly what will be sent.
+        </p>
+
+        <dl className="appform__fields">
+          <dt>Role</dt><dd>{job?.title ?? jobId}</dd>
+          <dt>Company</dt><dd>{job?.company ?? '—'}</dd>
+          <dt>Cover note</dt><dd className="appform__note">{app.coverNote}</dd>
+        </dl>
+
+        <div className="modal__resume">
+          {app.resumeSnapshot.map((b) => (
+            <p key={b.id} className="modal__block">
+              <code className="block__id">{b.id}</code> {b.text}
+            </p>
+          ))}
+        </div>
+
+        <div className="edit__actions modal__actions">
+          <button className="btn btn--accept" onClick={() => confirmSubmit()}>Submit</button>
+          <button className="btn" onClick={() => cancelSubmit()}>Cancel</button>
+        </div>
       </div>
     </div>
   )

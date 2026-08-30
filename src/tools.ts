@@ -13,10 +13,11 @@
  * which unregisters that scope in a single operation (§5).
  */
 import {
-  ALWAYS_TOOLS, EDIT_SCOPED_TOOLS, JOB_SCOPED_TOOLS, getApplications, getFitGaps, getJobDetails,
-  getProfileFacts, getResume, getWorkspaceState, pendingEdits, proposeResumeEdits,
-  requestProfileFact, searchJobs, selectJob, setWebmcpStatus, getState, subscribe,
-  withdrawEdit,
+  ALWAYS_TOOLS, EDIT_SCOPED_TOOLS, JOB_SCOPED_TOOLS, PREPARE_SCOPED_TOOLS,
+  SUBMIT_SCOPED_TOOLS, getApplications, getFitGaps, getJobDetails,
+  getProfileFacts, getResume, getWorkspaceState, pendingEdits, prepareApplication,
+  proposeResumeEdits, requestProfileFact, searchJobs, selectJob, setWebmcpStatus,
+  submitApplication, getState, subscribe, withdrawEdit,
 } from './store'
 import type { Application, EditProposal, FactKind, FactRequest, ResumeSection } from './types'
 
@@ -203,6 +204,31 @@ const JOB_SCOPED: ToolDescriptor[] = [
   ),
 ]
 
+const PREPARE_SCOPED: ToolDescriptor[] = [
+  tool(
+    'prepare_application',
+    'Build the application from the ACCEPTED resume and fill the form on screen so the human can see exactly what is about to be sent. Only available while a job is open AND no edits are awaiting review — if proposals are still pending this tool is not registered, because nothing may be sent past a diff the human has not looked at.',
+    {
+      type: 'object',
+      properties: { coverNote: { type: 'string', maxLength: 900 } },
+      required: ['coverNote'],
+      additionalProperties: false,
+    },
+    WRITES,
+    (a) => prepareApplication(String(a.coverNote ?? '')),
+  ),
+]
+
+const SUBMIT_SCOPED: ToolDescriptor[] = [
+  {
+    name: 'submit_application',
+    description: 'Send the prepared application. THIS IS THE ONLY CONSEQUENTIAL ACTION IN THE APP. It opens a confirmation dialog showing exactly what will be sent and does not resolve until the human clicks Submit or Cancel. If your turn is aborted the dialog closes and this rejects — nothing is sent.',
+    inputSchema: noArgs,
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+    execute: async (_args, ctx) => submitApplication(ctx?.signal),
+  },
+]
+
 const EDIT_SCOPED: ToolDescriptor[] = [
   tool(
     'withdraw_edit',
@@ -225,6 +251,10 @@ let jobScope: AbortController | null = null
 let jobScopeFor: string | null = null
 let editScope: AbortController | null = null
 let editScopeOn = false
+let prepareScope: AbortController | null = null
+let prepareScopeOn = false
+let submitScope: AbortController | null = null
+let submitScopeOn = false
 
 async function register(t: ToolDescriptor, signal?: AbortSignal) {
   const mc = document.modelContext
@@ -276,9 +306,40 @@ function syncEditScope() {
   for (const t of EDIT_SCOPED) void register(t, editScope.signal)
 }
 
+/** Generic on/off scope, so each contract rule reads as one line below. */
+function syncToggleScope(
+  on: boolean,
+  current: { ctrl: AbortController | null; on: boolean },
+  tools: ToolDescriptor[],
+) {
+  if (on === current.on) return current
+  if (!on) {
+    current.ctrl?.abort()
+    return { ctrl: null, on: false }
+  }
+  const ctrl = new AbortController()
+  for (const t of tools) void register(t, ctrl.signal)
+  return { ctrl, on: true }
+}
+
 function syncScopes() {
   syncJobScope()
   syncEditScope()
+
+  const s = getState()
+  const hasPending = pendingEdits(s).length > 0
+
+  const prep = syncToggleScope(
+    Boolean(s.openJobId) && !hasPending,
+    { ctrl: prepareScope, on: prepareScopeOn }, PREPARE_SCOPED,
+  )
+  prepareScope = prep.ctrl; prepareScopeOn = prep.on
+
+  const sub = syncToggleScope(
+    s.applications.some((a) => a.status === 'ready'),
+    { ctrl: submitScope, on: submitScopeOn }, SUBMIT_SCOPED,
+  )
+  submitScope = sub.ctrl; submitScopeOn = sub.on
 }
 
 /** Safe to call unconditionally; does nothing in a browser without WebMCP. */
@@ -301,12 +362,16 @@ export const TOOL_NAMES = {
   always: ALWAYS.map((t) => t.name),
   jobScoped: JOB_SCOPED.map((t) => t.name),
   editScoped: EDIT_SCOPED.map((t) => t.name),
+  prepareScoped: PREPARE_SCOPED.map((t) => t.name),
+  submitScoped: SUBMIT_SCOPED.map((t) => t.name),
 }
 
 // Keep the exported scope lists and the real descriptors from drifting apart —
 // the status strip counts the store's lists, not these.
 if (ALWAYS.map((t) => t.name).join() !== [...ALWAYS_TOOLS].join()
   || JOB_SCOPED.map((t) => t.name).join() !== [...JOB_SCOPED_TOOLS].join()
-  || EDIT_SCOPED.map((t) => t.name).join() !== [...EDIT_SCOPED_TOOLS].join()) {
+  || EDIT_SCOPED.map((t) => t.name).join() !== [...EDIT_SCOPED_TOOLS].join()
+  || PREPARE_SCOPED.map((t) => t.name).join() !== [...PREPARE_SCOPED_TOOLS].join()
+  || SUBMIT_SCOPED.map((t) => t.name).join() !== [...SUBMIT_SCOPED_TOOLS].join()) {
   console.warn('[tailor] registered tool scopes disagree with the store definition')
 }

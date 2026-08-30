@@ -39,6 +39,12 @@ export const JOB_SCOPED_TOOLS = [
 /** Registered only while at least one edit is pending (contract §5). */
 export const EDIT_SCOPED_TOOLS = ['withdraw_edit'] as const
 
+/** Job open AND zero pending edits — the ordering rule, expressed as scope. */
+export const PREPARE_SCOPED_TOOLS = ['prepare_application'] as const
+
+/** Only once an application is ready to send. */
+export const SUBMIT_SCOPED_TOOLS = ['submit_application'] as const
+
 export type State = {
   filters: Filters
   openJobId: string | null
@@ -47,19 +53,68 @@ export type State = {
   pendingEdits: PendingEdit[]
   factRequest: FactRequest | null
   applications: Application[]
+  /** The application the confirmation modal is currently showing, if any. */
+  submitModalFor: string | null
   /** 'active' once registerTool has been found and used; never faked. */
   webmcp: 'unsupported' | 'active'
 }
 
+/** Resolver for the open confirmation modal. Null when no modal is showing. */
+let submitResolver: ((confirmed: boolean) => void) | null = null
+
+const STORAGE_KEY = 'tailor.v1'
+
+/** The shipped demo data. A first visit always lands on this, never on nothing. */
+const DEFAULTS = () => ({
+  facts: FACTS.map((f) => ({ ...f })),
+  resume: (resumeData.blocks as ResumeBlock[]).map((b) => ({ ...b })),
+  applications: [] as Application[],
+})
+
+/**
+ * Only the parts a human can change are persisted. Jobs, and the baseline
+ * profile and resume, ship in the bundle — so an empty localStorage still gives
+ * a complete working app rather than an empty one.
+ */
+function loadPersisted() {
+  const d = DEFAULTS()
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return d
+    const parsed = JSON.parse(raw)
+    return {
+      facts: Array.isArray(parsed.facts) && parsed.facts.length > 0 ? parsed.facts as Fact[] : d.facts,
+      resume: Array.isArray(parsed.resume) && parsed.resume.length > 0 ? parsed.resume as ResumeBlock[] : d.resume,
+      applications: Array.isArray(parsed.applications) ? parsed.applications as Application[] : d.applications,
+    }
+  } catch {
+    // Corrupt or unavailable storage must never produce a broken page.
+    return d
+  }
+}
+
+const persisted = loadPersisted()
+
 let state: State = {
   filters: EMPTY_FILTERS,
   openJobId: null,
-  facts: FACTS,
-  resume: resumeData.blocks as ResumeBlock[],
+  facts: persisted.facts,
+  resume: persisted.resume,
   pendingEdits: [],
   factRequest: null,
-  applications: [],
+  applications: persisted.applications,
+  submitModalFor: null,
   webmcp: 'unsupported',
+}
+
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      facts: state.facts,
+      resume: state.resume,
+      applications: state.applications,
+    }))
+  } catch { /* private mode or quota — not worth breaking the page over */ }
 }
 
 const listeners = new Set<() => void>()
@@ -73,7 +128,30 @@ export function getState() { return state }
 
 function set(patch: Partial<State>) {
   state = { ...state, ...patch }
+  persist()
   for (const fn of listeners) fn()
+}
+
+/** True once the visitor has changed anything away from the shipped demo. */
+export function hasCustomState(s: State = state): boolean {
+  const base = resumeData.blocks as ResumeBlock[]
+  return s.applications.length > 0
+    || s.facts.length !== FACTS.length
+    || s.resume.some((b, i) => b.text !== base[i]?.text)
+}
+
+/** Visible control: put the demo back exactly as a judge first found it. */
+export function resetDemoData() {
+  try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+  submitResolver = null
+  set({
+    ...DEFAULTS(),
+    filters: EMPTY_FILTERS,
+    openJobId: null,
+    pendingEdits: [],
+    factRequest: null,
+    submitModalFor: null,
+  })
 }
 
 // ---------------------------------------------------------------- derived
@@ -89,8 +167,11 @@ export function openJob(s: State = state): Job | null {
 /** The tool names in scope right now. Derived from state, so it cannot drift. */
 export function toolsInScope(s: State = state): string[] {
   const names: string[] = [...ALWAYS_TOOLS]
+  const hasPending = s.pendingEdits.some((e) => e.status === 'pending')
   if (s.openJobId) names.push(...JOB_SCOPED_TOOLS)
-  if (s.pendingEdits.some((e) => e.status === 'pending')) names.push(...EDIT_SCOPED_TOOLS)
+  if (hasPending) names.push(...EDIT_SCOPED_TOOLS)
+  if (s.openJobId && !hasPending) names.push(...PREPARE_SCOPED_TOOLS)
+  if (s.applications.some((a) => a.status === 'ready')) names.push(...SUBMIT_SCOPED_TOOLS)
   return names
 }
 
@@ -175,13 +256,18 @@ export function getWorkspaceState() {
   return {
     summary: `Job list showing ${matches.length} of ${JOBS.length} jobs.`
       + (job ? ` '${job.title} at ${job.company}' is open.` : ' No job is open.')
+      + (pendingEdits().length
+        ? ` ${pendingEdits().length} edit${pendingEdits().length === 1 ? ' awaits' : 's await'} your review — `
+          + 'prepare_application stays unregistered until they are cleared.'
+        : '')
       + ` ${toolsInScope().length} tools registered.`,
     activeFilters: state.filters,
     visibleJobCount: matches.length,
     totalJobCount: JOBS.length,
     openJobId: state.openJobId,
     registeredTools: toolsInScope(),
-    pendingEditCount: 0,
+    pendingEditCount: pendingEdits().length,
+    pendingEditIds: pendingEdits().map((e) => e.id),
     applicationCounts: counts,
   }
 }
@@ -210,11 +296,22 @@ export function getResume(section?: ResumeSection) {
 
 export function getApplications(status?: Application['status']) {
   const rows = status ? state.applications.filter((a) => a.status === status) : state.applications
+  const counts = { draft: 0, ready: 0, submitted: 0 }
+  for (const a of state.applications) counts[a.status]++
   return {
     summary: rows.length === 0
       ? 'No applications yet.'
-      : `${rows.length} application${rows.length === 1 ? '' : 's'}.`,
-    applications: rows,
+      : `${rows.length} application${rows.length === 1 ? '' : 's'}: `
+        + `${counts.draft} draft, ${counts.ready} ready, ${counts.submitted} submitted.`,
+    applications: rows.map((a) => ({
+      jobId: a.jobId,
+      jobTitle: JOBS.find((j) => j.id === a.jobId)?.title ?? a.jobId,
+      company: JOBS.find((j) => j.id === a.jobId)?.company ?? '',
+      status: a.status,
+      submittedAt: a.submittedAt,
+      coverNote: a.coverNote,
+      blockCount: a.resumeSnapshot.length,
+    })),
   }
 }
 
@@ -358,4 +455,120 @@ export function saveFactRequest(claim: string, kind: Fact['kind'], tokens: strin
 
 export function dismissFactRequest() {
   set({ factRequest: null })
+}
+
+// ---------------------------------------------------------------- phase 3
+
+/**
+ * Builds the application from the ACCEPTED resume state and fills the form on
+ * screen. The precondition — a job open and zero pending edits — is the whole
+ * human-in-the-loop story in one rule: nothing can be sent while a proposal the
+ * human has not looked at is still outstanding.
+ */
+export function prepareApplication(coverNote: string) {
+  const job = openJob()
+  if (!job) return err('no_job_open', 'Call open_job first — an application is always for a specific posting.')
+
+  const pending = pendingEdits().length
+  if (pending > 0) {
+    return err(
+      'pending_edits',
+      `${pending} edit${pending === 1 ? '' : 's'} still awaiting the human's review. `
+      + 'They must accept or reject every proposal before an application can be prepared. '
+      + 'Use withdraw_edit if you want to retract one.',
+    )
+  }
+
+  const note = String(coverNote ?? '').slice(0, 900)
+  if (note.trim().length === 0) {
+    return err('empty_cover_note', 'Write a cover note grounded in the resume and the posting.')
+  }
+
+  const app: Application = {
+    jobId: job.id,
+    resumeSnapshot: state.resume.map((b) => ({ ...b })),
+    coverNote: note,
+    status: 'ready',
+    submittedAt: null,
+  }
+  set({ applications: [...state.applications.filter((a) => a.jobId !== job.id), app] })
+
+  return {
+    ok: true as const,
+    summary: `Application to ${job.company} is ready. ${app.resumeSnapshot.length} resume blocks and a `
+      + `${note.length}-character cover note are filled in on screen. Nothing is sent until the human confirms.`,
+    preview: {
+      jobId: job.id,
+      jobTitle: job.title,
+      company: job.company,
+      coverNote: note,
+      resumeBlockIds: app.resumeSnapshot.map((b) => b.id),
+    },
+    missingRequiredFields: [],
+  }
+}
+
+
+/**
+ * The only consequential action. Opens a modal showing exactly what will be
+ * sent and does not settle until the human clicks — or until the agent's turn
+ * is aborted, in which case the modal closes and the promise REJECTS.
+ */
+export function submitApplication(signal?: AbortSignal): Promise<unknown> {
+  const app = state.applications.find((a) => a.status === 'ready')
+  if (!app) {
+    return Promise.resolve(err('not_ready', 'No application is ready. Call prepare_application first.'))
+  }
+  if (submitResolver) {
+    return Promise.resolve(err('already_confirming', 'A confirmation dialog is already open. Wait for the human.'))
+  }
+
+  return new Promise((resolve, reject) => {
+    const cleanup = () => {
+      submitResolver = null
+      signal?.removeEventListener('abort', onAbort)
+      set({ submitModalFor: null })
+    }
+
+    function onAbort() {
+      cleanup()
+      reject(new Error('aborted: the agent turn was cancelled, so the confirmation dialog was closed. Nothing was sent.'))
+    }
+
+    if (signal?.aborted) {
+      reject(new Error('aborted before the dialog opened. Nothing was sent.'))
+      return
+    }
+    signal?.addEventListener('abort', onAbort, { once: true })
+
+    submitResolver = (confirmed: boolean) => {
+      cleanup()
+      if (!confirmed) {
+        resolve(err('user_declined', 'The user cancelled. Ask what they want changed before trying again.'))
+        return
+      }
+      const submittedAt = new Date().toISOString()
+      set({
+        applications: state.applications.map((a) =>
+          a.jobId === app.jobId ? { ...a, status: 'submitted' as const, submittedAt } : a),
+      })
+      const job = JOBS.find((j) => j.id === app.jobId)
+      resolve({
+        ok: true,
+        summary: `Application to ${job?.company ?? app.jobId} submitted.`,
+        applicationId: app.jobId,
+        submittedAt,
+      })
+    }
+
+    set({ submitModalFor: app.jobId })
+  })
+}
+
+/** Human-only, from the modal. */
+export function confirmSubmit() { submitResolver?.(true) }
+export function cancelSubmit() { submitResolver?.(false) }
+
+export function discardApplication(jobId: string) {
+  set({ applications: state.applications.filter((a) => a.jobId !== jobId) })
 }

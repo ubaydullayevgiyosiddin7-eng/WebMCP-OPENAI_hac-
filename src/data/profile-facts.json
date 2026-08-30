@@ -103,6 +103,12 @@
       "tokens": ["full cycle", "deployment", "production", "six systems", "lifecycle", "end-to-end", "model deployment"]
     },
     {
+      "id": "r_experience",
+      "kind": "role",
+      "text": "One year as AI / ML engineer at the State Customs Committee (September 2025 to present), during which more than six AI systems went into live operational use.",
+      "tokens": ["1 year", "one year", "experience"]
+    },
+    {
       "id": "r_customs_team",
       "kind": "role",
       "text": "Worked with colleagues to integrate models into existing inspection systems, and improved results through hyperparameter tuning and augmentation.",

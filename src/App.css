@@ -572,3 +572,74 @@ a.link { text-decoration: underline; }
   padding: 5px 7px;
   margin: 0 0 6px;
 }
+
+/* ---------------------------------------------------------------- tool rail */
+
+.rail {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 12px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.rail__count {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--dimmer);
+  flex: 0 0 auto;
+}
+.rail__count b { color: var(--accent); }
+
+.rail__group { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+.rail__group + .rail__group { border-left: 1px solid var(--line); padding-left: 12px; }
+
+.rail__label {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--dimmer);
+}
+
+.tchip {
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1;
+  padding: 3px 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--dim);
+  background: var(--bg);
+  animation: tool-in .32s ease-out;
+}
+
+/* Departing tools linger a moment so a removal reads as an event, not a gap. */
+.tchip.is-out {
+  color: var(--warn);
+  border-color: rgba(207, 112, 90, .4);
+  text-decoration: line-through;
+  animation: tool-out .9s ease-in forwards;
+}
+
+@keyframes tool-in {
+  from { opacity: 0; transform: translateY(-3px); border-color: var(--accent); color: var(--accent); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes tool-out {
+  0%   { opacity: 1; }
+  70%  { opacity: .55; }
+  100% { opacity: 0; transform: translateY(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tchip, .tchip.is-out { animation: none; }
+  .tchip.is-out { opacity: .5; }
+}

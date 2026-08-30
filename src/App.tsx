@@ -3,7 +3,8 @@ import './App.css'
 import { conceptsIn } from './lib/guard'
 import { groupTags, profileCoverage } from './lib/match'
 import {
-  ATTRIBUTION, FACTS, JOBS, PROFILE, acceptEdit, cancelSubmit, closeJob,
+  ALWAYS_TOOLS, ATTRIBUTION, EDIT_SCOPED_TOOLS, FACTS, JOBS, JOB_SCOPED_TOOLS,
+  PREPARE_SCOPED_TOOLS, PROFILE, SUBMIT_SCOPED_TOOLS, acceptEdit, cancelSubmit, closeJob,
   confirmSubmit, discardApplication, dismissFactRequest, getState,
   openJob as getOpenJob, hasCustomState, patchFilters, rejectEdit, resetDemoData,
   resetFilters, saveFactRequest, selectJob, subscribe, toolsInScope, visibleJobs,
@@ -47,7 +48,8 @@ export default function App() {
 
   return (
     <div className="app">
-      <StatusStrip toolCount={tools.length} tools={tools} webmcp={state.webmcp} />
+      <StatusStrip webmcp={state.webmcp} />
+      <ToolRail names={tools} />
 
       <main className="panes">
         <section className="pane pane--left" aria-label="Filters and job list">
@@ -73,11 +75,7 @@ export default function App() {
   )
 }
 
-function StatusStrip({ toolCount, tools, webmcp }: {
-  toolCount: number
-  tools: string[]
-  webmcp: 'unsupported' | 'active'
-}) {
+function StatusStrip({ webmcp }: { webmcp: 'unsupported' | 'active' }) {
   return (
     <header className="strip">
       <span className="strip__brand">tailor</span>
@@ -86,9 +84,6 @@ function StatusStrip({ toolCount, tools, webmcp }: {
 
       <span className="strip__spacer" />
 
-      <span className={`strip__tools ${webmcp === 'active' ? 'is-live' : ''}`} title={tools.join('\n')}>
-        <b>{toolCount}</b> tools registered
-      </span>
       <span className={`badge ${webmcp === 'active' ? 'badge--ok' : 'badge--off'}`}>
         {webmcp === 'active' ? 'WebMCP active' : 'WebMCP not detected'}
       </span>
@@ -539,6 +534,56 @@ function SubmitModal({ jobId, apps }: { jobId: string; apps: Application[] }) {
           <button className="btn" onClick={() => cancelSubmit()}>Cancel</button>
         </div>
       </div>
+    </div>
+  )
+}
+
+
+const TOOL_GROUPS: { label: string; members: readonly string[] }[] = [
+  { label: 'always', members: ALWAYS_TOOLS },
+  { label: 'job', members: JOB_SCOPED_TOOLS },
+  { label: 'edit', members: EDIT_SCOPED_TOOLS },
+  { label: 'application', members: [...PREPARE_SCOPED_TOOLS, ...SUBMIT_SCOPED_TOOLS] },
+]
+
+/**
+ * The registered tool surface, named and grouped by the scope that governs it.
+ *
+ * A count alone hides the interesting part: when an edit is queued,
+ * prepare_application leaves as withdraw_edit arrives, so the number is
+ * unchanged while the surface is meaningfully different. Names make that
+ * legible. Departing tools linger briefly greyed-out so a removal is as
+ * perceptible as an arrival.
+ */
+function ToolRail({ names }: { names: string[] }) {
+  const key = names.join()
+  const [seen, setSeen] = useState({ key, names, leaving: [] as string[] })
+
+  if (seen.key !== key) {
+    setSeen({ key, names, leaving: seen.names.filter((n) => !names.includes(n)) })
+  }
+
+  useEffect(() => {
+    if (seen.leaving.length === 0) return
+    const t = setTimeout(() => setSeen((s) => (s.leaving.length ? { ...s, leaving: [] } : s)), 900)
+    return () => clearTimeout(t)
+  }, [seen.leaving])
+
+  return (
+    <div className="rail" aria-label="Tools registered for the agent">
+      <span className="rail__count"><b>{names.length}</b> tools</span>
+      {TOOL_GROUPS.map((g) => {
+        const live = g.members.filter((m) => names.includes(m))
+        const going = g.members.filter((m) => seen.leaving.includes(m))
+        if (live.length === 0 && going.length === 0) return null
+        return (
+          <span className="rail__group" key={g.label}>
+            <span className="rail__label">{g.label}</span>
+            {live.map((n) => <span key={n} className="tchip">{n}</span>)}
+            {going.map((n) => <span key={n} className="tchip is-out">{n}</span>)}
+          </span>
+        )
+      })}
     </div>
   )
 }

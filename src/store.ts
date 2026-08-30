@@ -93,6 +93,25 @@ function loadPersisted() {
   }
 }
 
+/**
+ * A judge arriving at a URL someone else already used would otherwise inherit
+ * their state. ?reset=1 guarantees a clean slate without touching the keyboard,
+ * and strips itself from the address bar so a later reload is a normal visit.
+ */
+function consumeResetParam(): boolean {
+  try {
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('reset') !== '1') return false
+    localStorage.removeItem(STORAGE_KEY)
+    url.searchParams.delete('reset')
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash)
+    return true
+  } catch {
+    return false
+  }
+}
+
+consumeResetParam()
 const persisted = loadPersisted()
 
 let state: State = {
@@ -365,7 +384,8 @@ export function getJobDetails() {
   return {
     ok: true as const,
     summary: `${job.title} at ${job.company}. `
-      + `${requiredTags.length} required, ${niceToHaveTags.length} nice-to-have, ${unclassifiedTags.length} unclassified.`,
+      + `${requiredTags.length} required, ${niceToHaveTags.length} nice-to-have, ${unclassifiedTags.length} unclassified.`
+      + (requiredTags.length > 8 ? ' Call get_fit_gaps before working through them — it says which are already covered.' : ''),
     job: { ...jobSummary(job), location: job.location, postedAt: job.postedAt, source: job.source, url: job.url },
     description: job.description,
     descriptionTruncated: true,
@@ -373,6 +393,17 @@ export function getJobDetails() {
     niceToHaveTags: niceToHaveTags.map(strip),
     unclassifiedTags: unclassifiedTags.map(strip),
     minYears: job.minYears,
+    // A long requirement list is not a to-do list. Without this an agent tends
+    // to work through all of them in order; get_fit_gaps says which are already
+    // evidenced and which are genuinely missing, which is the useful ordering.
+    ...(requiredTags.length > 8
+      ? {
+        nextStep: 'get_fit_gaps',
+        nextStepReason: `${requiredTags.length} required items is too many to address one by one. `
+          + 'Call get_fit_gaps first: it splits them into what the fact bank already evidences and '
+          + 'what is genuinely missing, so you can lead with the covered work instead of walking the list.',
+      }
+      : {}),
   }
 }
 

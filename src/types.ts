@@ -100,6 +100,8 @@ export type PendingEdit = EditProposal & {
   before: string
   after: string
   status: 'pending' | 'accepted' | 'rejected'
+  /** Distinct pieces of work this sentence draws on. >1 is flagged, not blocked. */
+  combinesSources: number
 }
 
 export type GuardReason =

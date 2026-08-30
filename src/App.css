@@ -561,3 +561,14 @@ a.link { text-decoration: underline; }
 /* The right pane is narrow; let the caption drop to its own line rather than clip. */
 .appform .queue__note,
 .queue .queue__note { flex-basis: 100%; }
+
+/* A composition is allowed through, but the human is told to look at it. */
+.edit__combines {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--warn);
+  background: rgba(207, 112, 90, .09);
+  border-left: 2px solid var(--warn);
+  padding: 5px 7px;
+  margin: 0 0 6px;
+}

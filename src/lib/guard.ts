@@ -286,3 +286,30 @@ export function checkCoverNote(
       + 'The note is sent alongside the resume and is held to the same standard.',
   }
 }
+
+/**
+ * How many distinct pieces of work a proposed sentence draws on.
+ *
+ * Token matching cannot see entailment: "an OCR pipeline that reads fields from
+ * X-ray scans" takes every token from two real facts that never met, and each
+ * ingredient checks out. Rather than pretend to catch that, or block a
+ * legitimate summary sentence, we make it visible — the human is the final
+ * check, and the guard's job is to show them what actually needs checking.
+ *
+ * Projects are grouped by fact-id stem, so the three wagon-pipeline facts count
+ * as one piece of work while the wagon pipeline and the X-ray classifier count
+ * as two. Only achievements are grouped: skills are attributes of the candidate,
+ * not separate projects, and citing several of them is ordinary.
+ */
+export function sourceSpread(sourceFactIds: string[], facts: Fact[]): {
+  groups: string[]
+  combines: number
+} {
+  const groups = new Set<string>()
+  for (const id of sourceFactIds) {
+    const fact = facts.find((f) => f.id === id)
+    if (!fact || fact.kind !== 'achievement') continue
+    groups.add(id.split('_').slice(0, 2).join('_'))
+  }
+  return { groups: [...groups], combines: groups.size }
+}

@@ -12,7 +12,7 @@
 import jobsData from './data/jobs.json'
 import factsData from './data/profile-facts.json'
 import resumeData from './data/resume.json'
-import { checkCoverNote, checkEdit } from './lib/guard'
+import { checkCoverNote, checkEdit, sourceSpread } from './lib/guard'
 import { applyFilters, computeFitGaps, groupTags } from './lib/match'
 import type {
   Application, EditProposal, Fact, FactKind, FactRequest, Filters, GuardFailure,
@@ -414,7 +414,12 @@ export function proposeResumeEdits(edits: EditProposal[]) {
     return err('too_many_edits', 'At most 8 edits per call. Split them across turns so the human can review.')
   }
 
-  const queued: { editId: string; targetBlockId: string }[] = []
+  const queued: {
+    editId: string
+    targetBlockId: string
+    combinesSources: number
+    note?: string
+  }[] = []
   const rejected: GuardFailure[] = []
   const accepted: PendingEdit[] = []
 
@@ -424,6 +429,7 @@ export function proposeResumeEdits(edits: EditProposal[]) {
 
     const block = state.resume.find((b) => b.id === proposal.targetBlockId)!
     const id = `e_${++editSeq}`
+    const { combines } = sourceSpread(proposal.sourceFactIds, state.facts)
     accepted.push({
       ...proposal,
       id,
@@ -431,8 +437,18 @@ export function proposeResumeEdits(edits: EditProposal[]) {
       before: block.text,
       after: proposal.newText,
       status: 'pending',
+      combinesSources: combines,
     })
-    queued.push({ editId: id, targetBlockId: proposal.targetBlockId })
+    queued.push({
+      editId: id,
+      targetBlockId: proposal.targetBlockId,
+      combinesSources: combines,
+      ...(combines > 1 ? {
+        note: `Combines ${combines} separate pieces of work. Allowed, but flagged for the `
+          + 'user to verify — the guard checks that each ingredient is attested, not that '
+          + 'the combination is something that actually happened.',
+      } : {}),
+    })
   }
 
   if (accepted.length > 0) set({ pendingEdits: [...state.pendingEdits, ...accepted] })
@@ -441,6 +457,10 @@ export function proposeResumeEdits(edits: EditProposal[]) {
   const parts = [`${queued.length} of ${edits.length} edit${edits.length === 1 ? '' : 's'} queued for review.`]
   if (rejected.length > 0) {
     parts.push(`${rejected.length} rejected: ${rejected.map((r) => r.offendingTokens.join('/') || r.reason).join('; ')}.`)
+  }
+  const combined = queued.filter((q) => (q.combinesSources ?? 0) > 1).length
+  if (combined > 0) {
+    parts.push(`${combined} flagged for the user as combining separate pieces of work.`)
   }
   if (delta.scopeNote) parts.push(delta.scopeNote)
 

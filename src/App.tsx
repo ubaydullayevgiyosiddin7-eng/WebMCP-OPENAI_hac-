@@ -379,6 +379,14 @@ function EditCard({ edit }: { edit: PendingEdit }) {
 
       <p className="edit__rationale">{edit.rationale}</p>
 
+      {edit.combinesSources > 1 && (
+        <p className="edit__combines">
+          Combines {edit.combinesSources} separate pieces of work — verify this one.
+          Each term is backed by a cited fact, but nothing checks that the combination
+          describes something that actually happened.
+        </p>
+      )}
+
       <div className="edit__diff">
         <span className="d-ctx">{d.prefix}</span>
         {d.removed && <del className="d-del">{d.removed}</del>}

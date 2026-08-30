@@ -205,7 +205,11 @@ const CASES = [
   // ---- stitched claims ----------------------------------------------------
   {
     group: 'stitching',
-    name: 'two real facts stitched into an unclaimed combination',
+    // EXPECTED FAILURE, and deliberately kept. Token matching cannot see
+    // entailment. The claim is no longer silent, though: proposeResumeEdits
+    // marks it "combines 2 separate pieces of work — verify this one" in the
+    // diff, so the human is pointed straight at the sentence that needs it.
+    name: 'two real facts stitched into an unclaimed combination (surfaced, not blocked)',
     expect: 'refuse',
     proposal: {
       targetBlockId: 'b_exp_ocr',

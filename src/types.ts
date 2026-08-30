@@ -123,4 +123,10 @@ export type FactRequest = {
   claim: string
   kind: FactKind
   why: string
+  /**
+   * Concepts in the claim that the open posting requires and the fact bank does
+   * not support. Non-empty means the question is gap-driven, and the human is
+   * warned on screen regardless of what the agent chose to relay.
+   */
+  gapTags: string[]
 }

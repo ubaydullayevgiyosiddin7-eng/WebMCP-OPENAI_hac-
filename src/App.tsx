@@ -413,9 +413,19 @@ function FactRequestForm({ req }: { req: FactRequest }) {
   const [tokens, setTokens] = useState(() => [...conceptsIn(req.claim)].join(', '))
 
   return (
-    <div className="factreq">
+    <div className={`factreq ${req.gapTags?.length ? 'factreq--leading' : ''}`}>
       <h2 className="h2">The agent is asking you to confirm a fact</h2>
       <p className="factreq__why">{req.why}</p>
+
+      {req.gapTags?.length > 0 && (
+        <p className="factreq__leading">
+          <b>This question came from the job posting, not from your profile.</b>{' '}
+          Nothing you have recorded mentions {req.gapTags.join(' or ')}, and this posting requires
+          {req.gapTags.length === 1 ? ' it' : ' them'}. Add
+          {req.gapTags.length === 1 ? ' it' : ' them'} only if you have genuinely done this work.
+          A posting asking for something is not a reason to claim it.
+        </p>
+      )}
 
       <label className="factreq__label" htmlFor="fr-claim">Claim — edit it into your own words</label>
       <textarea
@@ -444,7 +454,7 @@ function FactRequestForm({ req }: { req: FactRequest }) {
             tokens.split(',').map((t) => t.trim()).filter(Boolean),
           )}
         >
-          Add to fact bank
+          {req.gapTags?.length ? 'Yes, I have done this' : 'Add to fact bank'}
         </button>
         <button className="btn" onClick={() => dismissFactRequest()}>Dismiss</button>
       </div>

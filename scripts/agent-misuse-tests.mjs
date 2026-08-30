@@ -149,6 +149,55 @@ check(
 )
 
 // ===================================================================
+console.log('\n=== A2. GAP-DRIVEN QUESTIONS ARE LEADING QUESTIONS ===')
+await page.goto(`${URL}?reset=1`, { waitUntil: 'networkidle' })
+await call('open_job', { jobId: JOB_A })
+
+let g = await call('request_profile_fact', {
+  claim: 'I have production Kubernetes experience.',
+  kind: 'skill',
+  why: 'The posting requires Kubernetes.',
+})
+check('asking about a required-but-unsupported skill is flagged leading',
+  g.leadingQuestion === true && g.gapTags?.includes('kubernetes'),
+  `gapTags: ${JSON.stringify(g.gapTags)}`)
+check('the warning leads the summary, so an agent reading only summary sees it',
+  /^This is a leading question/.test(g.summary ?? ''), (g.summary ?? '').slice(0, 95))
+check('the agent is told to relay it, not merely informed',
+  /say this to them/i.test(g.warning ?? ''), (g.warning ?? '').slice(0, 80))
+
+const onScreen = await page.locator('.factreq__leading').isVisible()
+check('the human is warned on screen regardless of what the agent relays',
+  onScreen, `notice visible: ${onScreen}`)
+const btn = await page.locator('.factreq .btn--accept').innerText()
+check('the confirm button asks for a claim, not an action',
+  /have done this/i.test(btn), `button reads: "${btn}"`)
+
+// A question about something the posting does NOT require is ordinary.
+await page.goto(`${URL}?reset=1`, { waitUntil: 'networkidle' })
+await call('open_job', { jobId: JOB_A })
+g = await call('request_profile_fact', {
+  claim: 'I presented this work at a national conference.',
+  kind: 'achievement',
+  why: 'Worth recording.',
+})
+check('an ordinary question is not flagged',
+  !g.leadingQuestion && (g.gapTags ?? []).length === 0,
+  (g.summary ?? '').slice(0, 80))
+const plain = await page.locator('.factreq__leading').count()
+check('and shows no warning on screen', plain === 0, `notices: ${plain}`)
+
+// The contract's demo beat must still work: the user says it, the agent relays.
+g = await call('request_profile_fact', {
+  claim: 'I have production Kubernetes experience.',
+  kind: 'skill',
+  why: 'The user said so.',
+})
+check('a flagged question is still ALLOWED, not refused (demo beat 6 survives)',
+  g.ok === true && g.status === 'awaiting_user',
+  `status: ${g.status}`)
+
+// ===================================================================
 console.log('\n=== B. WRONG OBJECT / WRONG ORDER ===')
 await page.goto(`${URL}?reset=1`, { waitUntil: 'networkidle' })
 

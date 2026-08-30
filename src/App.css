@@ -643,3 +643,20 @@ a.link { text-decoration: underline; }
   .tchip, .tchip.is-out { animation: none; }
   .tchip.is-out { opacity: .5; }
 }
+
+/* A gap-driven request is a leading question. Say so where the human decides,
+   not only in the agent's return value — the warning must not depend on the
+   agent choosing to relay it. */
+.factreq--leading { border-top-color: var(--warn); }
+.factreq--leading .h2 { color: var(--warn); }
+
+.factreq__leading {
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--text);
+  background: rgba(207, 112, 90, .12);
+  border-left: 2px solid var(--warn);
+  padding: 7px 9px;
+  margin: 0 0 8px;
+}
+.factreq__leading b { color: var(--warn); }

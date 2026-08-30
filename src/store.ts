@@ -12,8 +12,8 @@
 import jobsData from './data/jobs.json'
 import factsData from './data/profile-facts.json'
 import resumeData from './data/resume.json'
-import { checkCoverNote, checkEdit, sourceSpread } from './lib/guard'
-import { applyFilters, computeFitGaps, groupTags } from './lib/match'
+import { checkCoverNote, checkEdit, conceptsIn, sourceSpread } from './lib/guard'
+import { applyFilters, computeFitGaps, groupTags, profileCoverage } from './lib/match'
 import type {
   Application, EditProposal, Fact, FactKind, FactRequest, Filters, GuardFailure,
   Job, PendingEdit, ResumeBlock, ResumeSection,
@@ -628,11 +628,50 @@ export function requestProfileFact(req: FactRequest) {
   if (!req?.claim || !req?.kind) {
     return err('bad_request', 'Pass claim, kind and why. The user sees the claim pre-filled and decides.')
   }
-  set({ factRequest: { claim: String(req.claim), kind: req.kind, why: String(req.why ?? '') } })
+  const claim = String(req.claim)
+
+  // A question is "gap-driven" when it is about a skill the open posting
+  // requires and nothing in the fact bank supports. Those are leading
+  // questions: the user is being asked whether they have the exact thing that
+  // would make them a better candidate, by a system that already knows the
+  // answer is probably no. The app cannot tell that apart from the user
+  // volunteering it — it cannot hear the conversation — so this warns rather
+  // than refuses. Refusing would also break the legitimate relay in the
+  // contract's own demo script, where the user says "say I know Kubernetes".
+  const job = openJob()
+  const required = new Set(job?.tagNames ?? [])
+  const covered = profileCoverage(state.facts)
+  const gapTags = [...conceptsIn(claim)].filter((c) => required.has(c) && !covered.has(c))
+
+  set({
+    factRequest: {
+      claim,
+      kind: req.kind,
+      why: String(req.why ?? ''),
+      gapTags,
+    },
+  })
+
+  const base = `Asked the user to confirm: "${claim}". Nothing was added — continue, and re-read get_profile_facts later.`
+  if (gapTags.length === 0) {
+    return { ok: true as const, summary: base, status: 'awaiting_user' as const, gapTags }
+  }
+
+  const warning = `This is a leading question. ${gapTags.join(', ')} `
+    + `${gapTags.length === 1 ? 'is' : 'are'} required by the open posting and nothing in the fact bank `
+    + 'supports it, so you are asking the user for the one answer that would improve their match. '
+    + 'Say this to them in your own reply: the app has no evidence for this, you are asking because the '
+    + 'posting demands it, and they should only confirm it if they have genuinely done the work. '
+    + 'Do not present it as a formality or imply the application needs it. The user is shown the same '
+    + 'warning on screen either way.'
+
   return {
     ok: true as const,
-    summary: `Asked the user to confirm: "${req.claim}". Nothing was added — continue, and re-read get_profile_facts later.`,
     status: 'awaiting_user' as const,
+    summary: `${warning} ${base}`,
+    leadingQuestion: true,
+    gapTags,
+    warning,
   }
 }
 

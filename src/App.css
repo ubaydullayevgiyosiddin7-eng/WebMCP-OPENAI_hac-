@@ -106,9 +106,12 @@ body {
 }
 
 .pane { min-width: 0; overflow-y: auto; overflow-x: hidden; }
-.pane--left   { background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; }
-.pane--center { background: var(--bg); }
-.pane--right  { background: var(--panel); border-left: 1px solid var(--line); }
+
+/* Explicit columns. Without these, hiding the left pane lets the centre
+   auto-place into the collapsed 0-width track instead of keeping column 2. */
+.pane--left   { grid-column: 1; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; }
+.pane--center { grid-column: 2; background: var(--bg); }
+.pane--right  { grid-column: 3; background: var(--panel); border-left: 1px solid var(--line); }
 
 /* ---------------------------------------------------------------- filters */
 
@@ -588,13 +591,10 @@ a.link { text-decoration: underline; }
 /* ---------------------------------------------------------------- tool rail */
 
 .rail {
-  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 4px 12px;
-  background: var(--panel-2);
-  border-bottom: 1px solid var(--line);
+  padding: 5px 12px 7px;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
@@ -612,12 +612,18 @@ a.link { text-decoration: underline; }
 .rail__group { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; }
 .rail__group + .rail__group { border-left: 1px solid var(--line); padding-left: 12px; }
 
+/* The grouping is the argument, so the labels are not the faintest thing here. */
 .rail__label {
   font-family: var(--mono);
   font-size: 9.5px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--dimmer);
+  letter-spacing: .1em;
+  color: var(--accent);
+  background: rgba(224, 163, 65, .12);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--r);
+  padding: 3px 6px;
 }
 
 .tchip {
@@ -831,3 +837,138 @@ a.link { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) {
   .pane--left { transition: none; }
 }
+
+/* ---------------------------------------------------------------- rail shell */
+
+.railwrap {
+  flex: 0 0 auto;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.railwrap__head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 5px 12px;
+  background: none;
+  border: 0;
+  color: var(--dim);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.railwrap__head:hover { color: var(--text); }
+.railwrap__say b { color: var(--accent); font-variant-numeric: tabular-nums; }
+.railwrap__caret { color: var(--dimmer); transform: rotate(-90deg); transition: transform .15s; }
+.railwrap__caret.is-open { transform: none; }
+.railwrap__hint { margin-left: auto; font-size: 10.5px; color: var(--dimmer); }
+
+/* ---------------------------------------------------------------- header */
+
+.pill {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--dim);
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pill b { color: var(--text); font-variant-numeric: tabular-nums; }
+.pill:hover { color: var(--text); border-color: var(--dimmer); }
+.pill.is-on { color: var(--accent); border-color: var(--accent-dim); background: var(--raised); }
+
+.resume__who {
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 1px;
+  line-height: 1.35;
+}
+
+/* ---------------------------------------------------------------- filter sections */
+
+.fsec { padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+.fsec:first-child { padding-top: 0; }
+.fsec:last-of-type { border-bottom: 0; }
+
+.fsec__h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--dim);
+  margin: 0 0 6px;
+}
+.fsec__more { font-size: 10px; }
+
+.fsec__sub {
+  font-size: 10.5px;
+  color: var(--dimmer);
+  margin: 6px 0 4px;
+}
+.fsec__sub:first-of-type { margin-top: 0; }
+
+.fsec__row { display: flex; gap: 6px; }
+.fsec__row .input--sm { flex: 1 1 0; min-width: 0; }
+
+/* "On-site" was wrapping inside its own button. */
+.seg--wide { width: 100%; }
+.seg--wide button { flex: 1 1 0; white-space: nowrap; padding: 4px 6px; }
+
+/* ---------------------------------------------------------------- empty state */
+
+.empty { padding: 44px 28px; max-width: 62ch; color: var(--text); }
+.empty__h { font-size: 18px; font-weight: 600; line-height: 1.3; margin: 0 0 12px; }
+.empty__lede { font-size: 13px; line-height: 1.65; color: var(--dim); margin: 0 0 16px; }
+.empty__start {
+  font-size: 13px;
+  color: var(--accent);
+  margin: 0 0 22px;
+  padding-left: 10px;
+  border-left: 2px solid var(--accent);
+}
+.empty__note {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--dimmer);
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+}
+.empty__note code { font-family: var(--mono); color: var(--dim); }
+
+/* ---------------------------------------------------------------- collapsing */
+
+.panes.is-list-collapsed { grid-template-columns: 0 minmax(0, 1fr) 400px; }
+.panes.is-resume-collapsed { grid-template-columns: 330px minmax(0, 1fr) 0; }
+.panes.is-list-collapsed.is-resume-collapsed { grid-template-columns: 0 minmax(0, 1fr) 0; }
+.panes.is-list-collapsed .pane--left { display: none; }
+.panes.is-resume-collapsed .pane--right { display: none; }
+
+@media (max-width: 1000px) {
+  /* The list is an overlay here, so collapsing it is just hiding the overlay. */
+  .panes.is-list-collapsed .pane--left { display: block; }
+  .panes.is-resume-collapsed .pane--right { display: none; }
+  .empty { padding: 26px 16px; }
+  .empty__h { font-size: 16px; }
+}
+
+/* The name is a byline, not a second heading — one line, and it yields first. */
+.resume__head { align-items: baseline; gap: 10px; }
+.resume__head > div { min-width: 0; }
+.resume__who { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.resume__state { flex: 0 0 auto; white-space: nowrap; }
+
+/* A display rule outranks the UA stylesheet's [hidden], so a hidden flex
+   container stays visible unless this is stated explicitly. */
+[hidden] { display: none !important; }

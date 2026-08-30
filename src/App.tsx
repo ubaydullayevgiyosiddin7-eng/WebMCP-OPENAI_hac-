@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import './App.css'
 import { conceptsIn } from './lib/guard'
-import { groupTags, profileCoverage } from './lib/match'
+import { groupTags, profileCoverage, resolveToken } from './lib/match'
 import {
   ALWAYS_TOOLS, ATTRIBUTION, EDIT_SCOPED_TOOLS, FACTS, JOBS, JOB_SCOPED_TOOLS,
   PREPARE_SCOPED_TOOLS, PROFILE, SUBMIT_SCOPED_TOOLS, acceptEdit, cancelSubmit, closeJob,
@@ -13,6 +13,20 @@ import {
 import { initTools } from './tools'
 import type { Application, FactRequest, Job, JobTag, PendingEdit, ResumeSection, Seniority } from './types'
 import { EMPTY_FILTERS } from './types'
+
+/** Panel layout is a viewing preference, not app state — kept under its own key
+ *  so ?reset=1 restores the demo data without rearranging someone's workspace. */
+const PREFS_KEY = 'tailor.ui.v1'
+type Prefs = { list: boolean; resume: boolean; rail: boolean; allTags: boolean }
+const DEFAULT_PREFS: Prefs = { list: true, resume: true, rail: true, allTags: false }
+
+function loadPrefs(): Prefs {
+  try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') } }
+  catch { return DEFAULT_PREFS }
+}
+function savePrefs(p: Prefs) {
+  try { localStorage.setItem(PREFS_KEY, JSON.stringify(p)) } catch { /* private mode */ }
+}
 
 const SENIORITIES: Seniority[] = ['junior', 'mid', 'senior', 'lead']
 const SECTION_ORDER: ResumeSection[] = ['summary', 'experience', 'skills', 'education']
@@ -34,13 +48,43 @@ const FILTER_TAGS = (() => {
 
   for (const [tag] of byFreq.slice(0, 10)) keep.add(tag)
   for (const [tag] of byFreq) if (covered.has(tag)) keep.add(tag)
-
   return byFreq.filter(([tag]) => keep.has(tag))
+})()
+
+/**
+ * Skills are shown as two labelled groups rather than one ranked list.
+ *
+ * Ranking by demand alone is useless here: the candidate can evidence 28 of the
+ * 32 tags, so "his" tags are not a subset that frequency would surface —
+ * computer vision (12 postings) sits below azure (34), and the four he cannot
+ * evidence are exactly the four the market asks for most. Two groups say
+ * something a single list cannot: what this market wants, and what his shipped
+ * projects prove.
+ */
+const DEMAND_TAGS = FILTER_TAGS.slice(0, 8)
+
+const PROVEN_TAGS = (() => {
+  // Canonicals evidenced by achievement facts — work that shipped, not skills
+  // claimed in the abstract.
+  const proven = new Set<string>()
+  for (const f of FACTS) {
+    if (f.kind !== 'achievement') continue
+    for (const t of f.tokens) {
+      const c = resolveToken(t)
+      if (c) proven.add(c)
+    }
+  }
+  const inDemand = new Set(DEMAND_TAGS.map(([t]) => t))
+  return FILTER_TAGS.filter(([t]) => proven.has(t) && !inDemand.has(t)).slice(0, 6)
 })()
 
 export default function App() {
   const state = useSyncExternalStore(subscribe, getState)
-  const [listOpen, setListOpen] = useState(true)
+  const [prefs, setPrefsState] = useState<Prefs>(loadPrefs)
+  const setPref = (patch: Partial<Prefs>) =>
+    setPrefsState((prev) => { const next = { ...prev, ...patch }; savePrefs(next); return next })
+  const listOpen = prefs.list
+  const setListOpen = (v: boolean) => setPref({ list: v })
 
   useEffect(() => { initTools() }, [])
 
@@ -70,13 +114,24 @@ export default function App() {
         webmcp={state.webmcp}
         matchCount={matches.length}
         listOpen={listOpen}
-        onToggleList={() => setListOpen((v) => !v)}
+        resumeOpen={prefs.resume}
+        onToggleList={() => setListOpen(!listOpen)}
+        onToggleResume={() => setPref({ resume: !prefs.resume })}
       />
-      <ToolRail names={tools} />
+      <ToolRail names={tools} open={prefs.rail} onToggle={() => setPref({ rail: !prefs.rail })} />
 
-      <main className={`panes ${needsAttention ? 'panes--review-first' : ''} ${listOpen ? 'is-list-open' : ''}`}>
+      <main className={[
+        'panes',
+        needsAttention ? 'panes--review-first' : '',
+        listOpen ? 'is-list-open' : 'is-list-collapsed',
+        prefs.resume ? '' : 'is-resume-collapsed',
+      ].filter(Boolean).join(' ')}>
         <section className="pane pane--left" aria-label="Filters and job list">
-          <Filters matchCount={matches.length} />
+          <Filters
+            matchCount={matches.length}
+            allTags={prefs.allTags}
+            onToggleTags={() => setPref({ allTags: !prefs.allTags })}
+          />
           <JobList jobs={matches} openJobId={state.openJobId} />
         </section>
 
@@ -84,7 +139,7 @@ export default function App() {
           {job ? <JobDetail job={job} /> : <EmptyDetail />}
         </section>
 
-        <section className="pane pane--right" aria-label="Resume, review queue and applications">
+        <section className="pane pane--right" aria-label="Resume, review queue and applications" hidden={!prefs.resume}>
           <FactRequestPanel />
           <RefusalList refusals={state.refusals} />
           <ReviewQueue edits={pending} />
@@ -99,24 +154,25 @@ export default function App() {
   )
 }
 
-function StatusStrip({ webmcp, matchCount, listOpen, onToggleList }: {
+function StatusStrip({ webmcp, matchCount, listOpen, resumeOpen, onToggleList, onToggleResume }: {
   webmcp: 'unsupported' | 'active'
   matchCount: number
   listOpen: boolean
+  resumeOpen: boolean
   onToggleList: () => void
+  onToggleResume: () => void
 }) {
   return (
     <header className="strip">
-      <button
-        className={`strip__jobs ${listOpen ? 'is-on' : ''}`}
-        onClick={onToggleList}
-        aria-expanded={listOpen}
-      >
-        jobs <b>{matchCount}</b>
-      </button>
       <span className="strip__brand">tailor</span>
       <span className="strip__sep" />
-      <span className="strip__who">{PROFILE.name} — {PROFILE.headline}</span>
+
+      <button className={`pill ${listOpen ? 'is-on' : ''}`} onClick={onToggleList} aria-pressed={listOpen}>
+        Jobs <b>{matchCount}</b>
+      </button>
+      <button className={`pill ${resumeOpen ? 'is-on' : ''}`} onClick={onToggleResume} aria-pressed={resumeOpen}>
+        Résumé
+      </button>
 
       <span className="strip__spacer" />
 
@@ -146,71 +202,109 @@ function ResetControl() {
   )
 }
 
-function Filters({ matchCount }: { matchCount: number }) {
+function Filters({ matchCount, allTags, onToggleTags }: {
+  matchCount: number
+  allTags: boolean
+  onToggleTags: () => void
+}) {
   const { filters } = useSyncExternalStore(subscribe, getState)
   const dirty = JSON.stringify(filters) !== JSON.stringify(EMPTY_FILTERS)
 
   return (
     <div className="filters">
-      <div className="filters__row">
+      <section className="fsec">
+        <h3 className="fsec__h">Search</h3>
         <input
           className="input"
           type="search"
-          placeholder="Search title, company, description…"
+          placeholder="Title, company, description…"
           value={filters.query}
           onChange={(e) => patchFilters({ query: e.target.value })}
         />
-      </div>
+      </section>
 
-      <div className="filters__row">
-        <div className="seg" role="group" aria-label="Location">
+      <section className="fsec">
+        <h3 className="fsec__h">Work type</h3>
+        <div className="seg seg--wide" role="group" aria-label="Work type">
           <button className={filters.remote === null ? 'is-on' : ''} onClick={() => patchFilters({ remote: null })}>Any</button>
           <button className={filters.remote === true ? 'is-on' : ''} onClick={() => patchFilters({ remote: true })}>Remote</button>
           <button className={filters.remote === false ? 'is-on' : ''} onClick={() => patchFilters({ remote: false })}>On-site</button>
         </div>
+      </section>
 
-        <select
-          className="input input--sm"
-          value={filters.seniority ?? ''}
-          onChange={(e) => patchFilters({ seniority: (e.target.value || null) as Seniority | null })}
-          aria-label="Seniority"
-        >
-          <option value="">Any level</option>
-          {SENIORITIES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+      <section className="fsec">
+        <h3 className="fsec__h">Level &amp; experience</h3>
+        <div className="fsec__row">
+          <select
+            className="input input--sm"
+            value={filters.seniority ?? ''}
+            onChange={(e) => patchFilters({ seniority: (e.target.value || null) as Seniority | null })}
+            aria-label="Seniority"
+          >
+            <option value="">Any level</option>
+            {SENIORITIES.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+          <select
+            className="input input--sm"
+            value={filters.maxYears ?? ''}
+            onChange={(e) => patchFilters({ maxYears: e.target.value === '' ? null : Number(e.target.value) })}
+            aria-label="Maximum years required"
+          >
+            <option value="">Any years</option>
+            {[0, 1, 2, 3, 4, 5, 7, 10].map((y) => <option key={y} value={y}>≤ {y} years</option>)}
+          </select>
+        </div>
+      </section>
 
-        <select
-          className="input input--sm"
-          value={filters.maxYears ?? ''}
-          onChange={(e) => patchFilters({ maxYears: e.target.value === '' ? null : Number(e.target.value) })}
-          aria-label="Maximum years required"
-        >
-          <option value="">Any years</option>
-          {[0, 1, 2, 3, 4, 5, 7, 10].map((y) => <option key={y} value={y}>≤ {y}y</option>)}
-        </select>
-      </div>
+      <section className="fsec">
+        <h3 className="fsec__h">
+          Skills
+          <button className="link fsec__more" onClick={onToggleTags}>
+            {allTags ? 'show fewer' : `show all ${FILTER_TAGS.length}`}
+          </button>
+        </h3>
 
-      <div className="filters__tags">
-        {FILTER_TAGS.map(([tag, n]) => {
-          const on = filters.tags.includes(tag)
-          return (
-            <button
-              key={tag}
-              className={`chip chip--btn ${on ? 'is-on' : ''}`}
-              onClick={() => patchFilters({
-                tags: on ? filters.tags.filter((t) => t !== tag) : [...filters.tags, tag],
-              })}
-            >
-              {tag}<span className="chip__n">{n}</span>
-            </button>
-          )
-        })}
-      </div>
+        {!allTags && (
+          <>
+            <div className="fsec__sub">Most asked for on this board</div>
+            <TagChips tags={DEMAND_TAGS} selected={filters.tags} />
+            <div className="fsec__sub">Proven in your shipped projects</div>
+            <TagChips tags={PROVEN_TAGS} selected={filters.tags} />
+          </>
+        )}
+        {allTags && (
+          <>
+            <div className="fsec__sub">All {FILTER_TAGS.length} skills on this board</div>
+            <TagChips tags={FILTER_TAGS} selected={filters.tags} />
+          </>
+        )}
+      </section>
 
       <div className="filters__foot">
-        <span className="count"><b>{matchCount}</b> of {JOBS.length}</span>
+        <span className="count"><b>{matchCount}</b> of {JOBS.length} jobs</span>
         {dirty && <button className="link" onClick={() => resetFilters()}>clear filters</button>}
       </div>
+    </div>
+  )
+}
+
+function TagChips({ tags, selected }: { tags: [string, number][]; selected: string[] }) {
+  return (
+    <div className="filters__tags">
+      {tags.map(([tag, n]) => {
+        const on = selected.includes(tag)
+        return (
+          <button
+            key={tag}
+            className={`chip chip--btn ${on ? 'is-on' : ''}`}
+            onClick={() => patchFilters({
+              tags: on ? selected.filter((t) => t !== tag) : [...selected, tag],
+            })}
+          >
+            {tag}<span className="chip__n">{n}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -250,10 +344,18 @@ function JobList({ jobs, openJobId }: { jobs: Job[]; openJobId: string | null })
 function EmptyDetail() {
   return (
     <div className="empty">
-      <p>No job open.</p>
-      <p className="empty__hint">
-        Select a posting on the left. Two extra tools — <code>get_job_details</code> and{' '}
-        <code>get_fit_gaps</code> — register while a job is open, and the counter above will move.
+      <h2 className="empty__h">Tailor your résumé to a specific job — without inventing anything.</h2>
+      <p className="empty__lede">
+        Pick a posting from the list. The app reads what the job asks for, compares it against
+        the facts you have recorded about your own work, and lets your AI agent propose rewrites
+        that you accept or reject one at a time. Any claim it cannot trace back to one of your
+        facts is refused before it reaches you.
+      </p>
+      <p className="empty__start">Start by opening a posting on the left.</p>
+      <p className="empty__note">
+        Opening one gives your agent four more actions: <code>get_job_details</code>,{' '}
+        <code>get_fit_gaps</code>, <code>propose_resume_edits</code> and{' '}
+        <code>prepare_application</code>.
       </p>
     </div>
   )
@@ -336,7 +438,10 @@ function ResumePane() {
   return (
     <div className="resume">
       <header className="resume__head">
-        <h2 className="h2">Resume</h2>
+        <div>
+          <h2 className="h2">Résumé</h2>
+          <div className="resume__who">{PROFILE.name} · {PROFILE.headline}</div>
+        </div>
         <span className="resume__state">baseline · untailored</span>
       </header>
 
@@ -650,7 +755,11 @@ const TOOL_GROUPS: { label: string; members: readonly string[] }[] = [
  * legible. Departing tools linger briefly greyed-out so a removal is as
  * perceptible as an arrival.
  */
-function ToolRail({ names }: { names: string[] }) {
+function ToolRail({ names, open, onToggle }: {
+  names: string[]
+  open: boolean
+  onToggle: () => void
+}) {
   const key = names.join()
   const [seen, setSeen] = useState({ key, names, leaving: [] as string[] })
 
@@ -665,8 +774,15 @@ function ToolRail({ names }: { names: string[] }) {
   }, [seen.leaving])
 
   return (
-    <div className="rail" aria-label="Tools registered for the agent">
-      <span className="rail__count"><b>{names.length}</b> tools</span>
+    <div className="railwrap">
+      <button className="railwrap__head" onClick={onToggle} aria-expanded={open}>
+        <span className={`railwrap__caret ${open ? 'is-open' : ''}`}>▾</span>
+        <span className="railwrap__say">
+          Your agent can perform <b>{names.length}</b> action{names.length === 1 ? '' : 's'} right now
+        </span>
+        <span className="railwrap__hint">{open ? 'hide' : 'show'}</span>
+      </button>
+      <div className="rail" aria-label="Tools registered for the agent" hidden={!open}>
       {TOOL_GROUPS.map((g) => {
         const live = g.members.filter((m) => names.includes(m))
         const going = g.members.filter((m) => seen.leaving.includes(m))
@@ -679,6 +795,7 @@ function ToolRail({ names }: { names: string[] }) {
           </span>
         )
       })}
+      </div>
     </div>
   )
 }

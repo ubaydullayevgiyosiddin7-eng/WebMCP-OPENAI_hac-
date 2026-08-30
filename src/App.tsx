@@ -192,7 +192,7 @@ function StatusStrip({ webmcp, matchCount, listOpen, resumeOpen, onToggleList, o
         Jobs <b>{matchCount}</b>
       </button>
       <button className={`pill ${resumeOpen ? 'is-on' : ''}`} onClick={onToggleResume} aria-pressed={resumeOpen}>
-        Résumé
+        Resume
       </button>
 
       <span className="strip__spacer" />
@@ -376,7 +376,7 @@ function JobList({ jobs, openJobId }: { jobs: Job[]; openJobId: string | null })
 function EmptyDetail() {
   return (
     <div className="empty">
-      <h2 className="empty__h">Tailor your résumé to a specific job — without inventing anything.</h2>
+      <h2 className="empty__h">Tailor your resume to a specific job — without inventing anything.</h2>
       <p className="empty__lede">
         Pick a posting from the list. The app reads what the job asks for, compares it against
         the facts you have recorded about your own work, and lets your AI agent propose rewrites
@@ -471,7 +471,7 @@ function ResumePane() {
     <div className="resume">
       <header className="resume__head">
         <div>
-          <h2 className="h2">Résumé</h2>
+          <h2 className="h2">Resume</h2>
           <div className="resume__who">{PROFILE.name} · {PROFILE.headline}</div>
         </div>
         <span className="resume__state">baseline · untailored</span>

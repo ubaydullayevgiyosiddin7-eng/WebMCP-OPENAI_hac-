@@ -42,7 +42,7 @@ type Fact = {
   id: string;              // "f_react_5y"
   kind: "skill" | "role" | "achievement" | "education" | "language";
   text: string;            // "Built and shipped 4 React SPAs at Acme, 2021-2024"
-  tokens: string[];        // ["react", "spa", "acme"] — normalized, used by the guard
+  tokens: string[];        // ["react", "spa", "acme"] — normalised, used by the guard
 };
 
 type ResumeBlock = {
@@ -67,7 +67,7 @@ type Job = {
   remote: boolean;
   seniority: "junior" | "mid" | "senior" | "lead";
   minYears: number | null;
-  tags: JobTag[];          // normalized tech tags, each carrying its evidence
+  tags: JobTag[];          // normalised tech tags, each carrying its evidence
   tagNames: string[];      // derived — tags.map(t => t.tag), for cheap filtering
   description: string;     // truncated to 1400 chars; full text stays at `url`
   url: string;
@@ -330,7 +330,7 @@ honest in both directions.
 
 Aliases are derived from the corpus by measurement, never from intuition. Forms
 whose corpus usage is dominated by another meaning are excluded from job-text
-matching even when they look obvious — `cv` is résumé roughly half the time,
+matching even when they look obvious — `cv` is resume roughly half the time,
 `serving` is "serving 50,000+ customers", `classification` is overwhelmingly
 *text* classification, and `offline` means offline *evaluation*. Such forms may
 still resolve a profile token, where they are unambiguous, but they must never

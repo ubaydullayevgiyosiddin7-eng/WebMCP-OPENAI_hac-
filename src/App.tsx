@@ -5,7 +5,8 @@ import { groupTags, profileCoverage } from './lib/match'
 import {
   ALWAYS_TOOLS, ATTRIBUTION, EDIT_SCOPED_TOOLS, FACTS, JOBS, JOB_SCOPED_TOOLS,
   PREPARE_SCOPED_TOOLS, PROFILE, SUBMIT_SCOPED_TOOLS, acceptEdit, cancelSubmit, closeJob,
-  confirmSubmit, discardApplication, dismissFactRequest, getState,
+  clearRefusals, confirmSubmit, discardApplication, dismissFactRequest,
+  dismissRefusal, factById, getState,
   openJob as getOpenJob, hasCustomState, patchFilters, rejectEdit, resetDemoData,
   resetFilters, saveFactRequest, selectJob, subscribe, toolsInScope, visibleJobs,
 } from './store'
@@ -39,19 +40,41 @@ const FILTER_TAGS = (() => {
 
 export default function App() {
   const state = useSyncExternalStore(subscribe, getState)
+  const [listOpen, setListOpen] = useState(true)
 
   useEffect(() => { initTools() }, [])
+
+  // Opening a job is a decision to work on it; at narrow widths the list has
+  // done its job and the posting needs the room. Compared during render rather
+  // than synced in an effect — this is a reaction to a state change, not to an
+  // external system.
+  const [lastJobId, setLastJobId] = useState(state.openJobId)
+  if (lastJobId !== state.openJobId) {
+    setLastJobId(state.openJobId)
+    if (state.openJobId && window.matchMedia('(max-width: 1000px)').matches) setListOpen(false)
+  }
 
   const matches = useMemo(() => visibleJobs(state), [state])
   const job = getOpenJob(state)
   const tools = toolsInScope(state)
 
+  const pending = state.pendingEdits.filter((e) => e.status === 'pending')
+  // At recording width the panes cannot sit side by side, so whatever the human
+  // must act on is pulled above the posting. Nothing that needs a decision may
+  // require scrolling to find.
+  const needsAttention = pending.length > 0 || state.refusals.length > 0 || Boolean(state.factRequest)
+
   return (
     <div className="app">
-      <StatusStrip webmcp={state.webmcp} />
+      <StatusStrip
+        webmcp={state.webmcp}
+        matchCount={matches.length}
+        listOpen={listOpen}
+        onToggleList={() => setListOpen((v) => !v)}
+      />
       <ToolRail names={tools} />
 
-      <main className="panes">
+      <main className={`panes ${needsAttention ? 'panes--review-first' : ''} ${listOpen ? 'is-list-open' : ''}`}>
         <section className="pane pane--left" aria-label="Filters and job list">
           <Filters matchCount={matches.length} />
           <JobList jobs={matches} openJobId={state.openJobId} />
@@ -63,7 +86,8 @@ export default function App() {
 
         <section className="pane pane--right" aria-label="Resume, review queue and applications">
           <FactRequestPanel />
-          <ReviewQueue edits={state.pendingEdits.filter((e) => e.status === 'pending')} />
+          <RefusalList refusals={state.refusals} />
+          <ReviewQueue edits={pending} />
           <PreparedApplication apps={state.applications} />
           <ResumePane />
           <Tracker apps={state.applications} />
@@ -75,9 +99,21 @@ export default function App() {
   )
 }
 
-function StatusStrip({ webmcp }: { webmcp: 'unsupported' | 'active' }) {
+function StatusStrip({ webmcp, matchCount, listOpen, onToggleList }: {
+  webmcp: 'unsupported' | 'active'
+  matchCount: number
+  listOpen: boolean
+  onToggleList: () => void
+}) {
   return (
     <header className="strip">
+      <button
+        className={`strip__jobs ${listOpen ? 'is-on' : ''}`}
+        onClick={onToggleList}
+        aria-expanded={listOpen}
+      >
+        jobs <b>{matchCount}</b>
+      </button>
       <span className="strip__brand">tailor</span>
       <span className="strip__sep" />
       <span className="strip__who">{PROFILE.name} — {PROFILE.headline}</span>
@@ -350,6 +386,43 @@ function diffParts(before: string, after: string) {
   }
 }
 
+function RefusalList({ refusals }: { refusals: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string }[] }) {
+  if (refusals.length === 0) return null
+  return (
+    <div className="refusals">
+      <header className="queue__head">
+        <h2 className="h2">Guard held {refusals.length === 1 ? 'a claim' : `${refusals.length} claims`} back</h2>
+        {refusals.length > 1 && <button className="link" onClick={() => clearRefusals()}>dismiss all</button>}
+      </header>
+      {refusals.map((r) => <Refusal key={r.id} r={r} />)}
+    </div>
+  )
+}
+
+function Refusal({ r }: { r: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string } }) {
+  const plural = r.offendingTokens.length !== 1
+  return (
+    <article className="refusal">
+      <div className="refusal__label">refused</div>
+
+      <div className="refusal__tokens">
+        {r.offendingTokens.map((t) => <span key={t} className="refusal__token">{t}</span>)}
+      </div>
+
+      <p className="refusal__why">
+        {r.reason === 'unsupported_claim'
+          ? `Nothing you have claimed supports ${plural ? 'these terms' : 'this term'}. The edit was not queued.`
+          : `The edit was not queued (${r.reason.replace(/_/g, ' ')}).`}
+      </p>
+
+      <div className="refusal__foot">
+        <code className="block__id">{r.targetBlockId}</code>
+        <button className="link" onClick={() => dismissRefusal(r.id)}>dismiss</button>
+      </div>
+    </article>
+  )
+}
+
 function ReviewQueue({ edits }: { edits: PendingEdit[] }) {
   if (edits.length === 0) return null
   return (
@@ -365,22 +438,15 @@ function ReviewQueue({ edits }: { edits: PendingEdit[] }) {
 
 function EditCard({ edit }: { edit: PendingEdit }) {
   const d = diffParts(edit.before, edit.after)
+  const combined = edit.combinesSources > 1
   return (
-    <article className="edit">
+    <article className={`edit ${combined ? 'edit--combined' : ''}`}>
       <div className="edit__top">
         <code className="edit__id">{edit.id}</code>
         <code className="edit__target">{edit.targetBlockId}</code>
       </div>
 
       <p className="edit__rationale">{edit.rationale}</p>
-
-      {edit.combinesSources > 1 && (
-        <p className="edit__combines">
-          Combines {edit.combinesSources} separate pieces of work — verify this one.
-          Each term is backed by a cited fact, but nothing checks that the combination
-          describes something that actually happened.
-        </p>
-      )}
 
       <div className="edit__diff">
         <span className="d-ctx">{d.prefix}</span>
@@ -389,9 +455,28 @@ function EditCard({ edit }: { edit: PendingEdit }) {
         <span className="d-ctx">{d.suffix}</span>
       </div>
 
-      <div className="edit__facts">
-        {edit.sourceFactIds.map((id) => <span key={id} className="factref">{id}</span>)}
+      {/* Provenance is the load-bearing element: the claim rests on facts the
+          user wrote, quoted here rather than referenced by id. */}
+      <div className="grounds">
+        <div className="grounds__label">grounded in {edit.sourceFactIds.length} of your facts</div>
+        {edit.sourceFactIds.map((id) => {
+          const f = factById(id)
+          return (
+            <p key={id} className="grounds__item">
+              <code className="grounds__id">{id}</code>
+              <span className="grounds__text">{f ? f.text : 'unknown fact'}</span>
+            </p>
+          )
+        })}
       </div>
+
+      {combined && (
+        <p className="edit__combines">
+          <b>Needs your judgement.</b> This sentence draws on {edit.combinesSources} separate
+          pieces of work. Each term is backed by a fact above, but nothing checks that the
+          combination describes something that actually happened.
+        </p>
+      )}
 
       <div className="edit__actions">
         <button className="btn btn--accept" onClick={() => acceptEdit(edit.id)}>Accept</button>

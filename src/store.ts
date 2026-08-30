@@ -52,6 +52,10 @@ export type State = {
   resume: ResumeBlock[]
   pendingEdits: PendingEdit[]
   factRequest: FactRequest | null
+  /** Refusals the human has not dismissed. The guard holding a line is the
+   *  product's most important moment; it must not happen only in the agent's
+   *  transcript. */
+  refusals: (GuardFailure & { id: string; newText: string })[]
   applications: Application[]
   /** The application the confirmation modal is currently showing, if any. */
   submitModalFor: string | null
@@ -121,6 +125,7 @@ let state: State = {
   resume: persisted.resume,
   pendingEdits: [],
   factRequest: null,
+  refusals: [],
   applications: persisted.applications,
   submitModalFor: null,
   webmcp: 'unsupported',
@@ -169,6 +174,7 @@ export function resetDemoData() {
     openJobId: null,
     pendingEdits: [],
     factRequest: null,
+    refusals: [],
     submitModalFor: null,
   })
 }
@@ -572,7 +578,15 @@ export function proposeResumeEdits(edits: EditProposal[]) {
     })
   }
 
-  if (accepted.length > 0) set({ pendingEdits: [...state.pendingEdits, ...accepted] })
+  const shown = rejected.map((r, i) => ({
+    ...r,
+    id: `r_${++editSeq}_${i}`,
+    newText: edits.find((e) => e?.targetBlockId === r.targetBlockId)?.newText ?? '',
+  }))
+  set({
+    pendingEdits: accepted.length > 0 ? [...state.pendingEdits, ...accepted] : state.pendingEdits,
+    refusals: [...state.refusals, ...shown],
+  })
 
   const delta = scopeDelta(before)
   const parts = [`${queued.length} of ${edits.length} edit${edits.length === 1 ? '' : 's'} queued for review.`]
@@ -825,4 +839,17 @@ export function cancelSubmit() { submitResolver?.(false) }
 
 export function discardApplication(jobId: string) {
   set({ applications: state.applications.filter((a) => a.jobId !== jobId) })
+}
+
+export function dismissRefusal(id: string) {
+  set({ refusals: state.refusals.filter((r) => r.id !== id) })
+}
+
+export function clearRefusals() {
+  if (state.refusals.length) set({ refusals: [] })
+}
+
+/** The fact text behind an id, for showing provenance rather than a bare ref. */
+export function factById(id: string): Fact | undefined {
+  return state.facts.find((f) => f.id === id)
 }

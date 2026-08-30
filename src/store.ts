@@ -235,7 +235,17 @@ function scopeDelta(before: string[]) {
   return { toolsAdded, toolsRemoved, registeredTools: after, scopeNote: parts.join(' ') }
 }
 
-const err = (error: string, hint: string) => ({ ok: false as const, error, hint })
+/**
+ * Contract §4: every return carries a one-line human-readable `summary`.
+ * Refusals were returning ok/error/hint only, so an agent reading `summary`
+ * — which the contract tells it to do — got undefined on every failure path.
+ */
+const err = (error: string, hint: string) => ({
+  ok: false as const,
+  error,
+  hint,
+  summary: `Refused (${error}). ${hint}`,
+})
 
 // ---------------------------------------------------------------- actions
 
@@ -596,6 +606,8 @@ export function prepareApplication(coverNote: string, sourceFactIds: string[] = 
       error: noteFailure.reason,
       offendingTokens: noteFailure.offendingTokens,
       hint: noteFailure.hint,
+      summary: `Cover note refused: ${noteFailure.offendingTokens.join(', ')} `
+        + 'not supported by any cited fact. Pass sourceFactIds naming the facts that back it.',
     }
   }
 

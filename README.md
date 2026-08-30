@@ -51,6 +51,33 @@ trace back to something the user recorded.
 
 ---
 
+## What this does not do
+
+Stated early because assuming otherwise would make everything below misleading.
+
+**Nothing is ever sent to an employer.** `submit_application` marks a row
+`submitted` in local state and stops. There is no employer side, no outbound
+request, no integration with any ATS or job board. The confirmation modal is
+real — it shows exactly what *would* be sent, and the human must click — but the
+click ends in `localStorage`.
+
+**There is no account and no server.** All state is local. Clear your browser
+storage and you are back to the shipped demo; that is what `?reset=1` does
+deliberately.
+
+**The job data is a build-time snapshot, not a live feed.** 120 postings fetched
+once by `npm run fetch-jobs` and committed. Postings age and links die. Every row
+keeps its source and canonical URL so a reader can check the original.
+
+**The application tracker is a list, not a pipeline.** It records what you
+prepared and marks what you confirmed. It does not follow up, remind, or know
+anything an employer did.
+
+What is real is the constraint: the guard, the tool scoping, and the evidence
+behind every tag — all of which run on the data actually in this repo.
+
+---
+
 ## The design claim: approval changes capability, not permission
 
 This is the part worth taking from the project.
@@ -93,6 +120,65 @@ missing has nothing to read:
 
 > `1 of 1 edit queued for review. Now available: withdraw_edit. No longer
 > available: prepare_application (needs a job open and no edits pending review).`
+
+---
+
+## Leading questions: three layers, each because the last one failed
+
+*Everything above is a design claim. This section is a finding — the only part of
+this document containing evidence that could not have been arranged, because it
+is a record of a real agent ignoring instructions I wrote.*
+
+The agent can ask the user to add a fact. **No tool available to the agent can
+write to the fact bank** — that is the precise claim, and it is the one that is
+tested. A writing function does exist: `saveFactRequest`, called when a human
+clicks the confirm button in the panel. That is the design, not a loophole. What
+the test establishes is that nothing the agent can reach calls it —
+`npm run misuse-tests` fires all 13 tools with arguments designed to write a fact
+and asserts the bank is byte-identical afterwards, then clicks the button and
+asserts it changed.
+
+But *asking* has its own failure mode, and finding it took three attempts. Each
+layer exists because a real ChatGPT session showed the previous one was not
+enough.
+
+**Layer 1 — the description.** It originally read *"Ask the human to add a fact…
+use it when get_fit_gaps reports something missing that you believe the candidate
+actually has."*
+
+> A live session: the agent replied **"Once you confirm, I'll add your TensorFlow
+> and Kubernetes experience to the local profile fact bank."**
+
+It believed it could write. The description had taught it that. Rewritten to open
+with **DOES NOT ADD ANYTHING** and to say plainly that a missing requirement is
+evidence the user does *not* have it.
+
+**Layer 2 — the description was not enough.**
+
+> Next session: the agent correctly said *"the app prevents me from inserting them
+> until they're confirmed in your profile"* — then opened profile questions for
+> TensorFlow and Kubernetes anyway, purely because `get_fit_gaps` listed them
+> missing.
+
+It read the instruction and did it anyway. So the tool now detects when a claim
+names something **the open posting requires and the fact bank does not support**,
+and returns a warning that leads the summary.
+
+**Layer 3 — the agent might not relay it.** Layer 2 depends on the agent's
+cooperation, and layer 1 already proved that is not reliable. The same warning
+appears on screen, where it does not depend on the agent at all:
+
+> **This question came from the job posting, not from your profile.** Nothing you
+> have recorded mentions kubernetes, and this posting requires it. Add it only if
+> you have genuinely done this work. A posting asking for something is not a
+> reason to claim it.
+
+The confirm button reads **"Yes, I have done this"**, not "Add to fact bank".
+
+It warns rather than refuses, deliberately: the app cannot hear the conversation,
+so it cannot tell *the agent inferred this from a gap* from *the user just said
+they know Kubernetes*. Refusing would block the honest case to stop the dishonest
+one.
 
 ---
 
@@ -154,9 +240,17 @@ metric. `"near-perfect accuracy"` is refused as a superlative standing in for a
 number. `"Led the team"` is refused as a seniority claim no fact supports and no
 numeric check would catch.
 
-`npm run guard-tests` runs 30 adversarial cases. 29 behave as expected, and
-**zero true claims are refused** — which matters as much as the refusals, because
-a guard that blocks honest work is a guard people switch off.
+`npm run guard-tests` runs 30 adversarial cases. 29 behave as expected, with
+**zero false refusals across those 30 cases** — which matters as much as the
+refusals, because a guard that blocks honest work is a guard people switch off.
+
+Read that as a floor, not a proof. I wrote both the guard and the cases that
+attack it, so the suite measures the failures I thought to look for. Four of the
+leaks it now catches were found only because a case was added *after* the guard
+was written — spelled-out numbers, superlatives standing in for metrics,
+unquantified seniority verbs, and a narrower product name claimed from a broader
+concept. The suite is in the repo to be re-run and extended, and the one case it
+still fails is left in it.
 
 ### What grounding is not
 
@@ -187,56 +281,6 @@ The failing case is kept in the test suite as an expected failure. It is
 
 ---
 
-## Leading questions: three layers, each because the last one failed
-
-The agent can ask the user to add a fact. It cannot write one — proven, not
-assumed: `npm run misuse-tests` fires all 13 tools with arguments designed to
-write a fact and asserts the bank is byte-identical afterwards.
-
-But *asking* has its own failure mode, and finding it took three attempts. Each
-layer exists because a real ChatGPT session showed the previous one was not
-enough.
-
-**Layer 1 — the description.** It originally read *"Ask the human to add a fact…
-use it when get_fit_gaps reports something missing that you believe the candidate
-actually has."*
-
-> A live session: the agent replied **"Once you confirm, I'll add your TensorFlow
-> and Kubernetes experience to the local profile fact bank."**
-
-It believed it could write. The description had taught it that. Rewritten to open
-with **DOES NOT ADD ANYTHING** and to say plainly that a missing requirement is
-evidence the user does *not* have it.
-
-**Layer 2 — the description was not enough.**
-
-> Next session: the agent correctly said *"the app prevents me from inserting them
-> until they're confirmed in your profile"* — then opened profile questions for
-> TensorFlow and Kubernetes anyway, purely because `get_fit_gaps` listed them
-> missing.
-
-It read the instruction and did it anyway. So the tool now detects when a claim
-names something **the open posting requires and the fact bank does not support**,
-and returns a warning that leads the summary.
-
-**Layer 3 — the agent might not relay it.** Layer 2 depends on the agent's
-cooperation, and layer 1 already proved that is not reliable. The same warning
-appears on screen, where it does not depend on the agent at all:
-
-> **This question came from the job posting, not from your profile.** Nothing you
-> have recorded mentions kubernetes, and this posting requires it. Add it only if
-> you have genuinely done this work. A posting asking for something is not a
-> reason to claim it.
-
-The confirm button reads **"Yes, I have done this"**, not "Add to fact bank".
-
-It warns rather than refuses, deliberately: the app cannot hear the conversation,
-so it cannot tell *the agent inferred this from a gap* from *the user just said
-they know Kubernetes*. Refusing would block the honest case to stop the dishonest
-one.
-
----
-
 ## No server-side model call
 
 There is no backend, no API key and no LLM call in this codebase. The page exposes
@@ -257,9 +301,24 @@ than believed.
 
 ## The alias layer, and a false negative that matters
 
-Postings and resumes describe the same skill with different words. The corpus
-writes **TTS**, **STT** and **ASR**. This profile writes *"text to speech"* and
-*"speech recognition"* — forms appearing in **zero** of the 175 fetched postings.
+Aliases are **derived from the corpus by measurement, not by intuition**. The
+proof is what the measurement threw out — three obvious-looking aliases that a
+plausible guess would have accepted:
+
+| Candidate alias | What the corpus actually shows | Verdict |
+|---|---|---|
+| `cv` → computer vision | 10 hits, ~half of them *"apply with your CV in English"* | rejected |
+| `serving` → model deployment | 37 hits, dominated by *"serving 50,000+ customers"* | rejected |
+| `classification` → image classification | 16 hits, ~80% *text* classification | profile-only |
+
+Each was checked against the 175 fetched postings before being accepted or
+dropped. `classification` survives only on the resume side, where it is
+unambiguous; as a job matcher it would have labelled NLP roles as vision work.
+
+The reason the layer exists at all: postings and resumes describe the same skill
+with different words. The corpus writes **TTS**, **STT** and **ASR**. This
+profile writes *"text to speech"* and *"speech recognition"* — forms appearing in
+**zero** of those 175 postings.
 
 A literal comparison told a candidate with shipped speech systems that he lacked
 speech experience. That is the classic ATS failure, and **a false negative is as
@@ -267,14 +326,7 @@ damaging as a false positive**: it tells someone to acquire a skill they already
 have, and suppresses the fact that would have supported a legitimate line.
 
 Job tags and fact tokens now resolve through one table — 65 concepts, 207 surface
-forms. Aliases are **derived from the corpus by measurement**, and three obvious
-ones were measured and rejected:
-
-| Candidate alias | Measurement | Verdict |
-|---|---|---|
-| `cv` → computer vision | 10 hits, ~half *"apply with your CV"* | rejected |
-| `serving` → model deployment | 37 hits, mostly *"serving 50,000+ customers"* | rejected |
-| `classification` → image classification | 16 hits, ~80% *text* classification | profile-only |
+forms.
 
 `ray` is hyphen-guarded: the word-boundary matcher treats `-` as a separator, so
 **"X-ray" would otherwise match the Ray framework** — and this profile is full of

@@ -12,7 +12,7 @@
 import jobsData from './data/jobs.json'
 import factsData from './data/profile-facts.json'
 import resumeData from './data/resume.json'
-import { checkEdit } from './lib/guard'
+import { checkCoverNote, checkEdit } from './lib/guard'
 import { applyFilters, computeFitGaps, groupTags } from './lib/match'
 import type {
   Application, EditProposal, Fact, FactKind, FactRequest, Filters, GuardFailure,
@@ -465,7 +465,7 @@ export function dismissFactRequest() {
  * human-in-the-loop story in one rule: nothing can be sent while a proposal the
  * human has not looked at is still outstanding.
  */
-export function prepareApplication(coverNote: string) {
+export function prepareApplication(coverNote: string, sourceFactIds: string[] = []) {
   const job = openJob()
   if (!job) return err('no_job_open', 'Call open_job first — an application is always for a specific posting.')
 
@@ -484,10 +484,22 @@ export function prepareApplication(coverNote: string) {
     return err('empty_cover_note', 'Write a cover note grounded in the resume and the posting.')
   }
 
+  // The note is sent alongside the resume, so it is held to the same standard.
+  const noteFailure = checkCoverNote(note, state.facts, sourceFactIds)
+  if (noteFailure) {
+    return {
+      ok: false as const,
+      error: noteFailure.reason,
+      offendingTokens: noteFailure.offendingTokens,
+      hint: noteFailure.hint,
+    }
+  }
+
   const app: Application = {
     jobId: job.id,
     resumeSnapshot: state.resume.map((b) => ({ ...b })),
     coverNote: note,
+    coverNoteFactIds: sourceFactIds,
     status: 'ready',
     submittedAt: null,
   }

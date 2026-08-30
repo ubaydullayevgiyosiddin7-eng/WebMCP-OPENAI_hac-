@@ -207,15 +207,21 @@ const JOB_SCOPED: ToolDescriptor[] = [
 const PREPARE_SCOPED: ToolDescriptor[] = [
   tool(
     'prepare_application',
-    'Build the application from the ACCEPTED resume and fill the form on screen so the human can see exactly what is about to be sent. Only available while a job is open AND no edits are awaiting review — if proposals are still pending this tool is not registered, because nothing may be sent past a diff the human has not looked at.',
+    'Build the application from the ACCEPTED resume and fill the form on screen so the human can see exactly what is about to be sent. The cover note passes through the SAME fact guard as a resume edit, so cite the facts that back any claim you make in it. Only available while a job is open AND no edits are awaiting review — if proposals are still pending this tool is not registered, because nothing may be sent past a diff the human has not looked at.',
     {
       type: 'object',
-      properties: { coverNote: { type: 'string', maxLength: 900 } },
+      properties: {
+        coverNote: { type: 'string', maxLength: 900 },
+        sourceFactIds: {
+          type: 'array', items: { type: 'string' },
+          description: 'Facts backing any claim in the note. The cover note goes through the same guard as a resume edit — name a technology or a number without citing a fact and it is refused.',
+        },
+      },
       required: ['coverNote'],
       additionalProperties: false,
     },
     WRITES,
-    (a) => prepareApplication(String(a.coverNote ?? '')),
+    (a) => prepareApplication(String(a.coverNote ?? ''), (a.sourceFactIds ?? []) as string[]),
   ),
 ]
 

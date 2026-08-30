@@ -48,6 +48,8 @@ export type Application = {
   jobId: string
   resumeSnapshot: ResumeBlock[]
   coverNote: string
+  /** Facts cited to ground the cover note; the guard checks it against these. */
+  coverNoteFactIds: string[]
   status: 'draft' | 'ready' | 'submitted'
   submittedAt: string | null
 }

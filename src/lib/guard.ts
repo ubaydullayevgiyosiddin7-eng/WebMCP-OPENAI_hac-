@@ -186,50 +186,8 @@ export function checkEdit(
   }
 
   const grounding = groundingText(proposal, block, facts)
+  const offending = ungroundedIn(proposal.newText, grounding)
 
-  // 1. Technology and product concepts, resolved through the alias table.
-  const groundedConcepts = conceptsIn(grounding)
-  const claimedConcepts = conceptsIn(proposal.newText)
-  const ungroundedConcepts = [...claimedConcepts].filter((c) => !groundedConcepts.has(c))
-
-  // 2. Numbers. Exact match only — a rounded metric is a different metric.
-  const groundedNumbers = new Set(numbersIn(grounding))
-  const ungroundedNumbers = [...new Set(numbersIn(proposal.newText))]
-    .filter((n) => !groundedNumbers.has(n))
-
-  // 3. Names that appear nowhere in the cited material.
-  //
-  // A proper noun must appear LITERALLY in the grounding, even when it is a
-  // known alias of a grounded concept. "Whisper" resolves to the same concept as
-  // "TTS", so exempting resolved aliases let an agent name a specific model the
-  // candidate never claimed. A concept being grounded does not ground every
-  // product that implements it.
-  const groundLower = normalise(grounding)
-  const ungroundedNames = [...new Set(properNounsIn(proposal.newText))]
-    .filter((w) => !groundLower.includes(w.toLowerCase()))
-
-  // 4. Superlatives and seniority claims, neither of which a number check sees.
-  const textLower = normalise(proposal.newText)
-  const ungroundedPuffery = PUFFERY.filter((p) => textLower.includes(p) && !groundLower.includes(p))
-  const ungroundedSeniority = SENIORITY_CLAIMS.filter(
-    (p) => termRe(p).test(proposal.newText) && !termRe(p).test(grounding),
-  )
-
-  // Deduplicate case-insensitively: the same term otherwise appears twice, once
-  // as the canonical concept and once as the surface spelling ("tensorflow,
-  // kubernetes, Kubernetes, TensorFlow"), which is noise for an agent trying to
-  // work out what to change.
-  const seen = new Set<string>()
-  const offending: string[] = []
-  for (const t of [
-    ...ungroundedConcepts, ...ungroundedNumbers, ...ungroundedNames,
-    ...ungroundedPuffery, ...ungroundedSeniority,
-  ]) {
-    const key = t.toLowerCase()
-    if (seen.has(key)) continue
-    seen.add(key)
-    offending.push(t)
-  }
   if (offending.length > 0) {
     return fail('unsupported_claim', offending,
       `Nothing in the cited facts or the original block supports: ${offending.join(', ')}. `
@@ -237,4 +195,94 @@ export function checkEdit(
   }
 
   return null
+}
+
+/**
+ * Everything in `text` that nothing in `grounding` supports.
+ *
+ * Shared by resume edits and the cover note. The note is part of what gets
+ * sent, so holding it to a weaker standard than the resume would leave the
+ * product's central claim — that the agent cannot lie on your behalf — true
+ * only of the half of the payload that happens to be structured.
+ */
+export function ungroundedIn(text: string, grounding: string): string[] {
+  // 1. Technology and product concepts, resolved through the alias table.
+  const groundedConcepts = conceptsIn(grounding)
+  const ungroundedConcepts = [...conceptsIn(text)].filter((c) => !groundedConcepts.has(c))
+
+  // 2. Numbers. Exact match only — a rounded metric is a different metric.
+  const groundedNumbers = new Set(numbersIn(grounding))
+  const ungroundedNumbers = [...new Set(numbersIn(text))].filter((n) => !groundedNumbers.has(n))
+
+  // 3. Names that appear nowhere in the cited material.
+  //
+  // A proper noun must appear LITERALLY, even when it is a known alias of a
+  // grounded concept. "Whisper" resolves to the same concept as "TTS", so
+  // exempting resolved aliases once let an agent name a specific model the
+  // candidate never claimed. A grounded concept does not ground every product
+  // that implements it.
+  const groundLower = normalise(grounding)
+  const ungroundedNames = [...new Set(properNounsIn(text))]
+    .filter((w) => !groundLower.includes(w.toLowerCase()))
+
+  // 4. Superlatives and seniority claims, neither of which a number check sees.
+  const textLower = normalise(text)
+  const ungroundedPuffery = PUFFERY.filter((x) => textLower.includes(x) && !groundLower.includes(x))
+  const ungroundedSeniority = SENIORITY_CLAIMS.filter(
+    (x) => termRe(x).test(text) && !termRe(x).test(grounding),
+  )
+
+  // Deduplicate case-insensitively: the same term otherwise appears twice, once
+  // as the canonical concept and once as the surface spelling.
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const t of [
+    ...ungroundedConcepts, ...ungroundedNumbers, ...ungroundedNames,
+    ...ungroundedPuffery, ...ungroundedSeniority,
+  ]) {
+    const key = t.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(t)
+  }
+  return out
+}
+
+/**
+ * The cover note, held to the same standard as a resume block.
+ *
+ * Citing no facts is allowed here: a note that is pure connective prose —
+ * "I would be glad to bring this work to your team" — asserts nothing and has
+ * nothing to ground. The moment it names a technology, a number or a product,
+ * a fact has to carry it.
+ */
+export function checkCoverNote(
+  note: string,
+  facts: Fact[],
+  sourceFactIds: string[] = [],
+): GuardFailure | null {
+  const known = new Set(facts.map((f) => f.id))
+  const unknown = sourceFactIds.filter((id) => !known.has(id))
+  if (unknown.length > 0) {
+    return {
+      targetBlockId: 'coverNote',
+      reason: 'unknown_fact',
+      offendingTokens: unknown,
+      hint: 'These fact ids do not exist. Cite ids returned by get_profile_facts.',
+    }
+  }
+
+  const cited = facts.filter((f) => sourceFactIds.includes(f.id))
+  const grounding = [...cited.map((f) => f.text), ...cited.flatMap((f) => f.tokens)].join(' | ')
+  const offending = ungroundedIn(note, grounding)
+  if (offending.length === 0) return null
+
+  return {
+    targetBlockId: 'coverNote',
+    reason: 'unsupported_claim',
+    offendingTokens: offending,
+    hint: `The cover note claims ${offending.join(', ')}, which no cited fact supports. `
+      + 'Cite the fact ids that back it via sourceFactIds, or drop the claim. '
+      + 'The note is sent alongside the resume and is held to the same standard.',
+  }
 }

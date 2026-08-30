@@ -246,6 +246,56 @@ const CASES = [
     proposal: { targetBlockId: 'b_nope', newText: 'Anything.', rationale: 'x', sourceFactIds: ['r_customs'] } },
   { group: 'structural', name: 'whitespace-only change', expect: 'refuse',
     proposal: { targetBlockId: 'b_languages', newText: 'Uzbek — native.  English — B2.', rationale: 'x', sourceFactIds: ['l_uzbek', 'l_english'] } },
+// ---- cover note: same standard as a resume block ------------------------
+  {
+    group: 'cover note', kind: 'note',
+    name: 'pure connective prose, no citations needed',
+    expect: 'pass',
+    note: 'I would be glad to bring this work to your team, and I am happy to talk through any of it in detail.',
+    sourceFactIds: [],
+  },
+  {
+    group: 'cover note', kind: 'note',
+    name: 'names a real skill and cites the fact for it',
+    expect: 'pass',
+    note: "I'd be excited to bring my computer vision work to your team.",
+    sourceFactIds: ['f_opencv'],
+  },
+  {
+    group: 'cover note', kind: 'note',
+    name: 'names a real skill but cites nothing',
+    expect: 'refuse',
+    note: "I'd be excited to bring my computer vision work to your team.",
+    sourceFactIds: [],
+  },
+  {
+    group: 'cover note', kind: 'note',
+    name: 'slips an absent technology into the pitch',
+    expect: 'refuse',
+    note: 'I have shipped vision models to production and run them on Kubernetes across AWS.',
+    sourceFactIds: ['f_opencv', 'r_customs_scope'],
+  },
+  {
+    group: 'cover note', kind: 'note',
+    name: 'inflates a metric in prose',
+    expect: 'refuse',
+    note: 'My detection pipeline reached 99.9% accuracy in production.',
+    sourceFactIds: ['a_wagon_metrics'],
+  },
+  {
+    group: 'cover note', kind: 'note',
+    name: 'invented employer in the pitch',
+    expect: 'refuse',
+    note: 'After my time at Google I moved into customs inspection work.',
+    sourceFactIds: ['r_customs'],
+  },
+  {
+    group: 'cover note', kind: 'note',
+    name: 'exact metrics restated from a cited fact',
+    expect: 'pass',
+    note: 'My wagon pipeline reached detection mAP@50 of 0.994 and 99.76% recognition accuracy.',
+    sourceFactIds: ['a_wagon_metrics'],
+  },
 ]
 
 const browser = await chromium.launch()
@@ -259,7 +309,11 @@ const results = await page.evaluate(async (cases) => {
   return cases.map((c) => {
     let r = null
     let threw = null
-    try { r = guard.checkEdit(c.proposal, resume.blocks, facts.facts) } catch (e) { threw = String(e) }
+    try {
+      r = c.kind === 'note'
+        ? guard.checkCoverNote(c.note, facts.facts, c.sourceFactIds)
+        : guard.checkEdit(c.proposal, resume.blocks, facts.facts)
+    } catch (e) { threw = String(e) }
     return {
       group: c.group, name: c.name, expect: c.expect,
       refused: !!r, reason: r?.reason ?? null, tokens: r?.offendingTokens ?? [], threw,

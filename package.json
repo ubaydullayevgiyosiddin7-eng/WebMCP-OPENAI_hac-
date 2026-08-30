@@ -24,5 +24,7 @@
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2"
-  }
+  },
+  "license": "MIT",
+  "description": "A job board where an AI agent tailors your resume through WebMCP tools and cannot invent experience you never claimed."
 }

@@ -591,7 +591,15 @@ export function proposeResumeEdits(edits: EditProposal[]) {
   const delta = scopeDelta(before)
   const parts = [`${queued.length} of ${edits.length} edit${edits.length === 1 ? '' : 's'} queued for review.`]
   if (rejected.length > 0) {
-    parts.push(`${rejected.length} rejected: ${rejected.map((r) => r.offendingTokens.join('/') || r.reason).join('; ')}.`)
+    // Carry each refusal's own message, not the offending token. Echoing the
+    // agent's bad input back at it ("2 rejected: summary; wagon-pipeline")
+    // taught it nothing and it retried identically.
+    parts.push(`${rejected.length} rejected. ${rejected.map((r) => r.message).join(' ')}`)
+    // State the id list once rather than per rejection.
+    const unknownBlock = rejected.find((r) => r.reason === 'unknown_block')
+    if (unknownBlock?.validBlocks) {
+      parts.push(`Valid block ids: ${unknownBlock.validBlocks.map((b) => b.id).join(', ')}.`)
+    }
   }
   const combined = queued.filter((q) => (q.combinesSources ?? 0) > 1).length
   if (combined > 0) {

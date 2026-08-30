@@ -111,11 +111,19 @@ export type GuardReason =
   | 'unsupported_claim'
   | 'no_change'
 
+export type BlockRef = { id: string; section: ResumeSection; preview: string }
+
 export type GuardFailure = {
   targetBlockId: string
   reason: GuardReason
   offendingTokens: string[]
   hint: string
+  /** One line an agent can act on without another round trip. */
+  message: string
+  /** Present when the id itself was the problem: every id that would work. */
+  validBlocks?: BlockRef[]
+  /** The id the supplied string most plausibly meant. Never auto-applied. */
+  didYouMean?: string | null
 }
 
 /** A pre-filled request the human must accept before it becomes a fact. */

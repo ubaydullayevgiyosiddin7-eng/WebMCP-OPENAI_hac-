@@ -194,7 +194,7 @@ const JOB_SCOPED: ToolDescriptor[] = [
   ),
   tool(
     'propose_resume_edits',
-    'Queue resume rewrites for HUMAN REVIEW. This never applies anything — each edit appears as a before/after diff the human accepts or rejects. Every edit must cite the fact ids that support its wording. Edits whose new text contains a technology, product name or number that no cited fact supports are REFUSED, and come back listing the offending tokens so you can correct them. Do not retry the same wording; either cite a fact that supports it, call request_profile_fact, or drop the claim.',
+    'Queue resume rewrites for HUMAN REVIEW. This never applies anything — each edit appears as a before/after diff the human accepts or rejects. CALL get_resume FIRST: targetBlockId must be an id it returned, and those look like b_summary, b_exp_wagon, b_skills. Ids are assigned by the app and CANNOT be derived from the section name or from the text — "summary", "skills" and "wagon-pipeline" are not ids and are refused. Guessing an id is the most common way this call fails; a refusal will list every valid id, so read it rather than retrying the same guess. Every edit must also cite the fact ids supporting its wording. Edits whose new text contains a technology, product name or number that no cited fact supports are REFUSED, listing the offending tokens so you can correct them. Do not retry the same wording; either cite a fact that supports it, call request_profile_fact, or drop the claim.',
     {
       type: 'object',
       properties: {

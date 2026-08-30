@@ -21,7 +21,7 @@
  * and it is expected to fail.
  */
 import vocabulary from '../data/vocabulary.json'
-import type { EditProposal, Fact, GuardFailure, ResumeBlock } from '../types'
+import type { BlockRef, EditProposal, Fact, GuardFailure, ResumeBlock } from '../types'
 
 const ALIAS_TO_CANONICAL = vocabulary.aliasToCanonical as Record<string, string>
 const HYPHEN_GUARDED = new Set(vocabulary.hyphenGuarded as string[])
@@ -134,6 +134,84 @@ export function properNounsIn(text: string): string[] {
   return out
 }
 
+
+/** First words of a block, enough to tell two blocks apart at a glance. */
+function preview(text: string, max = 58): string {
+  if (text.length <= max) return text
+  const cut = text.slice(0, max)
+  return `${cut.slice(0, cut.lastIndexOf(' '))}…`
+}
+
+export const blockRefs = (blocks: ResumeBlock[]): BlockRef[] =>
+  blocks.map((b) => ({ id: b.id, section: b.section, preview: preview(b.text) }))
+
+const loosen = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
+
+/**
+ * What a wrong id most plausibly meant.
+ *
+ * Agents reliably invent readable ids — "summary", "wagon-pipeline", "skills" —
+ * rather than calling get_resume first. Naming the likely target turns a dead
+ * end into one correctable retry. It is never applied automatically: the agent
+ * re-sends, so the resume is only ever rewritten by an id someone chose.
+ */
+export function guessBlock(
+  supplied: string,
+  blocks: ResumeBlock[],
+): { id: string } | { candidates: string[] } | null {
+  const want = loosen(supplied)
+  if (!want) return null
+
+  // The id with its b_ / b_exp_ scaffolding removed: b_exp_wagon -> "wagon".
+  const bare = (id: string) => loosen(id.replace(/^b_(exp_)?/, ''))
+
+  const exact = blocks.filter((b) => bare(b.id) === want)
+  if (exact.length === 1) return { id: exact[0].id }
+
+  const partial = blocks.filter((b) => {
+    const n = bare(b.id)
+    return n.length > 2 && (want.includes(n) || n.includes(want))
+  })
+  if (partial.length === 1) return { id: partial[0].id }
+
+  // A section name is not an id, but it does narrow the field.
+  const bySection = blocks.filter((b) => loosen(b.section) === want)
+  if (bySection.length === 1) return { id: bySection[0].id }
+  if (bySection.length > 1) return { candidates: bySection.map((b) => b.id) }
+
+  if (partial.length > 1) return { candidates: partial.map((b) => b.id) }
+
+  // A typo in a real id — "b_sumary" — shares no useful substring, so fall back
+  // to edit distance. Only a single close match counts; two equally close ones
+  // are a guess, and guessing is what this function exists to replace.
+  const scored = blocks
+    .map((b) => ({ id: b.id, d: Math.min(distance(want, loosen(b.id)), distance(want, bare(b.id))) }))
+    .sort((x, y) => x.d - y.d)
+  const best = scored[0]
+  if (best && best.d <= 2 && (scored.length < 2 || scored[1].d > best.d)) return { id: best.id }
+
+  return null
+}
+
+/** Levenshtein, bounded by the short strings it is used on. */
+function distance(a: string, b: string): number {
+  if (a === b) return 0
+  if (!a.length || !b.length) return Math.max(a.length, b.length)
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i)
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i]
+    for (let j = 1; j <= b.length; j++) {
+      row[j] = Math.min(
+        prev[j] + 1,
+        row[j - 1] + 1,
+        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
+      )
+    }
+    prev = row
+  }
+  return prev[b.length]
+}
+
 /** Everything the proposal is allowed to draw on. */
 function groundingText(
   proposal: EditProposal,
@@ -160,12 +238,45 @@ export function checkEdit(
   facts: Fact[],
 ): GuardFailure | null {
   const fail = (reason: GuardFailure['reason'], offendingTokens: string[], hint: string): GuardFailure =>
-    ({ targetBlockId: proposal.targetBlockId, reason, offendingTokens, hint })
+    ({ targetBlockId: proposal.targetBlockId, reason, offendingTokens, hint, message: hint })
 
   const block = blocks.find((b) => b.id === proposal.targetBlockId)
   if (!block) {
-    return fail('unknown_block', [proposal.targetBlockId],
-      'No resume block with that id. Call get_resume and use an id from its blocks.')
+    const refs = blockRefs(blocks)
+    const idList = refs.map((r) => r.id).join(', ')
+    const supplied = String(proposal.targetBlockId ?? '')
+    const guess = guessBlock(supplied, blocks)
+
+    let message: string
+    let didYouMean: string | null = null
+
+    // The message stays specific to this edit; the full id list is stated once
+    // by the caller. Repeating fourteen ids per rejection buries the correction.
+    if (!supplied.trim()) {
+      message = 'targetBlockId was empty.'
+    } else if (guess && 'id' in guess) {
+      didYouMean = guess.id
+      message = `"${supplied}" is not a block id — you most likely meant "${guess.id}". Re-send with that id.`
+    } else if (guess && 'candidates' in guess) {
+      message = `"${supplied}" is a section, not a block id; it covers `
+        + `${guess.candidates.length} blocks (${guess.candidates.join(', ')}). Pick one.`
+    } else {
+      message = `"${supplied}" is not a block id.`
+    }
+
+    return {
+      targetBlockId: proposal.targetBlockId,
+      reason: 'unknown_block',
+      offendingTokens: [proposal.targetBlockId],
+      message,
+      // The aggregate summary states the id list once; this per-failure hint
+      // repeats it so a single rejection is self-sufficient on its own.
+      hint: `${message} Block ids are assigned by the app and cannot be derived from the `
+        + 'section name or the text — get_resume returns them alongside each block. '
+        + `Valid ids: ${idList}.`,
+      validBlocks: refs,
+      didYouMean,
+    }
   }
 
   if (!proposal.sourceFactIds || proposal.sourceFactIds.length === 0) {
@@ -267,6 +378,7 @@ export function checkCoverNote(
       targetBlockId: 'coverNote',
       reason: 'unknown_fact',
       offendingTokens: unknown,
+      message: `These fact ids do not exist: ${unknown.join(', ')}.`,
       hint: 'These fact ids do not exist. Cite ids returned by get_profile_facts.',
     }
   }
@@ -280,6 +392,7 @@ export function checkCoverNote(
     targetBlockId: 'coverNote',
     reason: 'unsupported_claim',
     offendingTokens: offending,
+    message: `The cover note claims ${offending.join(', ')}, which no cited fact supports.`,
     hint: `The cover note claims ${offending.join(', ')}, which no cited fact supports. `
       + 'Cite the fact ids that back it via sourceFactIds, or drop the claim. '
       + 'The note is sent alongside the resume and is held to the same standard.',

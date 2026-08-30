@@ -248,6 +248,60 @@ check('citing a non-existent factId refuses, not throws',
   r.rejected?.[0]?.hint?.slice(0, 80))
 
 // ===================================================================
+console.log('\n=== B2. A WRONG BLOCK ID MUST TEACH, NOT DEAD-END ===')
+//
+// Observed three times in live ChatGPT sessions: the agent invented readable
+// ids ("summary", "wagon-pipeline", "skills") instead of calling get_resume,
+// was refused with nothing actionable, and retried identically. A refusal that
+// does not carry the valid ids is a dead end.
+await page.goto(`${URL}?reset=1`, { waitUntil: 'networkidle' })
+await call('open_job', { jobId: JOB_A })
+
+const idCases = [
+  ['summary', 'b_summary', 'a section name mapping to exactly one block'],
+  ['skills', 'b_skills', 'the other unambiguous section name'],
+  ['wagon-pipeline', 'b_exp_wagon', 'a readable invention of the real id'],
+  ['b_sumary', 'b_summary', 'a typo in a real id'],
+]
+
+for (const [supplied, expected, label] of idCases) {
+  const res = await call('propose_resume_edits', {
+    edits: [{ targetBlockId: supplied, newText: 'Some replacement text here.', rationale: 'x', sourceFactIds: ['r_customs'] }],
+  })
+  const rej = res.rejected?.[0]
+  const ok = rej?.reason === 'unknown_block'
+    && rej.didYouMean === expected
+    && Array.isArray(rej.validBlocks) && rej.validBlocks.length > 0
+    && res.summary.includes(expected)
+  check(`"${supplied}" — ${label}`, ok, `didYouMean=${rej?.didYouMean}`)
+}
+
+{
+  const res = await call('propose_resume_edits', {
+    edits: [{ targetBlockId: 'experience', newText: 'Some replacement text here.', rationale: 'x', sourceFactIds: ['r_customs'] }],
+  })
+  const rej = res.rejected?.[0]
+  const ok = rej?.didYouMean === null && /covers \d+ blocks/.test(rej?.message ?? '')
+  check('"experience" — ambiguous section lists candidates, guesses nothing', ok, rej?.message?.slice(0, 88))
+}
+
+{
+  const res = await call('propose_resume_edits', {
+    edits: [{ targetBlockId: '', newText: 'Some replacement text here.', rationale: 'x', sourceFactIds: ['r_customs'] }],
+  })
+  const rej = res.rejected?.[0]
+  const ok = rej?.reason === 'unknown_block' && /empty/i.test(rej.message) && res.summary.includes('b_summary')
+  check('"" — empty id says so and still lists the ids', ok, rej?.message)
+}
+
+{
+  const res = await call('propose_resume_edits', {
+    edits: [{ targetBlockId: 'b_summary', newText: 'Computer vision engineer working with YOLO and OpenCV at the State Customs Committee.', rationale: 'x', sourceFactIds: ['r_customs', 'f_yolo', 'f_opencv'] }],
+  })
+  check('the corrected id then queues on the first retry', res.queued?.length === 1, res.summary?.slice(0, 70))
+}
+
+// ===================================================================
 console.log('\n=== C. MALFORMED ARGUMENTS ===')
 await page.goto(`${URL}?reset=1`, { waitUntil: 'networkidle' })
 await call('open_job', { jobId: JOB_A })

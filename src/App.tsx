@@ -523,7 +523,7 @@ function diffParts(before: string, after: string) {
   }
 }
 
-function RefusalList({ refusals }: { refusals: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string }[] }) {
+function RefusalList({ refusals }: { refusals: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string; message?: string }[] }) {
   if (refusals.length === 0) return null
   return (
     <div className="refusals">
@@ -536,7 +536,7 @@ function RefusalList({ refusals }: { refusals: { id: string; offendingTokens: st
   )
 }
 
-function Refusal({ r }: { r: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string } }) {
+function Refusal({ r }: { r: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string; message?: string } }) {
   const plural = r.offendingTokens.length !== 1
   return (
     <article className="refusal">
@@ -549,7 +549,7 @@ function Refusal({ r }: { r: { id: string; offendingTokens: string[]; targetBloc
       <p className="refusal__why">
         {r.reason === 'unsupported_claim'
           ? `Nothing you have claimed supports ${plural ? 'these terms' : 'this term'}. The edit was not queued.`
-          : `The edit was not queued (${r.reason.replace(/_/g, ' ')}).`}
+          : (r.message ?? `The edit was not queued (${r.reason.replace(/_/g, ' ')}).`)}
       </p>
 
       <div className="refusal__foot">

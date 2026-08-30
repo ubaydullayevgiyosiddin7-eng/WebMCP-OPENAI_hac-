@@ -17,8 +17,8 @@ import { EMPTY_FILTERS } from './types'
 /** Panel layout is a viewing preference, not app state — kept under its own key
  *  so ?reset=1 restores the demo data without rearranging someone's workspace. */
 const PREFS_KEY = 'tailor.ui.v1'
-type Prefs = { list: boolean; resume: boolean; rail: boolean; allTags: boolean }
-const DEFAULT_PREFS: Prefs = { list: true, resume: true, rail: true, allTags: false }
+type Prefs = { list: boolean; resume: boolean; rail: boolean; allTags: boolean; skills: boolean }
+const DEFAULT_PREFS: Prefs = { list: true, resume: true, rail: true, allTags: false, skills: false }
 
 function loadPrefs(): Prefs {
   try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') } }
@@ -128,13 +128,23 @@ export default function App() {
       ].filter(Boolean).join(' ')}>
         <section className="pane pane--left" aria-label="Filters and job list">
           <Filters
-            matchCount={matches.length}
             allTags={prefs.allTags}
+            skillsOpen={prefs.skills}
             onToggleTags={() => setPref({ allTags: !prefs.allTags })}
+            onToggleSkills={() => setPref({ skills: !prefs.skills })}
           />
-          <JobList jobs={matches} openJobId={state.openJobId} />
+          <div className="listwrap">
+            <div className="listwrap__head">
+              <span className="count"><b>{matches.length}</b> of {JOBS.length} jobs</span>
+              <span className="listwrap__hint">newest first</span>
+            </div>
+            <div className="listwrap__scroll">
+              <JobList jobs={matches} openJobId={state.openJobId} />
+            </div>
+          </div>
         </section>
 
+        <div className="stack">
         <section className="pane pane--center" aria-label="Job detail">
           {job ? <JobDetail job={job} /> : <EmptyDetail />}
         </section>
@@ -147,6 +157,7 @@ export default function App() {
           <ResumePane />
           <Tracker apps={state.applications} />
         </section>
+        </div>
       </main>
 
       {state.submitModalFor && <SubmitModal jobId={state.submitModalFor} apps={state.applications} />}
@@ -202,13 +213,15 @@ function ResetControl() {
   )
 }
 
-function Filters({ matchCount, allTags, onToggleTags }: {
-  matchCount: number
+function Filters({ allTags, skillsOpen, onToggleTags, onToggleSkills }: {
   allTags: boolean
+  skillsOpen: boolean
   onToggleTags: () => void
+  onToggleSkills: () => void
 }) {
   const { filters } = useSyncExternalStore(subscribe, getState)
   const dirty = JSON.stringify(filters) !== JSON.stringify(EMPTY_FILTERS)
+  const active = filters.tags.length
 
   return (
     <div className="filters">
@@ -256,13 +269,21 @@ function Filters({ matchCount, allTags, onToggleTags }: {
         </div>
       </section>
 
-      <section className="fsec">
-        <h3 className="fsec__h">
-          Skills
+      <section className="fsec fsec--skills">
+        <button className="fsec__toggle" onClick={onToggleSkills} aria-expanded={skillsOpen}>
+          <span className={`railwrap__caret ${skillsOpen ? 'is-open' : ''}`}>▾</span>
+          <span className="fsec__h fsec__h--inline">Skills</span>
+          {active > 0 && <span className="fsec__count">{active} active</span>}
+          <span className="fsec__more">{skillsOpen ? 'hide' : 'filter by skill'}</span>
+        </button>
+
+        {skillsOpen && (
+        <div className="fsec__body">
+        <div className="fsec__sub">
           <button className="link fsec__more" onClick={onToggleTags}>
             {allTags ? 'show fewer' : `show all ${FILTER_TAGS.length}`}
           </button>
-        </h3>
+        </div>
 
         {!allTags && (
           <>
@@ -278,12 +299,13 @@ function Filters({ matchCount, allTags, onToggleTags }: {
             <TagChips tags={FILTER_TAGS} selected={filters.tags} />
           </>
         )}
+        </div>
+        )}
       </section>
 
-      <div className="filters__foot">
-        <span className="count"><b>{matchCount}</b> of {JOBS.length} jobs</span>
-        {dirty && <button className="link" onClick={() => resetFilters()}>clear filters</button>}
-      </div>
+      {dirty && (
+        <button className="link filters__clear" onClick={() => resetFilters()}>clear all filters</button>
+      )}
     </div>
   )
 }

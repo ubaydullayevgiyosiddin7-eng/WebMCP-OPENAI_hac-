@@ -106,10 +106,22 @@ body {
 }
 
 .pane { min-width: 0; overflow-y: auto; overflow-x: hidden; }
+/* Long words and inline code must wrap. Nothing in a reading column truncates. */
+.pane--center, .pane--right { overflow-wrap: anywhere; }
 
 /* Explicit columns. Without these, hiding the left pane lets the centre
    auto-place into the collapsed 0-width track instead of keeping column 2. */
-.pane--left   { grid-column: 1; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; }
+/* The left pane is a two-part column: a fixed instrument and a scrolling list.
+   It must NOT scroll as one unit — doing so slid job rows under the sticky
+   filter block, so a card's tags showed with its title hidden behind it. */
+.pane--left {
+  grid-column: 1;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 .pane--center { grid-column: 2; background: var(--bg); }
 .pane--right  { grid-column: 3; background: var(--panel); border-left: 1px solid var(--line); }
 
@@ -117,12 +129,9 @@ body {
 
 .filters {
   flex: 0 0 auto;
-  padding: 10px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--line);
   background: var(--panel-2);
-  position: sticky;
-  top: 0;
-  z-index: 2;
 }
 
 .filters__row { display: flex; gap: 6px; margin-bottom: 6px; }
@@ -222,13 +231,16 @@ a.link { text-decoration: underline; }
 .jobrow:hover { background: var(--panel-2); }
 .jobrow.is-open { background: var(--raised); border-left-color: var(--accent); }
 
+/* "Software Engineer, Machine Learning Platform, N…" told the reader nothing.
+   Two lines, then clamp — the title is how a posting is recognised. */
 .jobrow__title {
-  display: block;
-  font-weight: 500;
-  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 500;
+  line-height: 1.32;
 }
 .jobrow__company { display: block; color: var(--dim); font-size: 12px; }
 .jobrow__meta { display: flex; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
@@ -828,8 +840,7 @@ a.link { text-decoration: underline; }
   .pane--right { border-left: 0; border-top: 1px solid var(--line); }
 
   /* Diffs, refusals and questions come first; the posting is still there below. */
-  .panes--review-first { display: flex; flex-direction: column; }
-  .panes--review-first .pane--right { order: -1; border-top: 0; }
+  .pane--right { border-top: 0; }
 
   .refusals, .queue, .factreq, .appform { margin-left: -12px; margin-right: -12px; }
 }
@@ -966,9 +977,109 @@ a.link { text-decoration: underline; }
 /* The name is a byline, not a second heading — one line, and it yields first. */
 .resume__head { align-items: baseline; gap: 10px; }
 .resume__head > div { min-width: 0; }
-.resume__who { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.resume__who { overflow-wrap: anywhere; }
 .resume__state { flex: 0 0 auto; white-space: nowrap; }
 
 /* A display rule outranks the UA stylesheet's [hidden], so a hidden flex
    container stays visible unless this is stated explicitly. */
 [hidden] { display: none !important; }
+
+/* ---------------------------------------------------------------- job list region */
+
+/*
+ * The postings are the content; the filters are the instrument. The list gets
+ * the remaining height and scrolls inside it — min-height:0 is what allows a
+ * flex child to be shorter than its content and therefore scrollable at all.
+ */
+.listwrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.listwrap__head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--dimmer);
+}
+.listwrap__head .count b { color: var(--text); }
+.listwrap__hint { color: var(--dimmer); }
+
+.listwrap__scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+
+/* ---------------------------------------------------------------- skills toggle */
+
+.fsec--skills { padding-bottom: 4px; }
+
+.fsec__toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 3px 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.fsec__h--inline { margin: 0; }
+.fsec__toggle:hover .fsec__h--inline { color: var(--text); }
+
+.fsec__count {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-radius: var(--r);
+  padding: 2px 5px;
+}
+.fsec__toggle .fsec__more { margin-left: auto; color: var(--dimmer); }
+.fsec__toggle:hover .fsec__more { color: var(--accent); }
+
+.fsec__body { padding-top: 6px; }
+.filters__clear { display: block; margin: 8px 0 2px; }
+
+/* ---------------------------------------------------------------- intermediate widths */
+
+/*
+ * Three columns need genuine room: 330 sidebar + 400 resume leaves the posting
+ * only 294px at 1024. Below 1250 the resume stacks under the posting instead,
+ * sharing one scroll column, so the reading column never drops under ~520px.
+ * `display: contents` lets the same markup be three grid children when there
+ * is room, and a scrolling stack when there is not.
+ */
+.stack { display: contents; }
+
+@media (min-width: 1001px) and (max-width: 1249px) {
+  .panes { grid-template-columns: 300px minmax(0, 1fr); }
+  .panes.is-list-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+  .panes.is-resume-collapsed { grid-template-columns: 300px minmax(0, 1fr); }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    grid-column: 2;
+    min-width: 0;
+    overflow-y: auto;
+  }
+  .pane--center, .pane--right { overflow: visible; height: auto; }
+  .pane--right { border-left: 0; border-top: 1px solid var(--line); }
+  .panes--review-first .stack { flex-direction: column-reverse; justify-content: flex-end; }
+}
+
+@media (max-width: 1000px) {
+  .stack { display: block; }
+  .panes--review-first { display: flex; flex-direction: column; }
+  .panes--review-first .stack { display: flex; flex-direction: column-reverse; justify-content: flex-end; }
+}

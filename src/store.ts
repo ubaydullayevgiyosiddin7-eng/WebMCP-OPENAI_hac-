@@ -240,6 +240,14 @@ function scopeDelta(before: string[]) {
  * Refusals were returning ok/error/hint only, so an agent reading `summary`
  * — which the contract tells it to do — got undefined on every failure path.
  */
+/**
+ * Agents pass a bare string where an array belongs often enough that coercing
+ * at the store boundary is cheaper than trusting schema enforcement upstream.
+ */
+const asStringArray = (v: unknown): string[] =>
+  (Array.isArray(v) ? v : typeof v === 'string' && v ? [v] : [])
+    .filter((x): x is string => typeof x === 'string')
+
 const err = (error: string, hint: string) => ({
   ok: false as const,
   error,
@@ -280,35 +288,90 @@ const jobSummary = (j: Job) => ({
  * intended state each call, which keeps behaviour predictable across turns.
  */
 export function searchJobs(input: Partial<Filters> & { limit?: number } = {}) {
-  const limit = Math.min(Math.max(input.limit ?? 10, 1), 25)
+  const limit = Math.min(Math.max(Number(input.limit) || 10, 1), 25)
+
+  // A parameter we cannot read must be reported, not dropped. Silently ignoring
+  // maxYears: "three" hands back all 120 jobs and lets the agent believe it
+  // filtered them.
+  const ignored: string[] = []
+  if (input.maxYears !== undefined && input.maxYears !== null && typeof input.maxYears !== 'number') {
+    ignored.push(`maxYears (expected a number, got ${JSON.stringify(input.maxYears)})`)
+  }
+  if (input.remote !== undefined && input.remote !== null && typeof input.remote !== 'boolean') {
+    ignored.push(`remote (expected true or false, got ${JSON.stringify(input.remote)})`)
+  }
+  if (input.seniority !== undefined && input.seniority !== null
+    && !['junior', 'mid', 'senior', 'lead'].includes(String(input.seniority))) {
+    ignored.push(`seniority (expected junior/mid/senior/lead, got ${JSON.stringify(input.seniority)})`)
+  }
+
   const next: Filters = {
-    query: input.query ?? '',
-    remote: input.remote ?? null,
-    seniority: input.seniority ?? null,
-    maxYears: input.maxYears ?? null,
-    tags: input.tags ?? [],
+    query: typeof input.query === 'string' ? input.query : '',
+    remote: typeof input.remote === 'boolean' ? input.remote : null,
+    seniority: ['junior', 'mid', 'senior', 'lead'].includes(String(input.seniority))
+      ? input.seniority as Filters['seniority']
+      : null,
+    maxYears: typeof input.maxYears === 'number' ? input.maxYears : null,
+    tags: asStringArray(input.tags),
   }
   setFilters(next)
   const matches = applyFilters(JOBS, next)
   return {
-    summary: `${matches.length} job${matches.length === 1 ? '' : 's'} match. Showing ${Math.min(limit, matches.length)}. Filters are now visible in the sidebar.`,
+    summary: `${matches.length} job${matches.length === 1 ? '' : 's'} match. `
+      + `Showing ${Math.min(limit, matches.length)}. Filters are now visible in the sidebar.`
+      + (ignored.length ? ` IGNORED, so this result is NOT filtered by them: ${ignored.join('; ')}.` : ''),
     matchCount: matches.length,
+    ignoredParameters: ignored,
+    activeFilters: next,
     jobs: matches.slice(0, limit).map(jobSummary),
   }
 }
 
 export function selectJob(jobId: string) {
   const before = toolsInScope()
+  if (!jobId || jobId === 'undefined' || jobId === 'null') {
+    return err('missing_job_id',
+      'open_job requires a jobId. Call search_jobs and pass an id from its results.')
+  }
   const job = JOBS.find((j) => j.id === jobId)
   if (!job) {
     return err('job_not_found', `No job with id "${jobId}". Call search_jobs first and use an id from its results.`)
   }
+  const previous = openJob()
+  const switched = previous !== null && previous.id !== jobId
+  if (previous?.id === jobId) {
+    // Re-opening the job that is already open is a no-op, not an error, but say
+    // so plainly — an agent that thinks it switched will misread what follows.
+    return {
+      ok: true as const,
+      summary: `"${job.title}" at ${job.company} was already open. Nothing changed.`,
+      job: jobSummary(job),
+      switchedFrom: null,
+      newlyAvailableTools: [],
+      ...scopeDelta(before),
+    }
+  }
+
   set({ openJobId: jobId })
   const delta = scopeDelta(before)
+
+  // Edits belong to the job they were written for and survive a switch.
+  const stranded = pendingEdits().filter((e) => e.jobId && e.jobId !== jobId)
+
   return {
     ok: true as const,
-    summary: `Opened "${job.title}" at ${job.company}. ${delta.scopeNote}`,
+    summary: (switched
+      ? `Closed "${previous.title}" at ${previous.company} and opened "${job.title}" at ${job.company}.`
+      : `Opened "${job.title}" at ${job.company}.`)
+      + (stranded.length
+        ? ` ${stranded.length} edit${stranded.length === 1 ? '' : 's'} from the previous job `
+          + `(${stranded.map((e) => e.id).join(', ')}) still await review and still block `
+          + 'prepare_application. Withdraw them if you are abandoning that job.'
+        : '')
+      + ` ${delta.scopeNote}`,
     job: jobSummary(job),
+    switchedFrom: switched ? previous.id : null,
+    strandedEditIds: stranded.map((e) => e.id),
     newlyAvailableTools: delta.toolsAdded,
     ...delta,
   }
@@ -343,7 +406,14 @@ export function getWorkspaceState() {
   }
 }
 
+const FACT_KINDS: FactKind[] = ['skill', 'role', 'achievement', 'education', 'language']
+
 export function getProfileFacts(kind?: FactKind) {
+  if (kind !== undefined && !FACT_KINDS.includes(kind)) {
+    return err('unknown_kind',
+      `"${kind}" is not a fact kind. Use one of ${FACT_KINDS.join(', ')}, or omit kind for all facts. `
+      + 'The bank is not empty — this call filtered on a value that matches nothing.')
+  }
   const facts = kind ? state.facts.filter((f) => f.kind === kind) : state.facts
   const byKind: Record<string, number> = {}
   for (const f of facts) byKind[f.kind] = (byKind[f.kind] ?? 0) + 1
@@ -454,6 +524,10 @@ export function proposeResumeEdits(edits: EditProposal[]) {
   if (edits.length > 8) {
     return err('too_many_edits', 'At most 8 edits per call. Split them across turns so the human can review.')
   }
+  if (!state.openJobId) {
+    return err('no_job_open',
+      'Edits are always tailored to a specific posting. Call open_job first, then propose against it.')
+  }
 
   const queued: {
     editId: string
@@ -464,7 +538,13 @@ export function proposeResumeEdits(edits: EditProposal[]) {
   const rejected: GuardFailure[] = []
   const accepted: PendingEdit[] = []
 
-  for (const proposal of edits) {
+  for (const raw of edits) {
+    const proposal: EditProposal = {
+      targetBlockId: String(raw?.targetBlockId ?? ''),
+      newText: String(raw?.newText ?? ''),
+      rationale: String(raw?.rationale ?? ''),
+      sourceFactIds: asStringArray(raw?.sourceFactIds),
+    }
     const failure = checkEdit(proposal, state.resume, state.facts)
     if (failure) { rejected.push(failure); continue }
 
@@ -578,7 +658,8 @@ export function dismissFactRequest() {
  * human-in-the-loop story in one rule: nothing can be sent while a proposal the
  * human has not looked at is still outstanding.
  */
-export function prepareApplication(coverNote: string, sourceFactIds: string[] = []) {
+export function prepareApplication(coverNote: string, rawFactIds: unknown = []) {
+  const sourceFactIds = asStringArray(rawFactIds)
   const before = toolsInScope()
   const job = openJob()
   if (!job) return err('no_job_open', 'Call open_job first — an application is always for a specific posting.')

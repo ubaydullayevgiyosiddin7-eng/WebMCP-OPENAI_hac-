@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "fetch-jobs": "node scripts/fetch-jobs.mjs",
-    "guard-tests": "node scripts/guard-tests.mjs"
+    "guard-tests": "node scripts/guard-tests.mjs",
+    "misuse-tests": "node scripts/agent-misuse-tests.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

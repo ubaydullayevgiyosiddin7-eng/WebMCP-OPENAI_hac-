@@ -61,7 +61,24 @@ function tool(
     description,
     inputSchema,
     annotations,
-    execute: async (args, ctx) => aborted(ctx) ?? run(args ?? {}),
+    execute: async (args, ctx) => {
+      const stop = aborted(ctx)
+      if (stop) return stop
+      try {
+        return run(args ?? {})
+      } catch (e) {
+        // Contract §4: errors are returned, never thrown. A real agent passes
+        // malformed arguments — a string where an array belongs, a missing
+        // field — and a rejected promise gives it nothing to correct.
+        const detail = e instanceof Error ? e.message : String(e)
+        return {
+          ok: false,
+          error: 'bad_arguments',
+          hint: `${name} could not read its arguments (${detail}). Check the inputSchema and call it again.`,
+          summary: `Refused (bad_arguments). ${name} could not read its arguments.`,
+        }
+      }
+    },
   }
 }
 
@@ -76,7 +93,7 @@ const ALWAYS: ToolDescriptor[] = [
   ),
   tool(
     'get_profile_facts',
-    "The candidate's fact bank. This is the ONLY legal source of resume claims — an experience that is not here has not been claimed, and must not be written into the resume. Reads only.",
+    "The candidate's fact bank, and the ONLY legal source of resume claims: an experience that is not here has not been claimed and must not appear in the resume or the cover note. Read-only, and there is no writable counterpart — no tool available to you can add, edit or delete a fact. If something is missing you may ask the user about it with request_profile_fact, which asks a question rather than recording an answer.",
     {
       type: 'object',
       properties: {
@@ -134,7 +151,7 @@ const ALWAYS: ToolDescriptor[] = [
   ),
   tool(
     'open_job',
-    'Select a job and open its detail pane. This CHANGES THE SCREEN and registers two further tools (get_job_details, get_fit_gaps) that are only meaningful while a job is open.',
+    'Open a posting. SWITCHES the open job: whatever was open is closed first, and only one job is ever open. If the user names a job, open it — do not ask which one, just switch. This CHANGES THE SCREEN and registers the job-scoped tools (get_job_details, get_fit_gaps, propose_resume_edits, and prepare_application when no edits are pending); the tools for the previous job are unregistered. Pending edits are NOT discarded by switching — they still belong to the job they were written for and still block prepare_application, so withdraw them if you are abandoning that job.',
     {
       type: 'object',
       properties: { jobId: { type: 'string' } },
@@ -146,7 +163,7 @@ const ALWAYS: ToolDescriptor[] = [
   ),
   tool(
     'request_profile_fact',
-    'Ask the human to add a fact to the bank. You CANNOT write to the fact bank yourself — this only opens a pre-filled panel that the human saves, edits or dismisses. Use it when get_fit_gaps reports something missing that you believe the candidate actually has. Returns immediately with awaiting_user; carry on and re-read get_profile_facts later.',
+    'DOES NOT ADD ANYTHING. This opens a question on screen for the user and returns immediately; the fact bank is unchanged when this call returns, and stays unchanged unless the user themself types an answer and saves it. You have no tool that writes to the fact bank — there is no follow-up call that commits this, and nothing you do can make it commit. Never tell the user you will add, record or save a fact: you are asking them a question about their own history, and they may well say no. Only ask about work the USER has actually done that the bank happens not to record yet. A requirement being missing is NOT evidence the user has it — if get_fit_gaps says TensorFlow is missing, the honest reading is that they do not have TensorFlow. Do not ask in order to close a gap. To see whether the user answered, re-read get_profile_facts on a later turn.',
     {
       type: 'object',
       properties: {
@@ -171,7 +188,7 @@ const JOB_SCOPED: ToolDescriptor[] = [
   ),
   tool(
     'get_fit_gaps',
-    'Deterministic comparison of the open posting against the fact bank. No model judgement is involved, which is what makes it checkable. `covered` names the fact ids that evidence each requirement; `missing` is your cue to ask the human via a profile-fact request rather than to invent anything. Reads only.',
+    'Deterministic comparison of the open posting against the fact bank. No model judgement is involved, which is what makes it checkable. `covered` names the fact ids that evidence each requirement — cite those when you propose wording. `missing` means the fact bank does not support it: treat that as something the candidate does NOT have, not as a gap to talk around. Do not claim a missing item, and do not use request_profile_fact to manufacture it. Lead with what is covered. Reads only.',
     noArgs, READ_ONLY,
     () => getFitGaps(),
   ),
@@ -207,7 +224,7 @@ const JOB_SCOPED: ToolDescriptor[] = [
 const PREPARE_SCOPED: ToolDescriptor[] = [
   tool(
     'prepare_application',
-    'Build the application from the ACCEPTED resume and fill the form on screen so the human can see exactly what is about to be sent. The cover note passes through the SAME fact guard as a resume edit, so cite the facts that back any claim you make in it. Only available while a job is open AND no edits are awaiting review — if proposals are still pending this tool is not registered, because nothing may be sent past a diff the human has not looked at.',
+    'Fill in the application form on screen from the ACCEPTED resume so the human can see exactly what would be sent. DOES NOT SEND — submit_application is the only thing that sends, and it needs a human click. The cover note passes through the SAME fact guard as a resume edit, so cite the facts that back any claim you make in it. Only available while a job is open AND no edits are awaiting review — if proposals are still pending this tool is not registered, because nothing may be sent past a diff the human has not looked at.',
     {
       type: 'object',
       properties: {
@@ -238,7 +255,7 @@ const SUBMIT_SCOPED: ToolDescriptor[] = [
 const EDIT_SCOPED: ToolDescriptor[] = [
   tool(
     'withdraw_edit',
-    'Retract a still-pending proposal — for example after the human rejects one and you want to offer different wording. Cannot touch an edit that has already been accepted.',
+    'Remove a still-pending proposal from the human review queue, so it disappears from their screen unreviewed. Use it when you want to replace wording you have already proposed. Cannot touch an edit the human has already accepted or rejected — those are their decisions, not yours.',
     {
       type: 'object',
       properties: { editId: { type: 'string' } },

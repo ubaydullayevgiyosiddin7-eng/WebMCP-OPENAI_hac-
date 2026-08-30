@@ -26,7 +26,7 @@ restores the demo to how you first found it.
 |---|---|
 | [`src/tools.ts`](src/tools.ts) | 13 tools and their scopes. The registered set changes with what is actually possible — see the lifecycle section below. |
 | [`src/lib/guard.ts`](src/lib/guard.ts) | The grounding check. Its header states what it does **not** do, in full. |
-| [`scripts/guard-tests.mjs`](scripts/guard-tests.mjs) | 30 adversarial cases trying to sneak false claims past it, including one that succeeds. |
+| [`scripts/guard-tests.mjs`](scripts/guard-tests.mjs) | 36 adversarial cases trying to sneak false claims past it, including one that succeeds. |
 
 **One interaction proves it.** Open a posting, ask the agent to add Kubernetes
 to your skills, and watch `propose_resume_edits` come back refused with the
@@ -240,17 +240,39 @@ metric. `"near-perfect accuracy"` is refused as a superlative standing in for a
 number. `"Led the team"` is refused as a seniority claim no fact supports and no
 numeric check would catch.
 
-`npm run guard-tests` runs 30 adversarial cases. 29 behave as expected, with
-**zero false refusals across those 30 cases** — which matters as much as the
-refusals, because a guard that blocks honest work is a guard people switch off.
+`npm run guard-tests` runs 36 adversarial cases. 35 behave as expected, with no
+false refusals among them — which matters as much as the refusals, because a
+guard that blocks honest work is a guard people switch off.
 
-Read that as a floor, not a proof. I wrote both the guard and the cases that
-attack it, so the suite measures the failures I thought to look for. Four of the
-leaks it now catches were found only because a case was added *after* the guard
-was written — spelled-out numbers, superlatives standing in for metrics,
-unquantified seniority verbs, and a narrower product name claimed from a broader
-concept. The suite is in the repo to be re-run and extended, and the one case it
-still fails is left in it.
+**That number was wrong once, and how it was wrong is the point.** An earlier
+version of this section claimed zero false refusals across 30 cases. Then a
+recorded ChatGPT session refused **"CNNs"** and **"APIs"** — both backed by facts
+the candidate wrote, both differing from the stored token only by an *s*. The
+check compared surface strings, so `CNN` matched and `CNNs` did not. The suite
+had no case of that shape, so it reported a clean sweep while the guard was
+blocking true claims on camera.
+
+Both sides are now reduced to one form before comparison — case, possessives and
+punctuation are removed, and a trailing plural *-s* only when three or more
+characters remain, which keeps `AWS`, `GCP` and `RAG` intact. Nothing further:
+no stemming, no prefix matching, no edit distance, because any of those would let
+`Kubernetes` reach a grounded word and that is exactly what must not happen. It
+normalises to `kubernete`, which no fact contains, and is still refused. The same
+session exposed a second case — `x ray` written without the hyphen was read as
+the **Ray** framework, since the guard blocked `X-ray` but not the spaced form.
+
+Every token in the fact bank was then audited against the forms a person would
+actually write — 684 variants across plurals, possessives, casing, hyphenation
+and spacing. Zero false refusals remain, and six cases of this shape are now in
+the suite, including two that check the normalisation did not overreach.
+
+So: read the number as a floor, not a proof. I wrote both the guard and the cases
+that attack it, so the suite measures the failures I thought to look for — and a
+real session found a class I had not. Five of the behaviours it now catches were
+added *after* the guard was written: spelled-out numbers, superlatives standing
+in for metrics, unquantified seniority verbs, a narrower product name claimed
+from a broader concept, and this one. The suite is in the repo to be re-run and
+extended, and the one case it still fails is left in it.
 
 ### What grounding is not
 
@@ -376,8 +398,8 @@ The app is fully usable by hand in a browser with no WebMCP support —
 detected" rather than implying a tool surface that is not there.
 
 ```bash
-npm run guard-tests      # 30 adversarial guard cases   (needs npm run dev)
-npm run misuse-tests     # 41 agent-misuse cases        (needs a built preview)
+npm run guard-tests      # 36 adversarial guard cases   (needs npm run dev)
+npm run misuse-tests     # 48 agent-misuse cases        (needs a built preview)
 ```
 
 `?reset=1` restores the shipped demo data and strips itself from the URL, so a

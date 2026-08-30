@@ -33,7 +33,11 @@ const reCache = new Map<string, RegExp>()
 function termRe(term: string): RegExp {
   let re = reCache.get(term)
   if (!re) {
-    const behind = HYPHEN_GUARDED.has(term) ? '(?<![a-z0-9-])' : '(?<![a-z0-9])'
+    // "ray" must not match inside "X-ray" — nor inside "x ray", which the
+    // hyphen guard alone missed and which an agent writes just as often.
+    const behind = HYPHEN_GUARDED.has(term)
+      ? String.raw`(?<![a-z0-9-])(?<!x[\s-])`
+      : '(?<![a-z0-9])'
     re = new RegExp(`${behind}${escapeRe(term)}(?![a-z0-9])`, 'i')
     reCache.set(term, re)
   }
@@ -212,6 +216,47 @@ function distance(a: string, b: string): number {
   return prev[b.length]
 }
 
+
+/**
+ * One surface form of a word, so that a claim and the fact backing it compare
+ * equal when they differ only in how the word was written.
+ *
+ * A live session refused "CNNs" and "APIs" — both genuinely grounded, both
+ * merely pluralised — because the check was a literal substring against the
+ * fact text, which held "CNN" and "REST API". That is a false refusal, the one
+ * failure class as damaging as a false pass.
+ *
+ * Where the line is drawn, deliberately narrowly:
+ *   - case, possessives, and punctuation (hyphens, dots, slashes) are removed;
+ *     "X-ray", "x ray" and "xray" are the same word, as are "PyTorch's" and
+ *     "PyTorch".
+ *   - a trailing plural -s is removed ONLY when three or more characters
+ *     remain, which keeps AWS, GCP and RAG intact rather than reducing them to
+ *     two-letter stems that could collide with something else.
+ *   - nothing else. No stemming, no prefix matching, no edit distance. Those
+ *     would let "Kubernetes" reach a grounded word, and the whole point is that
+ *     it must not. "Kubernetes" normalises to "kubernete", which appears in no
+ *     fact this profile contains, so it is still refused.
+ */
+export function normWord(w: string): string {
+  const base = String(w).toLowerCase()
+    .replace(/['‘’`]s$/, '')
+    .replace(/[^a-z0-9+#]/g, '')
+  if (!base.endsWith('s')) return base
+  const singular = base.slice(0, -1)
+  return singular.length >= 3 ? singular : base
+}
+
+/** Every word the cited material contains, in that same single form. */
+function groundedWords(grounding: string): Set<string> {
+  const out = new Set<string>()
+  for (const raw of grounding.split(/[^A-Za-z0-9+#'’]+/)) {
+    if (!raw) continue
+    out.add(normWord(raw))
+  }
+  return out
+}
+
 /** Everything the proposal is allowed to draw on. */
 function groundingText(
   proposal: EditProposal,
@@ -332,8 +377,9 @@ export function ungroundedIn(text: string, grounding: string): string[] {
   // candidate never claimed. A grounded concept does not ground every product
   // that implements it.
   const groundLower = normalise(grounding)
+  const groundWords = groundedWords(grounding)
   const ungroundedNames = [...new Set(properNounsIn(text))]
-    .filter((w) => !groundLower.includes(w.toLowerCase()))
+    .filter((w) => !groundWords.has(normWord(w)))
 
   // 4. Superlatives and seniority claims, neither of which a number check sees.
   const textLower = normalise(text)

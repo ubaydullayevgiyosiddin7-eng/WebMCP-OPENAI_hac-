@@ -51,6 +51,78 @@ const CASES = [
     },
   },
 
+  // ---- surface forms of a grounded word -----------------------------------
+  //
+  // A live ChatGPT session refused "CNNs" and "APIs" — both backed by facts the
+  // candidate wrote, both merely pluralised. These are false refusals, and the
+  // suite had no case of this shape until that recording produced one.
+  {
+    group: 'surface forms',
+    name: 'plural of a grounded acronym — CNNs',
+    expect: 'pass',
+    proposal: {
+      targetBlockId: 'b_skills',
+      newText: 'ResNet and CNN architectures, including production CNNs for image classification.',
+      rationale: 'Plural reads better in a skills line.',
+      sourceFactIds: ['f_resnet_cnn'],
+    },
+  },
+  {
+    group: 'surface forms',
+    name: 'plural of a grounded term inside a phrase — APIs',
+    expect: 'pass',
+    proposal: {
+      targetBlockId: 'b_skills',
+      newText: 'Backend and infrastructure: FastAPI, Flask, Docker, Linux, Git, and REST APIs.',
+      rationale: 'The fact says "rest api"; the plural is the same claim.',
+      sourceFactIds: ['f_backend'],
+    },
+  },
+  {
+    group: 'surface forms',
+    name: 'possessive of a grounded product name',
+    expect: 'pass',
+    proposal: {
+      targetBlockId: 'b_exp_wagon',
+      newText: "Built a three-stage computer vision pipeline for railway wagons using PyTorch's detection stack.",
+      rationale: 'Possessive form.',
+      sourceFactIds: ['a_wagon_pipeline', 'f_pytorch'],
+    },
+  },
+  {
+    group: 'surface forms',
+    name: 'space-separated X-ray must not read as the Ray framework',
+    expect: 'pass',
+    proposal: {
+      targetBlockId: 'b_exp_xray_loaded',
+      newText: 'Trained a ResNet classifier on customs x ray scans to decide whether a wagon is loaded or empty.',
+      rationale: 'Written without the hyphen.',
+      sourceFactIds: ['a_xray_loaded'],
+    },
+  },
+  {
+    group: 'surface forms',
+    name: 'normalisation must NOT let an absent term through',
+    expect: 'refuse',
+    proposal: {
+      targetBlockId: 'b_skills',
+      newText: 'Backend: FastAPI, Flask, Docker. Also ran Kubernetes clusters and TensorFlow jobs.',
+      rationale: 'Checks the line was drawn narrowly enough.',
+      sourceFactIds: ['f_backend'],
+    },
+  },
+  {
+    group: 'surface forms',
+    name: 'plurals do not smuggle an absent term either',
+    expect: 'refuse',
+    proposal: {
+      targetBlockId: 'b_skills',
+      newText: 'Backend: FastAPI, Flask, Docker, and several Kubernetes clusters.',
+      rationale: 'Plural of something no fact supports.',
+      sourceFactIds: ['f_backend'],
+    },
+  },
+
   // ---- hedged phrasing ----------------------------------------------------
   {
     group: 'hedging',

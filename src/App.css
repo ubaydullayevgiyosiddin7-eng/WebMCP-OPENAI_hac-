@@ -602,15 +602,18 @@ a.link { text-decoration: underline; }
 
 /* ---------------------------------------------------------------- tool rail */
 
+/*
+ * Wraps rather than scrolls. Scrolling hid 574px of 1334px at recording width —
+ * 43% of the registered tools were off-screen behind a scrollbar, which defeats
+ * the one thing this row exists to show. Wrapping costs a little height and the
+ * row is collapsible anyway.
+ */
 .rail {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 5px 12px 7px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  scrollbar-width: thin;
+  gap: 5px 10px;
+  padding: 4px 12px 8px;
 }
 
 .rail__count {
@@ -621,8 +624,11 @@ a.link { text-decoration: underline; }
 }
 .rail__count b { color: var(--accent); }
 
-.rail__group { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; }
-.rail__group + .rail__group { border-left: 1px solid var(--line); padding-left: 12px; }
+/* A group may wrap internally, but its label stays glued to its first chip. */
+.rail__group { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+/* No divider rule: when a group wraps, a left border hangs at the start of the
+   new line with nothing to divide. The accent labels already carry the grouping. */
+.rail__group + .rail__group { margin-left: 8px; }
 
 /* The grouping is the argument, so the labels are not the faintest thing here. */
 .rail__label {

@@ -11,12 +11,22 @@ agent is a first-class user of the page — alongside the human, not instead of 
 
 The agent can search jobs, read the user's fact bank, and **propose** resume
 rewrites tailored to a specific posting. It cannot silently change the resume, and
-it cannot invent experience the user never claimed. Every write is either
-reviewable (a diff the human accepts or rejects) or gated behind an explicit
-confirmation.
+and every claim it writes must be grounded in a fact the user recorded. Every
+write is either reviewable (a diff the human accepts or rejects) or gated behind
+an explicit confirmation.
 
-**The differentiator is not "AI writes your resume." It is "AI writes your resume
-and cannot lie, and you approve every line."**
+**An agent that can rewrite your resume, but not rewrite your experience.**
+
+WebMCP turns the resume into an evidence-bound workspace: the agent proposes,
+the page constrains, the human approves.
+
+> **What the constraint is, precisely.** The page checks *grounding*: every
+> technology, number and name in a proposed line must trace to a fact the user
+> recorded, or to the text already in the block. That is not a truth check — the
+> page cannot know whether the user's own record is accurate. It is also not an
+> entailment check: a sentence assembled from two true facts can describe
+> something that never happened, and grounding will pass it. That gap is real,
+> documented, and surfaced to the human rather than hidden.
 
 ### Non-goals
 

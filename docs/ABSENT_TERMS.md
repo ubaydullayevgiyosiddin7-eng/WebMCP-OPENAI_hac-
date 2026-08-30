@@ -12,9 +12,9 @@ verify — grep the bundle.
 
 ## Why a negative set is required
 
-Tailor's claim is that the agent cannot invent experience. That claim is
-untestable unless some of what employers ask for is genuinely absent from the
-fact bank.
+Tailor's constraint is that every claim in the resume traces to a fact the user
+recorded. That constraint is untestable unless some of what employers ask for is
+genuinely absent from the fact bank.
 
 If every technology in the job corpus happened to appear somewhere in the
 profile, the guard would never fire. The central moment — an agent asked to

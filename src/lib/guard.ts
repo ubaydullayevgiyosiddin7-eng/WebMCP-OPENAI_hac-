@@ -202,8 +202,7 @@ export function checkEdit(
  *
  * Shared by resume edits and the cover note. The note is part of what gets
  * sent, so holding it to a weaker standard than the resume would leave the
- * product's central claim — that the agent cannot lie on your behalf — true
- * only of the half of the payload that happens to be structured.
+ * grounding constraint holding over only the structured half of the payload.
  */
 export function ungroundedIn(text: string, grounding: string): string[] {
   // 1. Technology and product concepts, resolved through the alias table.

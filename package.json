@@ -26,5 +26,5 @@
     "vite": "^8.2.2"
   },
   "license": "MIT",
-  "description": "A job board where an AI agent tailors your resume through WebMCP tools and cannot invent experience you never claimed."
+  "description": "An agent that can rewrite your resume, but not rewrite your experience. A WebMCP job board where every proposed line must trace to a fact you recorded."
 }

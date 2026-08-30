@@ -177,6 +177,45 @@ export function toolsInScope(s: State = state): string[] {
 
 export const pendingEdits = (s: State = state) => s.pendingEdits.filter((e) => e.status === 'pending')
 
+
+/**
+ * The condition under which each scoped tool exists. Phrased as a requirement so
+ * it reads correctly when a tool goes away — an agent that finds a tool missing
+ * has nothing to read unless we say what it needs, and "it vanished" is not a
+ * debuggable state.
+ */
+const SCOPE_REQUIRES: Record<string, string> = {
+  get_job_details: 'a job to be open',
+  get_fit_gaps: 'a job to be open',
+  propose_resume_edits: 'a job to be open',
+  withdraw_edit: 'at least one edit pending review',
+  prepare_application: 'a job open and no edits pending review',
+  submit_application: 'a prepared application',
+}
+
+/**
+ * Diff the registered tool surface across an action and describe it in words.
+ * Every scope-changing action returns this, so the agent is never left to
+ * discover a change by failing.
+ */
+function scopeDelta(before: string[]) {
+  const after = toolsInScope()
+  const toolsAdded = after.filter((t) => !before.includes(t))
+  const toolsRemoved = before.filter((t) => !after.includes(t))
+
+  const parts: string[] = []
+  if (toolsAdded.length) {
+    parts.push(`Now available: ${toolsAdded.join(', ')}.`)
+  }
+  if (toolsRemoved.length) {
+    parts.push(`No longer available: ${toolsRemoved
+      .map((n) => (SCOPE_REQUIRES[n] ? `${n} (needs ${SCOPE_REQUIRES[n]})` : n))
+      .join(', ')}.`)
+  }
+
+  return { toolsAdded, toolsRemoved, registeredTools: after, scopeNote: parts.join(' ') }
+}
+
 const err = (error: string, hint: string) => ({ ok: false as const, error, hint })
 
 // ---------------------------------------------------------------- actions
@@ -230,16 +269,19 @@ export function searchJobs(input: Partial<Filters> & { limit?: number } = {}) {
 }
 
 export function selectJob(jobId: string) {
+  const before = toolsInScope()
   const job = JOBS.find((j) => j.id === jobId)
   if (!job) {
     return err('job_not_found', `No job with id "${jobId}". Call search_jobs first and use an id from its results.`)
   }
   set({ openJobId: jobId })
+  const delta = scopeDelta(before)
   return {
     ok: true as const,
-    summary: `Opened "${job.title}" at ${job.company}. ${JOB_SCOPED_TOOLS.length} more tools are now available.`,
+    summary: `Opened "${job.title}" at ${job.company}. ${delta.scopeNote}`,
     job: jobSummary(job),
-    newlyAvailableTools: [...JOB_SCOPED_TOOLS],
+    newlyAvailableTools: delta.toolsAdded,
+    ...delta,
   }
 }
 
@@ -364,6 +406,7 @@ let editSeq = 0
  * correct itself rather than retry blindly.
  */
 export function proposeResumeEdits(edits: EditProposal[]) {
+  const before = toolsInScope()
   if (!Array.isArray(edits) || edits.length === 0) {
     return err('no_edits', 'Pass at least one edit. Each needs targetBlockId, newText, rationale and sourceFactIds.')
   }
@@ -394,22 +437,31 @@ export function proposeResumeEdits(edits: EditProposal[]) {
 
   if (accepted.length > 0) set({ pendingEdits: [...state.pendingEdits, ...accepted] })
 
+  const delta = scopeDelta(before)
   const parts = [`${queued.length} of ${edits.length} edit${edits.length === 1 ? '' : 's'} queued for review.`]
   if (rejected.length > 0) {
     parts.push(`${rejected.length} rejected: ${rejected.map((r) => r.offendingTokens.join('/') || r.reason).join('; ')}.`)
   }
+  if (delta.scopeNote) parts.push(delta.scopeNote)
 
-  return { ok: true as const, summary: parts.join(' '), queued, rejected }
+  return { ok: true as const, summary: parts.join(' '), queued, rejected, ...delta }
 }
 
 export function withdrawEdit(editId: string) {
+  const before = toolsInScope()
   const edit = state.pendingEdits.find((e) => e.id === editId)
   if (!edit) return err('edit_not_found', `No edit "${editId}". Call get_workspace_state to see pending edit ids.`)
   if (edit.status !== 'pending') {
     return err('edit_not_pending', `Edit "${editId}" is already ${edit.status} and cannot be withdrawn.`)
   }
   set({ pendingEdits: state.pendingEdits.filter((e) => e.id !== editId) })
-  return { ok: true as const, summary: `Withdrew ${editId}.`, withdrawnId: editId }
+  const delta = scopeDelta(before)
+  return {
+    ok: true as const,
+    summary: `Withdrew ${editId}. ${delta.scopeNote}`.trim(),
+    withdrawnId: editId,
+    ...delta,
+  }
 }
 
 /** Human-only. The agent has no path to this. */
@@ -466,6 +518,7 @@ export function dismissFactRequest() {
  * human has not looked at is still outstanding.
  */
 export function prepareApplication(coverNote: string, sourceFactIds: string[] = []) {
+  const before = toolsInScope()
   const job = openJob()
   if (!job) return err('no_job_open', 'Call open_job first — an application is always for a specific posting.')
 
@@ -505,10 +558,13 @@ export function prepareApplication(coverNote: string, sourceFactIds: string[] = 
   }
   set({ applications: [...state.applications.filter((a) => a.jobId !== job.id), app] })
 
+  const delta = scopeDelta(before)
   return {
     ok: true as const,
+    ...delta,
     summary: `Application to ${job.company} is ready. ${app.resumeSnapshot.length} resume blocks and a `
-      + `${note.length}-character cover note are filled in on screen. Nothing is sent until the human confirms.`,
+      + `${note.length}-character cover note are filled in on screen. Nothing is sent until the human confirms. `
+      + delta.scopeNote,
     preview: {
       jobId: job.id,
       jobTitle: job.title,
@@ -527,6 +583,7 @@ export function prepareApplication(coverNote: string, sourceFactIds: string[] = 
  * is aborted, in which case the modal closes and the promise REJECTS.
  */
 export function submitApplication(signal?: AbortSignal): Promise<unknown> {
+  const before = toolsInScope()
   const app = state.applications.find((a) => a.status === 'ready')
   if (!app) {
     return Promise.resolve(err('not_ready', 'No application is ready. Call prepare_application first.'))
@@ -565,11 +622,13 @@ export function submitApplication(signal?: AbortSignal): Promise<unknown> {
           a.jobId === app.jobId ? { ...a, status: 'submitted' as const, submittedAt } : a),
       })
       const job = JOBS.find((j) => j.id === app.jobId)
+      const delta = scopeDelta(before)
       resolve({
         ok: true,
-        summary: `Application to ${job?.company ?? app.jobId} submitted.`,
+        summary: `Application to ${job?.company ?? app.jobId} submitted. ${delta.scopeNote}`.trim(),
         applicationId: app.jobId,
         submittedAt,
+        ...delta,
       })
     }
 

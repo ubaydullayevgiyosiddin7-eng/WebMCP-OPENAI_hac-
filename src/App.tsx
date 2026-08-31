@@ -205,21 +205,40 @@ function StatusStrip({ webmcp, matchCount, listOpen, resumeOpen, onToggleList, o
   )
 }
 
+/**
+ * A modified workspace is not the shipped demo, and anyone recording or
+ * evaluating the app needs to know that before they start, not after. This was
+ * a small dot once; a dot is easy to record straight past.
+ */
 function ResetControl() {
   const state = useSyncExternalStore(subscribe, getState)
   const dirty = hasCustomState(state)
+  const reset = () => {
+    if (!dirty || window.confirm('Reset the demo? Accepted edits, added facts and applications will be discarded.')) {
+      resetDemoData()
+    }
+  }
   return (
-    <button
-      className="link strip__reset"
-      title="Clear accepted edits, added facts and applications, and restore the shipped demo data."
-      onClick={() => {
-        if (!dirty || window.confirm('Reset the demo? Accepted edits, added facts and applications will be discarded.')) {
-          resetDemoData()
-        }
-      }}
-    >
-      reset demo data{dirty ? ' •' : ''}
-    </button>
+    <>
+      {dirty && (
+        <button
+          className="badge badge--warn strip__dirty"
+          title={'This workspace carries accepted edits, added facts or applications that are not part of '
+            + 'the shipped demo. Anything you see here may not reproduce on a fresh visit. Click to restore it.'}
+          onClick={reset}
+        >
+          <span className="strip__dirty-long">workspace modified — not the shipped demo</span>
+          <span className="strip__dirty-short">workspace modified</span>
+        </button>
+      )}
+      <button
+        className="link strip__reset"
+        title="Clear accepted edits, added facts and applications, and restore the shipped demo data."
+        onClick={reset}
+      >
+        reset demo data
+      </button>
+    </>
   )
 }
 
@@ -536,8 +555,10 @@ function RefusalList({ refusals }: { refusals: { id: string; offendingTokens: st
   )
 }
 
-function Refusal({ r }: { r: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string; message?: string } }) {
+function Refusal({ r }: { r: { id: string; offendingTokens: string[]; targetBlockId: string; reason: string; message?: string; citedFactIds?: string[] } }) {
   const plural = r.offendingTokens.length !== 1
+  const unsupported = r.reason === 'unsupported_claim'
+  const cited = r.citedFactIds ?? []
   return (
     <article className="refusal">
       <div className="refusal__label">refused</div>
@@ -546,11 +567,41 @@ function Refusal({ r }: { r: { id: string; offendingTokens: string[]; targetBloc
         {r.offendingTokens.map((t) => <span key={t} className="refusal__token">{t}</span>)}
       </div>
 
+      {/* The guard grounds an edit in the facts it cited plus the block it
+          rewrites — not in the whole profile. Saying "nothing you have claimed
+          supports this" made a scoping check read as a verdict on the user. */}
       <p className="refusal__why">
-        {r.reason === 'unsupported_claim'
-          ? `Nothing you have claimed supports ${plural ? 'these terms' : 'this term'}. The edit was not queued.`
+        {unsupported
+          ? `Nothing in the cited facts or the original block supports ${plural ? 'these terms' : 'this term'}. The edit was not queued.`
           : (r.message ?? `The edit was not queued (${r.reason.replace(/_/g, ' ')}).`)}
       </p>
+
+      {unsupported && (
+        <div className="refusal__cited">
+          <div className="refusal__cited-label">
+            {cited.length > 0
+              ? `this edit cited ${cited.length} fact${cited.length === 1 ? '' : 's'}`
+              : 'this edit cited no facts'}
+          </div>
+          {cited.length > 0 && (
+            <div className="refusal__cited-ids">
+              {cited.map((id) => {
+                const f = factById(id)
+                return (
+                  <code key={id} className="refusal__cited-id" title={f ? f.text : 'unknown fact id'}>
+                    {id}
+                  </code>
+                )
+              })}
+            </div>
+          )}
+          <p className="refusal__cited-note">
+            {plural ? 'Terms missing' : 'A term missing'} from this list may still be
+            recorded elsewhere in your profile — the edit cited the wrong facts, not
+            necessarily a gap in your experience.
+          </p>
+        </div>
+      )}
 
       <div className="refusal__foot">
         <code className="block__id">{r.targetBlockId}</code>

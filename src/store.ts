@@ -55,7 +55,7 @@ export type State = {
   /** Refusals the human has not dismissed. The guard holding a line is the
    *  product's most important moment; it must not happen only in the agent's
    *  transcript. */
-  refusals: (GuardFailure & { id: string; newText: string })[]
+  refusals: (GuardFailure & { id: string; newText: string; citedFactIds: string[] })[]
   applications: Application[]
   /** The application the confirmation modal is currently showing, if any. */
   submitModalFor: string | null
@@ -578,11 +578,20 @@ export function proposeResumeEdits(edits: EditProposal[]) {
     })
   }
 
-  const shown = rejected.map((r, i) => ({
-    ...r,
-    id: `r_${++editSeq}_${i}`,
-    newText: edits.find((e) => e?.targetBlockId === r.targetBlockId)?.newText ?? '',
-  }))
+  // Carry the ids the refused edit cited. A refusal that names only the
+  // offending term reads as "this is absent from your profile", when what the
+  // guard actually checked is the much narrower "absent from what THIS edit
+  // cited". Showing the citation list lets a human see the difference.
+  const shown = rejected.map((r, i) => {
+    const source = edits.find((e) => e?.targetBlockId === r.targetBlockId)
+    const cited = source?.sourceFactIds
+    return {
+      ...r,
+      id: `r_${++editSeq}_${i}`,
+      newText: source?.newText ?? '',
+      citedFactIds: Array.isArray(cited) ? cited.filter((x) => typeof x === 'string') : [],
+    }
+  })
   set({
     pendingEdits: accepted.length > 0 ? [...state.pendingEdits, ...accepted] : state.pendingEdits,
     refusals: [...state.refusals, ...shown],

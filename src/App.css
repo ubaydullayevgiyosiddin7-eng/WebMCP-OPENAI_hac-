@@ -96,6 +96,18 @@ body {
 .badge--ok  { color: var(--ok); border-color: #24402c; }
 .badge--off { color: var(--dimmer); }
 
+/* Loud on purpose: a modified workspace invalidates anything recorded from it. */
+.badge--warn {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+.badge--warn:hover { filter: brightness(1.12); }
+.strip__dirty-short { display: none; }
+
 /* ---------------------------------------------------------------- panes */
 
 .panes {
@@ -748,6 +760,33 @@ a.link { text-decoration: underline; }
 }
 
 .refusal__why { font-size: 11.5px; line-height: 1.5; color: var(--dim); margin: 0 0 7px; }
+
+/* What the edit actually cited — the difference between "you never claimed
+   this" and "this edit pointed at the wrong facts". */
+.refusal__cited {
+  border-top: 1px solid var(--line);
+  padding-top: 7px;
+  margin-bottom: 7px;
+}
+.refusal__cited-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dimmer);
+  margin-bottom: 5px;
+}
+.refusal__cited-ids { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.refusal__cited-id {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--dim);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 1px 5px;
+  cursor: help;
+}
+.refusal__cited-note { font-size: 11px; line-height: 1.5; color: var(--dimmer); margin: 0; }
 .refusal__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
 /* ---------------------------------------------------------------- grounds */
@@ -818,6 +857,11 @@ a.link { text-decoration: underline; }
 @media (max-width: 1000px) {
   .strip__jobs { display: inline-block; }
   .strip__who { display: none; }
+
+  /* The warning stays; only its wording shortens. Never hide it — a narrow
+     viewport is exactly the recording width where it matters most. */
+  .strip__dirty-long { display: none; }
+  .strip__dirty-short { display: inline; }
 
   .panes {
     display: block;
